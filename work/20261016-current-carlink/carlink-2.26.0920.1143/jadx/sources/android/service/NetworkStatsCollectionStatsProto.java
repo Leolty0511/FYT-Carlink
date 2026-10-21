@@ -1,0 +1,7 @@
+package android.service;
+
+/* JADX INFO: loaded from: classes.dex */
+public final class NetworkStatsCollectionStatsProto {
+    public static final long HISTORY = 1172526071810L;
+    public static final long KEY = 1172526071809L;
+}

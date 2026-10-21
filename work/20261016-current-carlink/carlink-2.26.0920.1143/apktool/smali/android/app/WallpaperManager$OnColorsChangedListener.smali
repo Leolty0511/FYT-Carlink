@@ -1,0 +1,22 @@
+.class public interface abstract Landroid/app/WallpaperManager$OnColorsChangedListener;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Landroid/app/WallpaperManager;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x609
+    name = "OnColorsChangedListener"
+.end annotation
+
+
+# virtual methods
+.method public abstract onColorsChanged(Landroid/app/WallpaperColors;I)V
+.end method
+
+.method public abstract onColorsChanged(Landroid/app/WallpaperColors;II)V
+.end method

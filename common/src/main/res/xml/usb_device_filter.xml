@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Apple -->
+    <!-- Matches the stock CarLink 2.0 wired-CarPlay classifier (0x05AC / 0x12A8). -->
+    <usb-device vendor-id="1452" product-id="4776" />
+</resources>

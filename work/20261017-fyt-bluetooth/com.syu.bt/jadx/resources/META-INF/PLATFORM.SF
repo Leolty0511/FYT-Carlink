@@ -1,0 +1,35 @@
+Signature-Version: 1.0
+Created-By: 1.0 (Android)
+SHA1-Digest-Manifest: 20UfhIgoRGDMMUPZ8s+8JisQ+7Y=
+X-Android-APK-Signed: 2, 3
+
+Name: AndroidManifest.xml
+SHA1-Digest: UTvcIbWre+zX6owZsBPpkM6k11w=
+
+Name: assets/core_ogg/res_bt.ogg
+SHA1-Digest: bRiXqjxR+9GXvUiDS5VNew93Yic=
+
+Name: classes.dex
+SHA1-Digest: ezJigyuFXNAfM4MeJYa4ddEPXrg=
+
+Name: res/drawable-nodpi-v4/bt_bk.png
+SHA1-Digest: jV3KB3iXPR8e92Yhk022ZNcf1UU=
+
+Name: res/drawable/bitmap_bk.xml
+SHA1-Digest: cj8VS6Hrms0CSbznva5gxjwaEzQ=
+
+Name: res/drawable/bt_icon.png
+SHA1-Digest: JOgcEDjR5ZCX89cRLpquRwSC668=
+
+Name: res/drawable/bt_icon_1.png
+SHA1-Digest: ZVaJRJofcIoUh8/6YcapoMfgbgA=
+
+Name: res/raw/conf_client.xml
+SHA1-Digest: iAr0A+H2KTDmcSPyzuxIfZprmXo=
+
+Name: res/raw/conf_platform.xml
+SHA1-Digest: jpd5IhW22aXkeDNlOz61A9zG8Sc=
+
+Name: resources.arsc
+SHA1-Digest: CjQhoz+/++rX2hQS9A6ULatzQCg=
+

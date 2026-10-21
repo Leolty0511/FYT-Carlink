@@ -1,0 +1,57 @@
+.class public interface abstract Landroid/view/autofill/IAutoFillManagerClient;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Landroid/os/IInterface;
+
+
+# annotations
+.annotation system Ldalvik/annotation/MemberClasses;
+    value = {
+        Landroid/view/autofill/IAutoFillManagerClient$Stub;
+    }
+.end annotation
+
+
+# virtual methods
+.method public abstract authenticate(IILandroid/content/IntentSender;Landroid/content/Intent;)V
+.end method
+
+.method public abstract autofill(ILjava/util/List;Ljava/util/List;)V
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "(I",
+            "Ljava/util/List<",
+            "Landroid/view/autofill/AutofillId;",
+            ">;",
+            "Ljava/util/List<",
+            "Landroid/view/autofill/AutofillValue;",
+            ">;)V"
+        }
+    .end annotation
+.end method
+
+.method public abstract notifyNoFillUi(ILandroid/view/autofill/AutofillId;Z)V
+.end method
+
+.method public abstract requestHideFillUi(ILandroid/view/autofill/AutofillId;)V
+.end method
+
+.method public abstract requestShowFillUi(ILandroid/view/autofill/AutofillId;IILandroid/graphics/Rect;Landroid/view/autofill/IAutofillWindowPresenter;)V
+.end method
+
+.method public abstract setSaveUiState(IZ)V
+.end method
+
+.method public abstract setSessionFinished(I)V
+.end method
+
+.method public abstract setState(ZZZ)V
+.end method
+
+.method public abstract setTrackedViews(I[Landroid/view/autofill/AutofillId;Z[Landroid/view/autofill/AutofillId;)V
+.end method
+
+.method public abstract startIntentSender(Landroid/content/IntentSender;Landroid/content/Intent;)V
+.end method

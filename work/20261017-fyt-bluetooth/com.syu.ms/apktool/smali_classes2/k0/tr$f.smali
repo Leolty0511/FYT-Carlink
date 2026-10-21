@@ -1,0 +1,121 @@
+.class public Lk0/tr$f;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Ljava/lang/Runnable;
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Lk0/tr;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x1
+    name = null
+.end annotation
+
+
+# instance fields
+.field public final synthetic a:Lk0/tr;
+
+
+# direct methods
+.method public constructor <init>(Lk0/tr;)V
+    .locals 0
+
+    .line 1
+    iput-object p1, p0, Lk0/tr$f;->a:Lk0/tr;
+
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    return-void
+.end method
+
+
+# virtual methods
+.method public run()V
+    .locals 3
+
+    .line 1
+    sget v0, Lu0/b;->D:I
+
+    iget-object v1, p0, Lk0/tr$f;->a:Lk0/tr;
+
+    iget v1, v1, Lk0/tr;->w:I
+
+    if-eq v0, v1, :cond_1
+
+    const/16 v1, 0xb
+
+    const/4 v2, 0x4
+
+    if-eq v0, v1, :cond_0
+
+    const/16 v1, 0xd
+
+    if-eq v0, v1, :cond_0
+
+    const/4 v0, 0x5
+
+    new-array v0, v0, [I
+
+    .line 2
+    fill-array-data v0, :array_0
+
+    invoke-static {v0}, Lz/k;->s([I)V
+
+    new-array v0, v2, [I
+
+    .line 3
+    fill-array-data v0, :array_1
+
+    invoke-static {v0}, Lz/k;->s([I)V
+
+    goto :goto_0
+
+    :cond_0
+    new-array v0, v2, [I
+
+    .line 4
+    fill-array-data v0, :array_2
+
+    invoke-static {v0}, Lz/k;->s([I)V
+
+    .line 5
+    :goto_0
+    iget-object v0, p0, Lk0/tr$f;->a:Lk0/tr;
+
+    sget v1, Lu0/b;->D:I
+
+    iput v1, v0, Lk0/tr;->w:I
+
+    :cond_1
+    return-void
+
+    :array_0
+    .array-data 4
+        0xe3
+        0x84
+        0x2
+        0x30
+        0x5
+    .end array-data
+
+    :array_1
+    .array-data 4
+        0xe3
+        0xe3
+        0x1
+        0x0
+    .end array-data
+
+    :array_2
+    .array-data 4
+        0xe3
+        0xe3
+        0x1
+        0x1
+    .end array-data
+.end method

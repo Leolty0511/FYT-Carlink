@@ -1,0 +1,22 @@
+#到前台,立刻切APP_ID_SPECIAL的应用
+#com.glsx.ddbox		  #滴滴虎
+com.vertech.roadexame #余哥路考助手
+com.lukaoyi.android.CarCoach
+com.welhzh.android.CarCoach
+lc.sc.KM3
+com.iflytek.speechcloud
+com.baling.wcrti
+com.JPTFreeConn
+com.yiren.dbaf
+com.iflytek.voicedemo
+com.example.roadtest
+com.hongfans.rearview
+lc.sc.KM3
+com.JPTFreeConn
+com.baling.wfa
+com.baling.wfb
+com.yiren.dbaa
+com.yiren.daaa
+com.baling.wfb
+com.iflytek.speechcloud
+com.baling.wfa

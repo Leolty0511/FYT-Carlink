@@ -1,0 +1,24 @@
+#语音应用，语音应用在录音时需要机器临时静音，以免干扰录音，影响识别效果
+#通常语音应用录音开始时会请求Audio Focus,该文件中适配的应用，在申请Audio Focus时
+#服务会做相应的音频处理，释放Audio Focus时恢复到当前状态声音输出
+com.google.android.googlequicksearchbox #Google语音
+#com.txznet.txz
+#%com\.txznet.
+com.txznet.txz
+com.txznet.smartadapter
+com.txznet.adapter
+com.txzing.voiceassistant
+car.ava.com.simplecontrollerava
+com.ava.car
+com.roadrover.voiceassistant #路畅
+com.tencent.wecarspeech
+vn.autoai.android
+com.tc.mangqu
+vn.com.cogamichi.app
+com.vietmap.assistant
+com.android.launcher6 #天之眼主页播放提示音
+com.atoto.speechtotext #驭丰
+com.haibingtech.voiceservice
+com.iflytek.autofly.voicecoreservice
+com.teyes.hanna
+com.sydr.voiceusage

@@ -1,0 +1,85 @@
+.class Landroid/media/WebVttParser$6;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Landroid/media/WebVttParser$Phase;
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Landroid/media/WebVttParser;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x1
+    name = null
+.end annotation
+
+
+# instance fields
+.field public final synthetic this$0:Landroid/media/WebVttParser;
+
+
+# direct methods
+.method public constructor <init>(Landroid/media/WebVttParser;)V
+    .locals 0
+
+    .line 1
+    iput-object p1, p0, Landroid/media/WebVttParser$6;->this$0:Landroid/media/WebVttParser;
+
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    return-void
+.end method
+
+
+# virtual methods
+.method public parse(Ljava/lang/String;)V
+    .locals 1
+
+    .line 1
+    invoke-virtual {p1}, Ljava/lang/String;->length()I
+
+    move-result v0
+
+    if-nez v0, :cond_0
+
+    .line 2
+    iget-object p1, p0, Landroid/media/WebVttParser$6;->this$0:Landroid/media/WebVttParser;
+
+    invoke-virtual {p1}, Landroid/media/WebVttParser;->yieldCue()V
+
+    .line 3
+    iget-object p1, p0, Landroid/media/WebVttParser$6;->this$0:Landroid/media/WebVttParser;
+
+    invoke-static {p1}, Landroid/media/WebVttParser;->access$600(Landroid/media/WebVttParser;)Landroid/media/WebVttParser$Phase;
+
+    move-result-object v0
+
+    invoke-static {p1, v0}, Landroid/media/WebVttParser;->access$102(Landroid/media/WebVttParser;Landroid/media/WebVttParser$Phase;)Landroid/media/WebVttParser$Phase;
+
+    return-void
+
+    .line 4
+    :cond_0
+    iget-object v0, p0, Landroid/media/WebVttParser$6;->this$0:Landroid/media/WebVttParser;
+
+    invoke-static {v0}, Landroid/media/WebVttParser;->access$900(Landroid/media/WebVttParser;)Landroid/media/TextTrackCue;
+
+    move-result-object v0
+
+    if-eqz v0, :cond_1
+
+    .line 5
+    iget-object v0, p0, Landroid/media/WebVttParser$6;->this$0:Landroid/media/WebVttParser;
+
+    invoke-static {v0}, Landroid/media/WebVttParser;->access$1100(Landroid/media/WebVttParser;)Ljava/util/Vector;
+
+    move-result-object v0
+
+    invoke-virtual {v0, p1}, Ljava/util/Vector;->add(Ljava/lang/Object;)Z
+
+    :cond_1
+    return-void
+.end method

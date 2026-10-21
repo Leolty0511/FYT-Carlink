@@ -1,0 +1,101 @@
+.class Landroid/view/View$MatchLabelForPredicate;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Lu/k;
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Landroid/view/View;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x1
+    name = "MatchLabelForPredicate"
+.end annotation
+
+.annotation system Ldalvik/annotation/Signature;
+    value = {
+        "Ljava/lang/Object;",
+        "Lu/k<",
+        "Landroid/view/View;",
+        ">;"
+    }
+.end annotation
+
+
+# instance fields
+.field private mLabeledId:I
+
+.field public final synthetic this$0:Landroid/view/View;
+
+
+# direct methods
+.method private constructor <init>(Landroid/view/View;)V
+    .locals 0
+
+    .line 1
+    iput-object p1, p0, Landroid/view/View$MatchLabelForPredicate;->this$0:Landroid/view/View;
+
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    return-void
+.end method
+
+.method public synthetic constructor <init>(Landroid/view/View;Landroid/view/View$1;)V
+    .locals 0
+
+    .line 2
+    invoke-direct {p0, p1}, Landroid/view/View$MatchLabelForPredicate;-><init>(Landroid/view/View;)V
+
+    return-void
+.end method
+
+.method public static synthetic access$802(Landroid/view/View$MatchLabelForPredicate;I)I
+    .locals 0
+
+    .line 1
+    iput p1, p0, Landroid/view/View$MatchLabelForPredicate;->mLabeledId:I
+
+    return p1
+.end method
+
+
+# virtual methods
+.method public apply(Landroid/view/View;)Z
+    .locals 1
+
+    .line 2
+    invoke-static {p1}, Landroid/view/View;->access$2700(Landroid/view/View;)I
+
+    move-result p1
+
+    iget v0, p0, Landroid/view/View$MatchLabelForPredicate;->mLabeledId:I
+
+    if-ne p1, v0, :cond_0
+
+    const/4 p1, 0x1
+
+    goto :goto_0
+
+    :cond_0
+    const/4 p1, 0x0
+
+    :goto_0
+    return p1
+.end method
+
+.method public bridge synthetic apply(Ljava/lang/Object;)Z
+    .locals 0
+
+    .line 1
+    check-cast p1, Landroid/view/View;
+
+    invoke-virtual {p0, p1}, Landroid/view/View$MatchLabelForPredicate;->apply(Landroid/view/View;)Z
+
+    move-result p1
+
+    return p1
+.end method

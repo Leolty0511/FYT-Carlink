@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@id/carplay_layout" android:background="#fe000000" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.syu.carlink.carplay.CarplayView android:id="@id/carplay_preview" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_centerInParent="true" />
+    <ImageView android:layout_gravity="center" android:id="@id/carplay_overlay" android:background="#fe000000" android:layout_width="fill_parent" android:layout_height="fill_parent" />
+</RelativeLayout>

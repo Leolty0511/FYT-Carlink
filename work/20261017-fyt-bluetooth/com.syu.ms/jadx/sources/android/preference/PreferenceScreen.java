@@ -1,0 +1,166 @@
+package android.preference;
+
+import android.R;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.text.TextUtils;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+
+/* JADX INFO: loaded from: classes.dex */
+public final class PreferenceScreen extends PreferenceGroup implements AdapterView.OnItemClickListener, DialogInterface.OnDismissListener {
+    private Dialog mDialog;
+    private ListView mListView;
+    private ListAdapter mRootAdapter;
+
+    public PreferenceScreen(Context context, AttributeSet attributeSet) {
+        super(context, attributeSet, R.attr.preferenceScreenStyle);
+    }
+
+    private void showDialog(Bundle bundle) {
+        Context context = getContext();
+        ListView listView = this.mListView;
+        if (listView != null) {
+            listView.setAdapter((ListAdapter) null);
+        }
+        View viewInflate = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(17367165, (ViewGroup) null);
+        ListView listView2 = (ListView) viewInflate.findViewById(R.id.list);
+        this.mListView = listView2;
+        bind(listView2);
+        CharSequence title = getTitle();
+        Dialog dialog = new Dialog(context, context.getThemeResId());
+        this.mDialog = dialog;
+        if (TextUtils.isEmpty(title)) {
+            dialog.getWindow().requestFeature(1);
+        } else {
+            dialog.setTitle(title);
+        }
+        dialog.setContentView(viewInflate);
+        dialog.setOnDismissListener(this);
+        if (bundle != null) {
+            dialog.onRestoreInstanceState(bundle);
+        }
+        getPreferenceManager().addPreferencesScreen(dialog);
+        dialog.show();
+    }
+
+    public void bind(ListView listView) {
+        listView.setOnItemClickListener(this);
+        listView.setAdapter(getRootAdapter());
+        onAttachedToActivity();
+    }
+
+    public Dialog getDialog() {
+        return this.mDialog;
+    }
+
+    public ListAdapter getRootAdapter() {
+        if (this.mRootAdapter == null) {
+            this.mRootAdapter = onCreateRootAdapter();
+        }
+        return this.mRootAdapter;
+    }
+
+    @Override // android.preference.PreferenceGroup
+    public boolean isOnSameScreenAsChildren() {
+        return false;
+    }
+
+    @Override // android.preference.Preference
+    public void onClick() {
+        if (getIntent() == null && getFragment() == null && getPreferenceCount() != 0) {
+            showDialog(null);
+        }
+    }
+
+    public ListAdapter onCreateRootAdapter() {
+        return new PreferenceGroupAdapter(this);
+    }
+
+    @Override // android.content.DialogInterface.OnDismissListener
+    public void onDismiss(DialogInterface dialogInterface) {
+        this.mDialog = null;
+        getPreferenceManager().removePreferencesScreen(dialogInterface);
+    }
+
+    @Override // android.widget.AdapterView.OnItemClickListener
+    public void onItemClick(AdapterView adapterView, View view, int i2, long j2) {
+        if (adapterView instanceof ListView) {
+            i2 -= ((ListView) adapterView).getHeaderViewsCount();
+        }
+        Object item = getRootAdapter().getItem(i2);
+        if (item instanceof Preference) {
+            ((Preference) item).performClick(this);
+        }
+    }
+
+    @Override // android.preference.Preference
+    public void onRestoreInstanceState(Parcelable parcelable) {
+        if (parcelable == null || !parcelable.getClass().equals(SavedState.class)) {
+            super.onRestoreInstanceState(parcelable);
+            return;
+        }
+        SavedState savedState = (SavedState) parcelable;
+        super.onRestoreInstanceState(savedState.getSuperState());
+        if (savedState.isDialogShowing) {
+            showDialog(savedState.dialogBundle);
+        }
+    }
+
+    @Override // android.preference.Preference
+    public Parcelable onSaveInstanceState() {
+        Parcelable parcelableOnSaveInstanceState = super.onSaveInstanceState();
+        Dialog dialog = this.mDialog;
+        if (dialog == null || !dialog.isShowing()) {
+            return parcelableOnSaveInstanceState;
+        }
+        SavedState savedState = new SavedState(parcelableOnSaveInstanceState);
+        savedState.isDialogShowing = true;
+        savedState.dialogBundle = dialog.onSaveInstanceState();
+        return savedState;
+    }
+
+    public static class SavedState extends Preference.BaseSavedState {
+        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() { // from class: android.preference.PreferenceScreen.SavedState.1
+            /* JADX WARN: Can't rename method to resolve collision */
+            @Override // android.os.Parcelable.Creator
+            public SavedState createFromParcel(Parcel parcel) {
+                return new SavedState(parcel);
+            }
+
+            /* JADX WARN: Can't rename method to resolve collision */
+            @Override // android.os.Parcelable.Creator
+            public SavedState[] newArray(int i2) {
+                return new SavedState[i2];
+            }
+        };
+        public Bundle dialogBundle;
+        public boolean isDialogShowing;
+
+        public SavedState(Parcel parcel) {
+            super(parcel);
+            this.isDialogShowing = parcel.readInt() == 1;
+            this.dialogBundle = parcel.readBundle();
+        }
+
+        @Override // android.view.AbsSavedState, android.os.Parcelable
+        public void writeToParcel(Parcel parcel, int i2) {
+            super.writeToParcel(parcel, i2);
+            parcel.writeInt(this.isDialogShowing ? 1 : 0);
+            parcel.writeBundle(this.dialogBundle);
+        }
+
+        public SavedState(Parcelable parcelable) {
+            super(parcelable);
+        }
+    }
+}

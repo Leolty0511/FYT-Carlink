@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="car_logo_size">60dp</dimen>
+    <dimen name="check_button_height">40dp</dimen>
+    <dimen name="check_button_radius">28dp</dimen>
+    <dimen name="check_button_textsize">10sp</dimen>
+    <dimen name="check_button_width">80dp</dimen>
+    <dimen name="connecting_and_text_space">0px</dimen>
+    <dimen name="connecting_bg_height">40px</dimen>
+    <dimen name="connecting_bg_radius">32px</dimen>
+    <dimen name="connecting_img_height">166px</dimen>
+    <dimen name="connecting_img_width">166px</dimen>
+    <dimen name="connecting_text_padding_h">14dp</dimen>
+    <dimen name="connecting_text_padding_v">4dp</dimen>
+    <dimen name="connection_text_size">12sp</dimen>
+    <dimen name="help_msg_height">290px</dimen>
+    <dimen name="help_msg_padding_h">34px</dimen>
+    <dimen name="help_msg_radius">13px</dimen>
+    <dimen name="help_msg_spacing">18px</dimen>
+    <dimen name="help_msg_text_size">14px</dimen>
+    <dimen name="help_msg_width">448px</dimen>
+    <dimen name="help_tip_close_size">34px</dimen>
+    <dimen name="help_title_text_size">18px</dimen>
+    <dimen name="logo_space_left">42px</dimen>
+    <dimen name="logo_space_top">38px</dimen>
+    <dimen name="setting_btn_space_right">35px</dimen>
+    <dimen name="setting_btn_space_top">31px</dimen>
+    <dimen name="setting_help_space">20px</dimen>
+    <dimen name="settings_btn_size">56px</dimen>
+    <dimen name="settings_item_start">20dp</dimen>
+    <dimen name="settings_item_text_start">12dp</dimen>
+    <dimen name="settings_text_size">10sp</dimen>
+    <dimen name="settings_title_text_size">16sp</dimen>
+    <dimen name="test_value">2600px</dimen>
+</resources>

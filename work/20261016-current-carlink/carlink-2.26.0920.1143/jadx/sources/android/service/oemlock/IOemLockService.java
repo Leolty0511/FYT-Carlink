@@ -1,0 +1,203 @@
+package android.service.oemlock;
+
+import android.os.Binder;
+import android.os.IBinder;
+import android.os.IInterface;
+import android.os.Parcel;
+
+/* JADX INFO: loaded from: classes2.dex */
+public interface IOemLockService extends IInterface {
+
+    public static abstract class Stub extends Binder implements IOemLockService {
+        private static final String DESCRIPTOR = "android.service.oemlock.IOemLockService";
+        static final int TRANSACTION_isDeviceOemUnlocked = 6;
+        static final int TRANSACTION_isOemUnlockAllowed = 5;
+        static final int TRANSACTION_isOemUnlockAllowedByCarrier = 2;
+        static final int TRANSACTION_isOemUnlockAllowedByUser = 4;
+        static final int TRANSACTION_setOemUnlockAllowedByCarrier = 1;
+        static final int TRANSACTION_setOemUnlockAllowedByUser = 3;
+
+        public static class Proxy implements IOemLockService {
+            private IBinder mRemote;
+
+            public Proxy(IBinder iBinder) {
+                this.mRemote = iBinder;
+            }
+
+            @Override // android.os.IInterface
+            public IBinder asBinder() {
+                return this.mRemote;
+            }
+
+            public String getInterfaceDescriptor() {
+                return Stub.DESCRIPTOR;
+            }
+
+            @Override // android.service.oemlock.IOemLockService
+            public boolean isDeviceOemUnlocked() {
+                Parcel parcelObtain = Parcel.obtain();
+                Parcel parcelObtain2 = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    this.mRemote.transact(6, parcelObtain, parcelObtain2, 0);
+                    parcelObtain2.readException();
+                    return parcelObtain2.readInt() != 0;
+                } finally {
+                    parcelObtain2.recycle();
+                    parcelObtain.recycle();
+                }
+            }
+
+            @Override // android.service.oemlock.IOemLockService
+            public boolean isOemUnlockAllowed() {
+                Parcel parcelObtain = Parcel.obtain();
+                Parcel parcelObtain2 = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    this.mRemote.transact(5, parcelObtain, parcelObtain2, 0);
+                    parcelObtain2.readException();
+                    return parcelObtain2.readInt() != 0;
+                } finally {
+                    parcelObtain2.recycle();
+                    parcelObtain.recycle();
+                }
+            }
+
+            @Override // android.service.oemlock.IOemLockService
+            public boolean isOemUnlockAllowedByCarrier() {
+                Parcel parcelObtain = Parcel.obtain();
+                Parcel parcelObtain2 = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    this.mRemote.transact(2, parcelObtain, parcelObtain2, 0);
+                    parcelObtain2.readException();
+                    return parcelObtain2.readInt() != 0;
+                } finally {
+                    parcelObtain2.recycle();
+                    parcelObtain.recycle();
+                }
+            }
+
+            @Override // android.service.oemlock.IOemLockService
+            public boolean isOemUnlockAllowedByUser() {
+                Parcel parcelObtain = Parcel.obtain();
+                Parcel parcelObtain2 = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    this.mRemote.transact(4, parcelObtain, parcelObtain2, 0);
+                    parcelObtain2.readException();
+                    return parcelObtain2.readInt() != 0;
+                } finally {
+                    parcelObtain2.recycle();
+                    parcelObtain.recycle();
+                }
+            }
+
+            @Override // android.service.oemlock.IOemLockService
+            public void setOemUnlockAllowedByCarrier(boolean z2, byte[] bArr) {
+                Parcel parcelObtain = Parcel.obtain();
+                Parcel parcelObtain2 = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    parcelObtain.writeInt(z2 ? 1 : 0);
+                    parcelObtain.writeByteArray(bArr);
+                    this.mRemote.transact(1, parcelObtain, parcelObtain2, 0);
+                    parcelObtain2.readException();
+                } finally {
+                    parcelObtain2.recycle();
+                    parcelObtain.recycle();
+                }
+            }
+
+            @Override // android.service.oemlock.IOemLockService
+            public void setOemUnlockAllowedByUser(boolean z2) {
+                Parcel parcelObtain = Parcel.obtain();
+                Parcel parcelObtain2 = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    parcelObtain.writeInt(z2 ? 1 : 0);
+                    this.mRemote.transact(3, parcelObtain, parcelObtain2, 0);
+                    parcelObtain2.readException();
+                } finally {
+                    parcelObtain2.recycle();
+                    parcelObtain.recycle();
+                }
+            }
+        }
+
+        public Stub() {
+            attachInterface(this, DESCRIPTOR);
+        }
+
+        public static IOemLockService asInterface(IBinder iBinder) {
+            if (iBinder == null) {
+                return null;
+            }
+            IInterface iInterfaceQueryLocalInterface = iBinder.queryLocalInterface(DESCRIPTOR);
+            return (iInterfaceQueryLocalInterface == null || !(iInterfaceQueryLocalInterface instanceof IOemLockService)) ? new Proxy(iBinder) : (IOemLockService) iInterfaceQueryLocalInterface;
+        }
+
+        @Override // android.os.IInterface
+        public IBinder asBinder() {
+            return this;
+        }
+
+        @Override // android.os.Binder
+        public boolean onTransact(int i2, Parcel parcel, Parcel parcel2, int i3) {
+            if (i2 == 1598968902) {
+                parcel2.writeString(DESCRIPTOR);
+                return true;
+            }
+            switch (i2) {
+                case 1:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    setOemUnlockAllowedByCarrier(parcel.readInt() != 0, parcel.createByteArray());
+                    parcel2.writeNoException();
+                    return true;
+                case 2:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    boolean zIsOemUnlockAllowedByCarrier = isOemUnlockAllowedByCarrier();
+                    parcel2.writeNoException();
+                    parcel2.writeInt(zIsOemUnlockAllowedByCarrier ? 1 : 0);
+                    return true;
+                case 3:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    setOemUnlockAllowedByUser(parcel.readInt() != 0);
+                    parcel2.writeNoException();
+                    return true;
+                case 4:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    boolean zIsOemUnlockAllowedByUser = isOemUnlockAllowedByUser();
+                    parcel2.writeNoException();
+                    parcel2.writeInt(zIsOemUnlockAllowedByUser ? 1 : 0);
+                    return true;
+                case 5:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    boolean zIsOemUnlockAllowed = isOemUnlockAllowed();
+                    parcel2.writeNoException();
+                    parcel2.writeInt(zIsOemUnlockAllowed ? 1 : 0);
+                    return true;
+                case 6:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    boolean zIsDeviceOemUnlocked = isDeviceOemUnlocked();
+                    parcel2.writeNoException();
+                    parcel2.writeInt(zIsDeviceOemUnlocked ? 1 : 0);
+                    return true;
+                default:
+                    return super.onTransact(i2, parcel, parcel2, i3);
+            }
+        }
+    }
+
+    boolean isDeviceOemUnlocked();
+
+    boolean isOemUnlockAllowed();
+
+    boolean isOemUnlockAllowedByCarrier();
+
+    boolean isOemUnlockAllowedByUser();
+
+    void setOemUnlockAllowedByCarrier(boolean z2, byte[] bArr);
+
+    void setOemUnlockAllowedByUser(boolean z2);
+}

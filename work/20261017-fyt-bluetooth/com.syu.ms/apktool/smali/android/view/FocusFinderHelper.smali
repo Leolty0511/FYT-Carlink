@@ -1,0 +1,97 @@
+.class public Landroid/view/FocusFinderHelper;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+
+# instance fields
+.field private mFocusFinder:Landroid/view/FocusFinder;
+
+
+# direct methods
+.method public constructor <init>(Landroid/view/FocusFinder;)V
+    .locals 0
+
+    .line 1
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    .line 2
+    iput-object p1, p0, Landroid/view/FocusFinderHelper;->mFocusFinder:Landroid/view/FocusFinder;
+
+    return-void
+.end method
+
+.method public static majorAxisDistance(ILandroid/graphics/Rect;Landroid/graphics/Rect;)I
+    .locals 0
+
+    .line 1
+    invoke-static {p0, p1, p2}, Landroid/view/FocusFinder;->majorAxisDistance(ILandroid/graphics/Rect;Landroid/graphics/Rect;)I
+
+    move-result p0
+
+    return p0
+.end method
+
+.method public static majorAxisDistanceToFarEdge(ILandroid/graphics/Rect;Landroid/graphics/Rect;)I
+    .locals 0
+
+    .line 1
+    invoke-static {p0, p1, p2}, Landroid/view/FocusFinder;->majorAxisDistanceToFarEdge(ILandroid/graphics/Rect;Landroid/graphics/Rect;)I
+
+    move-result p0
+
+    return p0
+.end method
+
+
+# virtual methods
+.method public beamBeats(ILandroid/graphics/Rect;Landroid/graphics/Rect;Landroid/graphics/Rect;)Z
+    .locals 1
+
+    .line 1
+    iget-object v0, p0, Landroid/view/FocusFinderHelper;->mFocusFinder:Landroid/view/FocusFinder;
+
+    invoke-virtual {v0, p1, p2, p3, p4}, Landroid/view/FocusFinder;->beamBeats(ILandroid/graphics/Rect;Landroid/graphics/Rect;Landroid/graphics/Rect;)Z
+
+    move-result p1
+
+    return p1
+.end method
+
+.method public beamsOverlap(ILandroid/graphics/Rect;Landroid/graphics/Rect;)Z
+    .locals 1
+
+    .line 1
+    iget-object v0, p0, Landroid/view/FocusFinderHelper;->mFocusFinder:Landroid/view/FocusFinder;
+
+    invoke-virtual {v0, p1, p2, p3}, Landroid/view/FocusFinder;->beamsOverlap(ILandroid/graphics/Rect;Landroid/graphics/Rect;)Z
+
+    move-result p1
+
+    return p1
+.end method
+
+.method public isBetterCandidate(ILandroid/graphics/Rect;Landroid/graphics/Rect;Landroid/graphics/Rect;)Z
+    .locals 1
+
+    .line 1
+    iget-object v0, p0, Landroid/view/FocusFinderHelper;->mFocusFinder:Landroid/view/FocusFinder;
+
+    invoke-virtual {v0, p1, p2, p3, p4}, Landroid/view/FocusFinder;->isBetterCandidate(ILandroid/graphics/Rect;Landroid/graphics/Rect;Landroid/graphics/Rect;)Z
+
+    move-result p1
+
+    return p1
+.end method
+
+.method public isCandidate(Landroid/graphics/Rect;Landroid/graphics/Rect;I)Z
+    .locals 1
+
+    .line 1
+    iget-object v0, p0, Landroid/view/FocusFinderHelper;->mFocusFinder:Landroid/view/FocusFinder;
+
+    invoke-virtual {v0, p1, p2, p3}, Landroid/view/FocusFinder;->isCandidate(Landroid/graphics/Rect;Landroid/graphics/Rect;I)Z
+
+    move-result p1
+
+    return p1
+.end method

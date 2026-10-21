@@ -1,0 +1,63 @@
+.class Landroid/security/net/config/DirectoryCertificateSource$2;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Landroid/security/net/config/DirectoryCertificateSource$CertSelector;
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingMethod;
+    value = Landroid/security/net/config/DirectoryCertificateSource;->findByIssuerAndSignature(Ljava/security/cert/X509Certificate;)Ljava/security/cert/X509Certificate;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x1
+    name = null
+.end annotation
+
+
+# instance fields
+.field final synthetic this$0:Landroid/security/net/config/DirectoryCertificateSource;
+
+.field final synthetic val$cert:Ljava/security/cert/X509Certificate;
+
+
+# direct methods
+.method public constructor <init>(Landroid/security/net/config/DirectoryCertificateSource;Ljava/security/cert/X509Certificate;)V
+    .locals 0
+
+    iput-object p1, p0, Landroid/security/net/config/DirectoryCertificateSource$2;->this$0:Landroid/security/net/config/DirectoryCertificateSource;
+
+    iput-object p2, p0, Landroid/security/net/config/DirectoryCertificateSource$2;->val$cert:Ljava/security/cert/X509Certificate;
+
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    return-void
+.end method
+
+
+# virtual methods
+.method public match(Ljava/security/cert/X509Certificate;)Z
+    .locals 1
+
+    :try_start_0
+    iget-object v0, p0, Landroid/security/net/config/DirectoryCertificateSource$2;->val$cert:Ljava/security/cert/X509Certificate;
+
+    invoke-virtual {p1}, Ljava/security/cert/Certificate;->getPublicKey()Ljava/security/PublicKey;
+
+    move-result-object p1
+
+    invoke-virtual {v0, p1}, Ljava/security/cert/Certificate;->verify(Ljava/security/PublicKey;)V
+    :try_end_0
+    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_0} :catch_0
+
+    const/4 p1, 0x1
+
+    return p1
+
+    :catch_0
+    const/4 p1, 0x0
+
+    return p1
+.end method

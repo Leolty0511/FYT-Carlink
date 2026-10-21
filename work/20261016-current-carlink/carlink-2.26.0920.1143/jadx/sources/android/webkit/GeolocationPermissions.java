@@ -1,0 +1,30 @@
+package android.webkit;
+
+import java.util.Set;
+
+/* JADX INFO: loaded from: classes2.dex */
+public class GeolocationPermissions {
+
+    public interface Callback {
+        void invoke(String str, boolean z2, boolean z3);
+    }
+
+    public static GeolocationPermissions getInstance() {
+        return WebViewFactory.getProvider().getGeolocationPermissions();
+    }
+
+    public void allow(String str) {
+    }
+
+    public void clear(String str) {
+    }
+
+    public void clearAll() {
+    }
+
+    public void getAllowed(String str, ValueCallback<Boolean> valueCallback) {
+    }
+
+    public void getOrigins(ValueCallback<Set<String>> valueCallback) {
+    }
+}

@@ -1,0 +1,75 @@
+.class Landroid/telecom/RemoteConference$7;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Ljava/lang/Runnable;
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingMethod;
+    value = Landroid/telecom/RemoteConference;->setConferenceableConnections(Ljava/util/List;)V
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x1
+    name = null
+.end annotation
+
+
+# instance fields
+.field final synthetic this$0:Landroid/telecom/RemoteConference;
+
+.field final synthetic val$callback:Landroid/telecom/RemoteConference$Callback;
+
+.field final synthetic val$conference:Landroid/telecom/RemoteConference;
+
+
+# direct methods
+.method public constructor <init>(Landroid/telecom/RemoteConference;Landroid/telecom/RemoteConference$Callback;Landroid/telecom/RemoteConference;)V
+    .locals 0
+
+    iput-object p1, p0, Landroid/telecom/RemoteConference$7;->this$0:Landroid/telecom/RemoteConference;
+
+    iput-object p2, p0, Landroid/telecom/RemoteConference$7;->val$callback:Landroid/telecom/RemoteConference$Callback;
+
+    iput-object p3, p0, Landroid/telecom/RemoteConference$7;->val$conference:Landroid/telecom/RemoteConference;
+
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    return-void
+.end method
+
+
+# virtual methods
+.method public run()V
+    .locals 3
+
+    .line 1
+    iget-object v0, p0, Landroid/telecom/RemoteConference$7;->val$callback:Landroid/telecom/RemoteConference$Callback;
+
+    .line 2
+    .line 3
+    iget-object v1, p0, Landroid/telecom/RemoteConference$7;->val$conference:Landroid/telecom/RemoteConference;
+
+    .line 4
+    .line 5
+    iget-object v2, p0, Landroid/telecom/RemoteConference$7;->this$0:Landroid/telecom/RemoteConference;
+
+    .line 6
+    .line 7
+    invoke-static {v2}, Landroid/telecom/RemoteConference;->access$200(Landroid/telecom/RemoteConference;)Ljava/util/List;
+
+    .line 8
+    .line 9
+    .line 10
+    move-result-object v2
+
+    .line 11
+    invoke-virtual {v0, v1, v2}, Landroid/telecom/RemoteConference$Callback;->onConferenceableConnectionsChanged(Landroid/telecom/RemoteConference;Ljava/util/List;)V
+
+    .line 12
+    .line 13
+    .line 14
+    return-void
+.end method

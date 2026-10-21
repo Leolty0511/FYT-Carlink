@@ -1,0 +1,15 @@
+<project name="platform">
+	<property name="platform" value="9853"/>
+	<property name="name_default" value="SYU-Android"/>
+	<property name="name_diy" value="SYU-Android"/>	
+	<property name="auto_downPhoneBook" value="1"/>
+	<property name="customer" value="BT_NEW"/>	
+	<property name="show_pairedbt" value="1"/>	
+	<property name="AI_JZ" value="1"/>	
+	<property name="AI_JZ2" value="1"/>	
+	
+	<property name="changeappidwhentalking" value="1"/>
+	<property name="sharedUserId" value="android.uid.system"/>
+	<property name="apkid" value="190000010_com.syu.bt"/>
+</project>
+

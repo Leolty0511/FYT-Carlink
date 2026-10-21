@@ -1,0 +1,86 @@
+.class public abstract Landroid/app/usage/UsageStatsManagerInternal;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+
+# annotations
+.annotation system Ldalvik/annotation/MemberClasses;
+    value = {
+        Landroid/app/usage/UsageStatsManagerInternal$AppStateEventChangeListener;,
+        Landroid/app/usage/UsageStatsManagerInternal$AppIdleStateChangeListener;
+    }
+.end annotation
+
+
+# direct methods
+.method public constructor <init>()V
+    .locals 0
+
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    return-void
+.end method
+
+
+# virtual methods
+.method public abstract addAppIdleStateChangeListener(Landroid/app/usage/UsageStatsManagerInternal$AppIdleStateChangeListener;)V
+.end method
+
+.method public abstract addAppStateEventChangeListener(Landroid/app/usage/UsageStatsManagerInternal$AppStateEventChangeListener;)V
+.end method
+
+.method public abstract applyRestoredPayload(ILjava/lang/String;[B)V
+.end method
+
+.method public abstract getBackupPayload(ILjava/lang/String;)[B
+.end method
+
+.method public abstract getIdleUidsForUser(I)[I
+.end method
+
+.method public abstract isAppIdle(Ljava/lang/String;II)Z
+.end method
+
+.method public abstract isAppIdleParoleOn()Z
+.end method
+
+.method public abstract prepareShutdown()V
+.end method
+
+.method public abstract queryUsageStatsForUser(IIJJZ)Ljava/util/List;
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "(IIJJZ)",
+            "Ljava/util/List<",
+            "Landroid/app/usage/UsageStats;",
+            ">;"
+        }
+    .end annotation
+.end method
+
+.method public abstract removeAppIdleStateChangeListener(Landroid/app/usage/UsageStatsManagerInternal$AppIdleStateChangeListener;)V
+.end method
+
+.method public abstract removeAppStateEventChangeListener(Landroid/app/usage/UsageStatsManagerInternal$AppStateEventChangeListener;)V
+.end method
+
+.method public abstract reportConfigurationChange(Landroid/content/res/Configuration;I)V
+.end method
+
+.method public abstract reportContentProviderUsage(Ljava/lang/String;Ljava/lang/String;I)V
+.end method
+
+.method public abstract reportEvent(Landroid/content/ComponentName;II)V
+.end method
+
+.method public abstract reportEvent(Ljava/lang/String;II)V
+.end method
+
+.method public abstract reportShortcutUsage(Ljava/lang/String;Ljava/lang/String;I)V
+.end method
+
+.method public abstract setAppIdleEnabled(Z)V
+.end method
+
+.method public abstract setAppInactive(Ljava/lang/String;ZI)V
+.end method

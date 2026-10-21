@@ -1,0 +1,45 @@
+// Contains common enum definitions which are used across Java and C++ for the
+// Wi-Fi Projection Protocol.
+
+syntax = "proto2";
+
+package wifi_projection_protocol;
+
+option java_outer_classname = "WifiProjectionProtocol";
+option java_package = "com.google.android.projection.proto";
+option optimize_for = LITE_RUNTIME;
+
+// The transport type for a given connection.
+enum TransportType {
+  TRANSPORT_TYPE_UNKNOWN = 0;
+  TRANSPORT_TYPE_BLUETOOTH_RFCOMM = 1;
+  TRANSPORT_TYPE_WIFI_TCP = 2;
+}
+
+// Result codes that can be returned to the head unit when it attempts to start
+// projection.
+enum ProjectionStartResult {
+  PROJECTION_START_RESULT_UNKNOWN = 0;
+  // No longer returned by WifiProjectionProtocol::StartProjection. Implementers
+  // should check for `PROJECTION_START_RESULT_START_RESPONSE_RECEIVED` for an
+  // indication of a successful start attempt.
+  PROJECTION_START_RESULT_START_REQUEST_SENT = 1 [deprecated = true];
+  // Device is not ready (version request/response has not been completed).
+  PROJECTION_START_RESULT_DEVICE_NOT_READY = 2;
+  // MD responded to the WifiVersionRequest with a WifiVersionResponse with
+  // MessageStatus::STATUS_SUCCESS.
+  PROJECTION_START_RESULT_START_RESPONSE_RECEIVED = 3;
+  // The attempt to start projection failed. This typically indicates that the
+  // mobile device was lost before it ever replied with a `WifiStartResponse`.
+  PROJECTION_START_RESULT_START_REQUEST_FAILED = 4;
+  // There is already a device attempting to start projection.
+  PROJECTION_START_RESULT_ALREADY_ATTEMPTING_START = 5;
+}
+
+// Indicates the direction of Wi-Fi discovery messages being transferred in the
+// Wi-Fi Projection Protocol.
+enum MessageDirection {
+  MESSAGE_DIRECTION_UNKNOWN = 0;
+  MESSAGE_DIRECTION_TO_REMOTE_DEVICE = 1;
+  MESSAGE_DIRECTION_FROM_REMOTE_DEVICE = 2;
+}

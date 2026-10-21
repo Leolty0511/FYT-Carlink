@@ -1,0 +1,1574 @@
+.class Landroid/telephony/JapanesePhoneNumberFormatter;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+
+# static fields
+.field private static FORMAT_MAP:[S
+
+
+# direct methods
+.method public static constructor <clinit>()V
+    .locals 1
+
+    .line 1
+    const/16 v0, 0x4ba
+
+    .line 2
+    .line 3
+    new-array v0, v0, [S
+
+    .line 4
+    .line 5
+    fill-array-data v0, :array_0
+
+    .line 6
+    .line 7
+    .line 8
+    sput-object v0, Landroid/telephony/JapanesePhoneNumberFormatter;->FORMAT_MAP:[S
+
+    .line 9
+    .line 10
+    return-void
+
+    .line 11
+    :array_0
+    .array-data 2
+        -0x64s
+        0xas
+        0xdcs
+        -0xfs
+        0x19as
+        0x212s
+        0x4b0s
+        0x29es
+        0x30cs
+        0x424s
+        -0x64s
+        -0x19s
+        0x14s
+        0x28s
+        0x46s
+        0x64s
+        0x96s
+        0xbes
+        0xc8s
+        0xd2s
+        -0x24s
+        -0x64s
+        -0x64s
+        -0x23s
+        -0x23s
+        -0x23s
+        0x1es
+        -0x64s
+        -0x64s
+        -0x64s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x2ds
+        -0x23s
+        -0x23s
+        -0x64s
+        -0x64s
+        -0x64s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        0x32s
+        -0x23s
+        0x3cs
+        -0x23s
+        -0x23s
+        -0x2ds
+        -0x23s
+        -0x2ds
+        -0x23s
+        -0x23s
+        -0x2ds
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x2ds
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x2ds
+        -0x2ds
+        -0x23s
+        -0x64s
+        -0x64s
+        -0x23s
+        -0x23s
+        -0x23s
+        0x50s
+        0x5as
+        -0x64s
+        -0x64s
+        -0x64s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x2ds
+        -0x2ds
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x2ds
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        0x6es
+        0x78s
+        0x82s
+        -0x23s
+        0x8cs
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x2ds
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x2ds
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x2ds
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x2ds
+        -0x2ds
+        -0x23s
+        -0x23s
+        -0x64s
+        -0x64s
+        -0x23s
+        0xa0s
+        0xaas
+        0xb4s
+        -0x23s
+        -0x23s
+        -0x64s
+        -0x64s
+        -0x23s
+        -0x23s
+        -0x2ds
+        -0x23s
+        -0x2ds
+        -0x2ds
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x2ds
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x2ds
+        -0x2ds
+        -0x2ds
+        -0x23s
+        -0x2ds
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x64s
+        -0x64s
+        0xe6s
+        0xfas
+        0x104s
+        0x10es
+        0x140s
+        0x154s
+        0x168s
+        0x186s
+        -0x23s
+        -0x19s
+        -0x19s
+        0xf0s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x23s
+        0x118s
+        0x122s
+        0x12cs
+        0x136s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        0x14as
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        0x15es
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x23s
+        0x172s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        0x17cs
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x19s
+        0x190s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0xfs
+        -0xfs
+        0x1a4s
+        0x1ccs
+        -0x19s
+        -0x19s
+        0x1d6s
+        0x1e0s
+        0x1f4s
+        0x1fes
+        -0xfs
+        -0x19s
+        0x1aes
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        0x1b8s
+        0x1c2s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0xfs
+        -0x19s
+        -0xfs
+        -0xfs
+        -0xfs
+        -0xfs
+        -0xfs
+        -0x19s
+        -0x19s
+        -0xfs
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        0x1eas
+        -0xfs
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0xfs
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0xfs
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x19s
+        0x208s
+        -0x64s
+        -0x64s
+        -0x2ds
+        -0x64s
+        -0x2ds
+        -0x64s
+        -0x2ds
+        -0x64s
+        -0x2ds
+        -0x64s
+        -0x1as
+        -0x64s
+        -0x19s
+        0x21cs
+        0x244s
+        0x24es
+        0x258s
+        0x262s
+        0x276s
+        0x280s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        0x226s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        0x230s
+        0x23as
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x64s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x24s
+        -0x64s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        0x26cs
+        -0x23s
+        -0x23s
+        -0x64s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x2ds
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        0x28as
+        -0x23s
+        0x294s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x2ds
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x2ds
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x1as
+        -0x64s
+        0x2a8s
+        0x2b2s
+        0x2bcs
+        -0x19s
+        0x2d0s
+        0x2das
+        -0x19s
+        0x2e4s
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x64s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        0x2c6s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x2ds
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        0x2ees
+        0x2f8s
+        0x302s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        0x316s
+        -0x64s
+        0x320s
+        0x352s
+        0x384s
+        0x398s
+        0x3acs
+        0x406s
+        0x410s
+        0x41as
+        -0x24s
+        -0x1as
+        -0x1as
+        -0x1as
+        -0x1as
+        -0x1as
+        -0x1as
+        -0x1as
+        -0x1as
+        -0x1as
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        0x32as
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x19s
+        0x334s
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        0x33es
+        -0x23s
+        0x348s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x64s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x64s
+        -0x64s
+        -0x64s
+        -0x64s
+        -0x64s
+        -0x64s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        0x35cs
+        -0x23s
+        0x366s
+        0x370s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x2ds
+        -0x2ds
+        -0x23s
+        -0x64s
+        -0x64s
+        -0x64s
+        -0x64s
+        -0x64s
+        -0x64s
+        0x37as
+        -0x64s
+        -0x64s
+        -0x64s
+        -0x19s
+        -0x2ds
+        -0x2ds
+        -0x19s
+        -0x2ds
+        -0x2ds
+        -0x19s
+        -0x2ds
+        -0x2ds
+        -0x2ds
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        0x38es
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x2ds
+        -0x23s
+        -0x23s
+        -0x64s
+        0x3a2s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x64s
+        -0x64s
+        -0x2ds
+        -0x64s
+        -0x2ds
+        -0x64s
+        -0x64s
+        -0x64s
+        -0x64s
+        -0x64s
+        -0x19s
+        -0x19s
+        -0x19s
+        0x3b6s
+        -0x19s
+        0x3cas
+        0x3des
+        -0x23s
+        0x3e8s
+        0x3f2s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        0x3c0s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x2ds
+        -0x2ds
+        -0x2ds
+        -0x2ds
+        -0x2ds
+        -0x2ds
+        -0x23s
+        -0x2ds
+        -0x2ds
+        -0x2ds
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        0x3d4s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x64s
+        -0x64s
+        -0x19s
+        -0x19s
+        -0x64s
+        -0x64s
+        -0x64s
+        -0x64s
+        -0x64s
+        -0x64s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        0x3fcs
+        -0x2ds
+        -0x2ds
+        -0x23s
+        -0x23s
+        -0x2ds
+        -0x2ds
+        -0x2ds
+        -0x2ds
+        -0x2ds
+        -0x2ds
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x1as
+        -0x64s
+        0x42es
+        0x438s
+        0x442s
+        0x456s
+        0x460s
+        0x46as
+        0x474s
+        0x488s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x64s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x64s
+        -0x23s
+        -0x23s
+        -0x23s
+        0x44cs
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x2ds
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        0x47es
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x2ds
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        0x492s
+        -0x19s
+        -0x23s
+        0x49cs
+        -0x23s
+        0x4a6s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x64s
+        -0x64s
+        -0x2ds
+        -0x2ds
+        -0x64s
+        -0x64s
+        -0x64s
+        -0x64s
+        -0x64s
+        -0x64s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x19s
+        -0x19s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x23s
+        -0x2ds
+        -0x1as
+        -0xfs
+        -0xfs
+        -0xfs
+        -0xfs
+        -0xfs
+        -0xfs
+        -0xfs
+        -0xfs
+        -0xfs
+    .end array-data
+.end method
+
+.method public constructor <init>()V
+    .locals 0
+
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    return-void
+.end method
+
+.method public static format(Landroid/text/Editable;)V
+    .locals 11
+
+    .line 1
+    invoke-interface {p0}, Ljava/lang/CharSequence;->length()I
+
+    .line 2
+    .line 3
+    .line 4
+    move-result v0
+
+    .line 5
+    const/16 v1, 0x30
+
+    .line 6
+    .line 7
+    const/4 v2, 0x0
+
+    .line 8
+    const/4 v3, 0x3
+
+    .line 9
+    if-le v0, v3, :cond_0
+
+    .line 10
+    .line 11
+    invoke-interface {p0, v2, v3}, Ljava/lang/CharSequence;->subSequence(II)Ljava/lang/CharSequence;
+
+    .line 12
+    .line 13
+    .line 14
+    move-result-object v4
+
+    .line 15
+    invoke-interface {v4}, Ljava/lang/CharSequence;->toString()Ljava/lang/String;
+
+    .line 16
+    .line 17
+    .line 18
+    move-result-object v4
+
+    .line 19
+    const-string v5, "+81"
+
+    .line 20
+    .line 21
+    invoke-virtual {v4, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+
+    .line 22
+    .line 23
+    .line 24
+    move-result v4
+
+    .line 25
+    if-eqz v4, :cond_0
+
+    .line 26
+    .line 27
+    move v4, v3
+
+    .line 28
+    goto :goto_0
+
+    .line 29
+    :cond_0
+    const/4 v4, 0x1
+
+    .line 30
+    if-lt v0, v4, :cond_9
+
+    .line 31
+    .line 32
+    invoke-interface {p0, v2}, Ljava/lang/CharSequence;->charAt(I)C
+
+    .line 33
+    .line 34
+    .line 35
+    move-result v5
+
+    .line 36
+    if-eq v5, v1, :cond_1
+
+    .line 37
+    .line 38
+    goto/16 :goto_4
+
+    .line 39
+    .line 40
+    :cond_1
+    :goto_0
+    invoke-interface {p0, v2, v0}, Ljava/lang/CharSequence;->subSequence(II)Ljava/lang/CharSequence;
+
+    .line 41
+    .line 42
+    .line 43
+    move-result-object v0
+
+    .line 44
+    move v5, v2
+
+    .line 45
+    :goto_1
+    invoke-interface {p0}, Ljava/lang/CharSequence;->length()I
+
+    .line 46
+    .line 47
+    .line 48
+    move-result v6
+
+    .line 49
+    if-ge v5, v6, :cond_3
+
+    .line 50
+    .line 51
+    invoke-interface {p0, v5}, Ljava/lang/CharSequence;->charAt(I)C
+
+    .line 52
+    .line 53
+    .line 54
+    move-result v6
+
+    .line 55
+    const/16 v7, 0x2d
+
+    .line 56
+    .line 57
+    if-ne v6, v7, :cond_2
+
+    .line 58
+    .line 59
+    add-int/lit8 v6, v5, 0x1
+
+    .line 60
+    .line 61
+    invoke-interface {p0, v5, v6}, Landroid/text/Editable;->delete(II)Landroid/text/Editable;
+
+    .line 62
+    .line 63
+    .line 64
+    goto :goto_1
+
+    .line 65
+    :cond_2
+    add-int/lit8 v5, v5, 0x1
+
+    .line 66
+    .line 67
+    goto :goto_1
+
+    .line 68
+    :cond_3
+    invoke-interface {p0}, Ljava/lang/CharSequence;->length()I
+
+    .line 69
+    .line 70
+    .line 71
+    move-result v5
+
+    .line 72
+    move v7, v2
+
+    .line 73
+    move v6, v4
+
+    .line 74
+    :goto_2
+    const-string v8, "-"
+
+    .line 75
+    .line 76
+    if-ge v6, v5, :cond_8
+
+    .line 77
+    .line 78
+    invoke-interface {p0, v6}, Ljava/lang/CharSequence;->charAt(I)C
+
+    .line 79
+    .line 80
+    .line 81
+    move-result v9
+
+    .line 82
+    invoke-static {v9}, Ljava/lang/Character;->isDigit(C)Z
+
+    .line 83
+    .line 84
+    .line 85
+    move-result v10
+
+    .line 86
+    if-nez v10, :cond_4
+
+    .line 87
+    .line 88
+    invoke-interface {p0, v2, v5, v0}, Landroid/text/Editable;->replace(IILjava/lang/CharSequence;)Landroid/text/Editable;
+
+    .line 89
+    .line 90
+    .line 91
+    return-void
+
+    .line 92
+    :cond_4
+    sget-object v10, Landroid/telephony/JapanesePhoneNumberFormatter;->FORMAT_MAP:[S
+
+    .line 93
+    .line 94
+    add-int/2addr v7, v9
+
+    .line 95
+    sub-int/2addr v7, v1
+
+    .line 96
+    aget-short v7, v10, v7
+
+    .line 97
+    .line 98
+    if-gez v7, :cond_7
+
+    .line 99
+    .line 100
+    const/16 v1, -0x64
+
+    .line 101
+    .line 102
+    if-gt v7, v1, :cond_5
+
+    .line 103
+    .line 104
+    invoke-interface {p0, v2, v5, v0}, Landroid/text/Editable;->replace(IILjava/lang/CharSequence;)Landroid/text/Editable;
+
+    .line 105
+    .line 106
+    .line 107
+    return-void
+
+    .line 108
+    :cond_5
+    invoke-static {v7}, Ljava/lang/Math;->abs(I)I
+
+    .line 109
+    .line 110
+    .line 111
+    move-result v0
+
+    .line 112
+    rem-int/lit8 v0, v0, 0xa
+
+    .line 113
+    .line 114
+    add-int/2addr v0, v4
+
+    .line 115
+    if-le v5, v0, :cond_6
+
+    .line 116
+    .line 117
+    invoke-interface {p0, v0, v8}, Landroid/text/Editable;->insert(ILjava/lang/CharSequence;)Landroid/text/Editable;
+
+    .line 118
+    .line 119
+    .line 120
+    :cond_6
+    invoke-static {v7}, Ljava/lang/Math;->abs(I)I
+
+    .line 121
+    .line 122
+    .line 123
+    move-result v0
+
+    .line 124
+    div-int/lit8 v0, v0, 0xa
+
+    .line 125
+    .line 126
+    add-int/2addr v0, v4
+
+    .line 127
+    if-le v5, v0, :cond_8
+
+    .line 128
+    .line 129
+    invoke-interface {p0, v0, v8}, Landroid/text/Editable;->insert(ILjava/lang/CharSequence;)Landroid/text/Editable;
+
+    .line 130
+    .line 131
+    .line 132
+    goto :goto_3
+
+    .line 133
+    :cond_7
+    add-int/lit8 v6, v6, 0x1
+
+    .line 134
+    .line 135
+    goto :goto_2
+
+    .line 136
+    :cond_8
+    :goto_3
+    if-le v5, v3, :cond_9
+
+    .line 137
+    .line 138
+    if-ne v4, v3, :cond_9
+
+    .line 139
+    .line 140
+    invoke-interface {p0, v4, v8}, Landroid/text/Editable;->insert(ILjava/lang/CharSequence;)Landroid/text/Editable;
+
+    .line 141
+    .line 142
+    .line 143
+    :cond_9
+    :goto_4
+    return-void
+.end method

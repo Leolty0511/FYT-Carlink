@@ -1,0 +1,170 @@
+package android.net;
+
+import android.content.Context;
+import android.os.Handler;
+import android.os.Messenger;
+import java.util.concurrent.atomic.AtomicBoolean;
+import u.j;
+
+/* JADX INFO: loaded from: classes.dex */
+public abstract class BaseNetworkStateTracker implements NetworkStateTracker {
+    public static final String PROP_TCP_BUFFER_UNKNOWN = "net.tcp.buffersize.unknown";
+    public static final String PROP_TCP_BUFFER_WIFI = "net.tcp.buffersize.wifi";
+    public Context mContext;
+    private AtomicBoolean mDefaultRouteSet;
+    public LinkCapabilities mLinkCapabilities;
+    public LinkProperties mLinkProperties;
+    public NetworkInfo mNetworkInfo;
+    private AtomicBoolean mPrivateDnsRouteSet;
+    private Handler mTarget;
+    private AtomicBoolean mTeardownRequested;
+
+    public BaseNetworkStateTracker(int i2) {
+        this.mTeardownRequested = new AtomicBoolean(false);
+        this.mPrivateDnsRouteSet = new AtomicBoolean(false);
+        this.mDefaultRouteSet = new AtomicBoolean(false);
+        this.mNetworkInfo = new NetworkInfo(i2, -1, ConnectivityManager.getNetworkTypeName(i2), null);
+        this.mLinkProperties = new LinkProperties();
+        this.mLinkCapabilities = new LinkCapabilities();
+    }
+
+    @Override // android.net.NetworkStateTracker
+    public void addStackedLink(LinkProperties linkProperties) {
+        this.mLinkProperties.addStackedLink(linkProperties);
+    }
+
+    @Override // android.net.NetworkStateTracker
+    public void captivePortalCheckComplete() {
+    }
+
+    @Override // android.net.NetworkStateTracker
+    public void captivePortalCheckCompleted(boolean z2) {
+    }
+
+    @Override // android.net.NetworkStateTracker
+    public void defaultRouteSet(boolean z2) {
+        this.mDefaultRouteSet.set(z2);
+    }
+
+    public final void dispatchConfigurationChanged() {
+        this.mTarget.obtainMessage(NetworkStateTracker.EVENT_CONFIGURATION_CHANGED, getNetworkInfo()).sendToTarget();
+    }
+
+    public final void dispatchStateChanged() {
+        this.mTarget.obtainMessage(458752, getNetworkInfo()).sendToTarget();
+    }
+
+    @Override // android.net.NetworkStateTracker
+    public LinkCapabilities getLinkCapabilities() {
+        return new LinkCapabilities(this.mLinkCapabilities);
+    }
+
+    @Override // android.net.NetworkStateTracker
+    public LinkProperties getLinkProperties() {
+        return new LinkProperties(this.mLinkProperties);
+    }
+
+    @Override // android.net.NetworkStateTracker
+    public LinkQualityInfo getLinkQualityInfo() {
+        return null;
+    }
+
+    @Override // android.net.NetworkStateTracker
+    public NetworkInfo getNetworkInfo() {
+        return new NetworkInfo(this.mNetworkInfo);
+    }
+
+    @Override // android.net.NetworkStateTracker
+    public String getNetworkInterfaceName() {
+        LinkProperties linkProperties = this.mLinkProperties;
+        if (linkProperties != null) {
+            return linkProperties.getInterfaceName();
+        }
+        return null;
+    }
+
+    @Deprecated
+    public Handler getTargetHandler() {
+        return this.mTarget;
+    }
+
+    @Override // android.net.NetworkStateTracker
+    public boolean isAvailable() {
+        return this.mNetworkInfo.isAvailable();
+    }
+
+    @Override // android.net.NetworkStateTracker
+    public boolean isDefaultRouteSet() {
+        return this.mDefaultRouteSet.get();
+    }
+
+    @Override // android.net.NetworkStateTracker
+    public boolean isPrivateDnsRouteSet() {
+        return this.mPrivateDnsRouteSet.get();
+    }
+
+    @Override // android.net.NetworkStateTracker
+    public boolean isTeardownRequested() {
+        return this.mTeardownRequested.get();
+    }
+
+    @Override // android.net.NetworkStateTracker
+    public void privateDnsRouteSet(boolean z2) {
+        this.mPrivateDnsRouteSet.set(z2);
+    }
+
+    @Override // android.net.NetworkStateTracker
+    public void removeStackedLink(LinkProperties linkProperties) {
+        this.mLinkProperties.removeStackedLink(linkProperties);
+    }
+
+    @Override // android.net.NetworkStateTracker
+    public void setDependencyMet(boolean z2) {
+    }
+
+    @Override // android.net.NetworkStateTracker
+    public void setPolicyDataEnable(boolean z2) {
+    }
+
+    @Override // android.net.NetworkStateTracker
+    public boolean setRadio(boolean z2) {
+        return true;
+    }
+
+    @Override // android.net.NetworkStateTracker
+    public void setTeardownRequested(boolean z2) {
+        this.mTeardownRequested.set(z2);
+    }
+
+    @Override // android.net.NetworkStateTracker
+    public void setUserDataEnable(boolean z2) {
+    }
+
+    @Override // android.net.NetworkStateTracker
+    public void startMonitoring(Context context, Handler handler) {
+        this.mContext = (Context) j.a(context);
+        this.mTarget = (Handler) j.a(handler);
+        startMonitoringInternal();
+    }
+
+    public void startMonitoringInternal() {
+    }
+
+    @Override // android.net.NetworkStateTracker
+    public void startSampling(SamplingDataTracker.SamplingSnapshot samplingSnapshot) {
+    }
+
+    @Override // android.net.NetworkStateTracker
+    public void stopSampling(SamplingDataTracker.SamplingSnapshot samplingSnapshot) {
+    }
+
+    @Override // android.net.NetworkStateTracker
+    public void supplyMessenger(Messenger messenger) {
+    }
+
+    public BaseNetworkStateTracker() {
+        this.mTeardownRequested = new AtomicBoolean(false);
+        this.mPrivateDnsRouteSet = new AtomicBoolean(false);
+        this.mDefaultRouteSet = new AtomicBoolean(false);
+    }
+}

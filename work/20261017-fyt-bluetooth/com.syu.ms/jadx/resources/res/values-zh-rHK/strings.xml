@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">服務</string>
+    <string name="ic_error">加密IC認證失敗 CODE :</string>
+    <string name="image_conve_error">視頻模組驗證失敗!!</string>
+    <string name="loud_off">LOUD已關閉</string>
+    <string name="loud_on">LOUD已打開</string>
+    <string name="mcu_match_old">MCU版本太旧，请重新升级MCU软件</string>
+    <string name="mcu_need_update">MCU需要升級!</string>
+    <string name="platform_and_mcu_match_error">MCU和硬件平台不匹配，請重新升級正確的軟件！</string>
+    <string name="please_reboot">請重啟系統!</string>
+    <string name="ui_and_mcu_match_error">UI和MCU不匹配，請重新升級正確的軟件！</string>
+    <string name="upgrade_mcu">請爲MCU升級正式版軟件！</string>
+</resources>

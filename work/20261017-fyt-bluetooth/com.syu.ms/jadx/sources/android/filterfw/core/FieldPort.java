@@ -1,0 +1,87 @@
+package android.filterfw.core;
+
+import java.lang.reflect.Field;
+
+/* JADX INFO: loaded from: classes.dex */
+public class FieldPort extends InputPort {
+    public Field mField;
+    public boolean mHasFrame;
+    public Object mValue;
+    public boolean mValueWaiting;
+
+    public FieldPort(Filter filter, String str, Field field, boolean z2) {
+        super(filter, str);
+        this.mValueWaiting = false;
+        this.mField = field;
+        this.mHasFrame = z2;
+    }
+
+    @Override // android.filterfw.core.InputPort
+    public synchronized boolean acceptsFrame() {
+        return !this.mValueWaiting;
+    }
+
+    @Override // android.filterfw.core.FilterPort
+    public void clear() {
+    }
+
+    @Override // android.filterfw.core.InputPort
+    public Object getTarget() {
+        try {
+            return this.mField.get(this.mFilter);
+        } catch (IllegalAccessException unused) {
+            return null;
+        }
+    }
+
+    @Override // android.filterfw.core.FilterPort
+    public synchronized boolean hasFrame() {
+        return this.mHasFrame;
+    }
+
+    @Override // android.filterfw.core.FilterPort
+    public synchronized Frame pullFrame() {
+        throw new RuntimeException("Cannot pull frame on " + this + "!");
+    }
+
+    @Override // android.filterfw.core.FilterPort
+    public void pushFrame(Frame frame) {
+        setFieldFrame(frame, false);
+    }
+
+    public synchronized void setFieldFrame(Frame frame, boolean z2) {
+        assertPortIsOpen();
+        checkFrameType(frame, z2);
+        Object objectValue = frame.getObjectValue();
+        if ((objectValue == null && this.mValue != null) || !objectValue.equals(this.mValue)) {
+            this.mValue = objectValue;
+            this.mValueWaiting = true;
+        }
+        this.mHasFrame = true;
+    }
+
+    @Override // android.filterfw.core.FilterPort
+    public void setFrame(Frame frame) {
+        setFieldFrame(frame, true);
+    }
+
+    @Override // android.filterfw.core.FilterPort
+    public String toString() {
+        return "field " + super.toString();
+    }
+
+    @Override // android.filterfw.core.InputPort
+    public synchronized void transfer(FilterContext filterContext) {
+        if (this.mValueWaiting) {
+            try {
+                this.mField.set(this.mFilter, this.mValue);
+                this.mValueWaiting = false;
+                if (filterContext != null) {
+                    this.mFilter.notifyFieldPortValueUpdated(this.mName, filterContext);
+                }
+            } catch (IllegalAccessException unused) {
+                throw new RuntimeException("Access to field '" + this.mField.getName() + "' was denied!");
+            }
+        }
+    }
+}

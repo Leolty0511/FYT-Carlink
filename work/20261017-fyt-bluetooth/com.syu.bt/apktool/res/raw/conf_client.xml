@@ -1,0 +1,8 @@
+<project name="client">
+	<property name="app-name" value="BT"/>
+	<property name="ver-name" value="5.0"/>
+	<property name="client-name" value="SYU"/>
+	<property name="client-folder" value="公版"/>		
+	<property name="ui-id" value="2"/>
+	<property name="platform-name" value="7862"/>	
+</project>

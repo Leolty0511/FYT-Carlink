@@ -1,0 +1,4 @@
+<project name="platform">
+	 <property name="apkid" value="190000000_com.syu.ms"/> 
+	<!-- <property name="apkid" value="170000000_com.syu.ms"/> -->
+</project>

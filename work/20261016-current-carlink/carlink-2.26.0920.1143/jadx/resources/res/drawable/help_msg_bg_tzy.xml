@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <padding
+        android:left="@dimen/help_msg_padding_h"
+        android:top="12dp"
+        android:right="@dimen/help_msg_padding_h"
+        android:bottom="12dp"/>
+    <size
+        android:height="@dimen/help_msg_height"
+        android:width="@dimen/help_msg_width"/>
+    <solid android:color="#060910"/>
+    <corners android:radius="@dimen/help_msg_radius"/>
+</shape>

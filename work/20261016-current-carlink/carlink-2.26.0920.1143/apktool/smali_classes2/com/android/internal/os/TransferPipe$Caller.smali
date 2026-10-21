@@ -1,0 +1,19 @@
+.class interface abstract Lcom/android/internal/os/TransferPipe$Caller;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Lcom/android/internal/os/TransferPipe;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x609
+    name = "Caller"
+.end annotation
+
+
+# virtual methods
+.method public abstract go(Landroid/os/IInterface;Ljava/io/FileDescriptor;Ljava/lang/String;[Ljava/lang/String;)V
+.end method

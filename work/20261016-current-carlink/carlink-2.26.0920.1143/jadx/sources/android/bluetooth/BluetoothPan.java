@@ -1,0 +1,265 @@
+package android.bluetooth;
+
+import android.accessibilityservice.c;
+import android.app.m;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.a;
+import android.os.Binder;
+import android.os.IBinder;
+import android.os.Process;
+import android.os.RemoteException;
+import android.util.Log;
+import java.util.ArrayList;
+import java.util.List;
+
+/* JADX INFO: loaded from: classes.dex */
+public final class BluetoothPan implements BluetoothProfile {
+    public static final String ACTION_CONNECTION_STATE_CHANGED = "android.bluetooth.pan.profile.action.CONNECTION_STATE_CHANGED";
+    private static final boolean DBG = true;
+    public static final String EXTRA_LOCAL_ROLE = "android.bluetooth.pan.extra.LOCAL_ROLE";
+    public static final int LOCAL_NAP_ROLE = 1;
+    public static final int LOCAL_PANU_ROLE = 2;
+    public static final int PAN_CONNECT_FAILED_ALREADY_CONNECTED = 1001;
+    public static final int PAN_CONNECT_FAILED_ATTEMPT_FAILED = 1002;
+    public static final int PAN_DISCONNECT_FAILED_NOT_CONNECTED = 1000;
+    public static final int PAN_OPERATION_GENERIC_FAILURE = 1003;
+    public static final int PAN_OPERATION_SUCCESS = 1004;
+    public static final int PAN_ROLE_NONE = 0;
+    public static final int REMOTE_NAP_ROLE = 1;
+    public static final int REMOTE_PANU_ROLE = 2;
+    private static final String TAG = "BluetoothPan";
+    private static final boolean VDBG = false;
+    private BluetoothAdapter mAdapter;
+    private final ServiceConnection mConnection;
+    private Context mContext;
+    private volatile IBluetoothPan mPanService;
+    private BluetoothProfile.ServiceListener mServiceListener;
+    private final IBluetoothStateChangeCallback mStateChangeCallback;
+
+    public BluetoothPan(Context context, BluetoothProfile.ServiceListener serviceListener) {
+        IBluetoothStateChangeCallback.Stub stub = new IBluetoothStateChangeCallback.Stub() { // from class: android.bluetooth.BluetoothPan.1
+            @Override // android.bluetooth.IBluetoothStateChangeCallback
+            public void onBluetoothStateChange(boolean z2) {
+                c.z("onBluetoothStateChange on: ", z2, BluetoothPan.TAG);
+                if (!z2) {
+                    synchronized (BluetoothPan.this.mConnection) {
+                        try {
+                            BluetoothPan.this.mPanService = null;
+                            BluetoothPan.this.mContext.unbindService(BluetoothPan.this.mConnection);
+                        } catch (Exception e2) {
+                            Log.e(BluetoothPan.TAG, "", e2);
+                        }
+                    }
+                    return;
+                }
+                try {
+                    if (BluetoothPan.this.mPanService == null) {
+                        BluetoothPan.this.doBind();
+                    }
+                } catch (IllegalStateException e3) {
+                    Log.e(BluetoothPan.TAG, "onBluetoothStateChange: could not bind to PAN service: ", e3);
+                } catch (SecurityException e4) {
+                    Log.e(BluetoothPan.TAG, "onBluetoothStateChange: could not bind to PAN service: ", e4);
+                }
+            }
+        };
+        this.mStateChangeCallback = stub;
+        this.mConnection = new ServiceConnection() { // from class: android.bluetooth.BluetoothPan.2
+            @Override // android.content.ServiceConnection
+            public final /* synthetic */ void onBindingDied(ComponentName componentName) {
+                a.a(this, componentName);
+            }
+
+            @Override // android.content.ServiceConnection
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                Log.d(BluetoothPan.TAG, "BluetoothPAN Proxy object connected");
+                BluetoothPan.this.mPanService = IBluetoothPan.Stub.asInterface(Binder.allowBlocking(iBinder));
+                if (BluetoothPan.this.mServiceListener != null) {
+                    BluetoothPan.this.mServiceListener.onServiceConnected(5, BluetoothPan.this);
+                }
+            }
+
+            @Override // android.content.ServiceConnection
+            public void onServiceDisconnected(ComponentName componentName) {
+                Log.d(BluetoothPan.TAG, "BluetoothPAN Proxy object disconnected");
+                BluetoothPan.this.mPanService = null;
+                if (BluetoothPan.this.mServiceListener != null) {
+                    BluetoothPan.this.mServiceListener.onServiceDisconnected(5);
+                }
+            }
+        };
+        this.mContext = context;
+        this.mServiceListener = serviceListener;
+        BluetoothAdapter defaultAdapter = BluetoothAdapter.getDefaultAdapter();
+        this.mAdapter = defaultAdapter;
+        try {
+            defaultAdapter.getBluetoothManager().registerStateChangeCallback(stub);
+        } catch (RemoteException e2) {
+            Log.w(TAG, "Unable to register BluetoothStateChangeCallback", e2);
+        }
+        doBind();
+    }
+
+    private boolean isEnabled() {
+        return this.mAdapter.getState() == 12;
+    }
+
+    private static boolean isValidDevice(BluetoothDevice bluetoothDevice) {
+        return bluetoothDevice != null && BluetoothAdapter.checkBluetoothAddress(bluetoothDevice.getAddress());
+    }
+
+    private static void log(String str) {
+        Log.d(TAG, str);
+    }
+
+    public void close() {
+        IBluetoothManager bluetoothManager = this.mAdapter.getBluetoothManager();
+        if (bluetoothManager != null) {
+            try {
+                bluetoothManager.unregisterStateChangeCallback(this.mStateChangeCallback);
+            } catch (RemoteException e2) {
+                Log.w(TAG, "Unable to unregister BluetoothStateChangeCallback", e2);
+            }
+        }
+        synchronized (this.mConnection) {
+            if (this.mPanService != null) {
+                try {
+                    this.mPanService = null;
+                    this.mContext.unbindService(this.mConnection);
+                } catch (Exception e3) {
+                    Log.e(TAG, "", e3);
+                }
+            }
+        }
+        this.mServiceListener = null;
+    }
+
+    public boolean connect(BluetoothDevice bluetoothDevice) {
+        log(m.g("connect(", bluetoothDevice, ")"));
+        IBluetoothPan iBluetoothPan = this.mPanService;
+        if (iBluetoothPan != null && isEnabled() && isValidDevice(bluetoothDevice)) {
+            try {
+                return iBluetoothPan.connect(bluetoothDevice);
+            } catch (RemoteException unused) {
+                m.w(new StringBuilder("Stack:"), TAG);
+                return false;
+            }
+        }
+        if (iBluetoothPan == null) {
+            Log.w(TAG, "Proxy not attached to service");
+        }
+        return false;
+    }
+
+    public boolean disconnect(BluetoothDevice bluetoothDevice) {
+        log(m.g("disconnect(", bluetoothDevice, ")"));
+        IBluetoothPan iBluetoothPan = this.mPanService;
+        if (iBluetoothPan != null && isEnabled() && isValidDevice(bluetoothDevice)) {
+            try {
+                return iBluetoothPan.disconnect(bluetoothDevice);
+            } catch (RemoteException unused) {
+                m.w(new StringBuilder("Stack:"), TAG);
+                return false;
+            }
+        }
+        if (iBluetoothPan == null) {
+            Log.w(TAG, "Proxy not attached to service");
+        }
+        return false;
+    }
+
+    public boolean doBind() {
+        Intent intent = new Intent(IBluetoothPan.class.getName());
+        ComponentName componentNameResolveSystemService = intent.resolveSystemService(this.mContext.getPackageManager(), 0);
+        intent.setComponent(componentNameResolveSystemService);
+        if (componentNameResolveSystemService != null && this.mContext.bindServiceAsUser(intent, this.mConnection, 0, Process.myUserHandle())) {
+            return true;
+        }
+        Log.e(TAG, "Could not bind to Bluetooth Pan Service with " + intent);
+        return false;
+    }
+
+    public void finalize() {
+        close();
+    }
+
+    @Override // android.bluetooth.BluetoothProfile
+    public List<BluetoothDevice> getConnectedDevices() {
+        IBluetoothPan iBluetoothPan = this.mPanService;
+        if (iBluetoothPan == null || !isEnabled()) {
+            if (iBluetoothPan == null) {
+                Log.w(TAG, "Proxy not attached to service");
+            }
+            return new ArrayList();
+        }
+        try {
+            return iBluetoothPan.getConnectedDevices();
+        } catch (RemoteException unused) {
+            Log.e(TAG, "Stack:" + Log.getStackTraceString(new Throwable()));
+            return new ArrayList();
+        }
+    }
+
+    @Override // android.bluetooth.BluetoothProfile
+    public int getConnectionState(BluetoothDevice bluetoothDevice) {
+        IBluetoothPan iBluetoothPan = this.mPanService;
+        if (iBluetoothPan != null && isEnabled() && isValidDevice(bluetoothDevice)) {
+            try {
+                return iBluetoothPan.getConnectionState(bluetoothDevice);
+            } catch (RemoteException unused) {
+                m.w(new StringBuilder("Stack:"), TAG);
+                return 0;
+            }
+        }
+        if (iBluetoothPan == null) {
+            Log.w(TAG, "Proxy not attached to service");
+        }
+        return 0;
+    }
+
+    @Override // android.bluetooth.BluetoothProfile
+    public List<BluetoothDevice> getDevicesMatchingConnectionStates(int[] iArr) {
+        IBluetoothPan iBluetoothPan = this.mPanService;
+        if (iBluetoothPan == null || !isEnabled()) {
+            if (iBluetoothPan == null) {
+                Log.w(TAG, "Proxy not attached to service");
+            }
+            return new ArrayList();
+        }
+        try {
+            return iBluetoothPan.getDevicesMatchingConnectionStates(iArr);
+        } catch (RemoteException unused) {
+            Log.e(TAG, "Stack:" + Log.getStackTraceString(new Throwable()));
+            return new ArrayList();
+        }
+    }
+
+    public boolean isTetheringOn() {
+        IBluetoothPan iBluetoothPan = this.mPanService;
+        if (iBluetoothPan == null || !isEnabled()) {
+            return false;
+        }
+        try {
+            return iBluetoothPan.isTetheringOn();
+        } catch (RemoteException unused) {
+            m.w(new StringBuilder("Stack:"), TAG);
+            return false;
+        }
+    }
+
+    public void setBluetoothTethering(boolean z2) {
+        log("setBluetoothTethering(" + z2 + ")");
+        IBluetoothPan iBluetoothPan = this.mPanService;
+        if (iBluetoothPan == null || !isEnabled()) {
+            return;
+        }
+        try {
+            iBluetoothPan.setBluetoothTethering(z2);
+        } catch (RemoteException unused) {
+            m.w(new StringBuilder("Stack:"), TAG);
+        }
+    }
+}

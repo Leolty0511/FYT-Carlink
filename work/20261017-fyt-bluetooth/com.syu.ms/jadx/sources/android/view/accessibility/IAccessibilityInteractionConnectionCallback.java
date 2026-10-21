@@ -1,0 +1,126 @@
+package android.view.accessibility;
+
+import android.os.Binder;
+import android.os.IBinder;
+import android.os.IInterface;
+import android.os.Parcel;
+import java.util.List;
+
+/* JADX INFO: loaded from: classes.dex */
+public interface IAccessibilityInteractionConnectionCallback extends IInterface {
+
+    public static abstract class Stub extends Binder implements IAccessibilityInteractionConnectionCallback {
+        private static final String DESCRIPTOR = "android.view.accessibility.IAccessibilityInteractionConnectionCallback";
+        public static final int TRANSACTION_setFindAccessibilityNodeInfoResult = 1;
+        public static final int TRANSACTION_setFindAccessibilityNodeInfosResult = 2;
+        public static final int TRANSACTION_setPerformAccessibilityActionResult = 3;
+
+        public static class Proxy implements IAccessibilityInteractionConnectionCallback {
+            private IBinder mRemote;
+
+            public Proxy(IBinder iBinder) {
+                this.mRemote = iBinder;
+            }
+
+            @Override // android.os.IInterface
+            public IBinder asBinder() {
+                return this.mRemote;
+            }
+
+            public String getInterfaceDescriptor() {
+                return Stub.DESCRIPTOR;
+            }
+
+            @Override // android.view.accessibility.IAccessibilityInteractionConnectionCallback
+            public void setFindAccessibilityNodeInfoResult(AccessibilityNodeInfo accessibilityNodeInfo, int i2) {
+                Parcel parcelObtain = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    if (accessibilityNodeInfo != null) {
+                        parcelObtain.writeInt(1);
+                        accessibilityNodeInfo.writeToParcel(parcelObtain, 0);
+                    } else {
+                        parcelObtain.writeInt(0);
+                    }
+                    parcelObtain.writeInt(i2);
+                    this.mRemote.transact(1, parcelObtain, null, 1);
+                } finally {
+                    parcelObtain.recycle();
+                }
+            }
+
+            @Override // android.view.accessibility.IAccessibilityInteractionConnectionCallback
+            public void setFindAccessibilityNodeInfosResult(List<AccessibilityNodeInfo> list, int i2) {
+                Parcel parcelObtain = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    parcelObtain.writeTypedList(list);
+                    parcelObtain.writeInt(i2);
+                    this.mRemote.transact(2, parcelObtain, null, 1);
+                } finally {
+                    parcelObtain.recycle();
+                }
+            }
+
+            @Override // android.view.accessibility.IAccessibilityInteractionConnectionCallback
+            public void setPerformAccessibilityActionResult(boolean z2, int i2) {
+                Parcel parcelObtain = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    parcelObtain.writeInt(z2 ? 1 : 0);
+                    parcelObtain.writeInt(i2);
+                    this.mRemote.transact(3, parcelObtain, null, 1);
+                } finally {
+                    parcelObtain.recycle();
+                }
+            }
+        }
+
+        public Stub() {
+            attachInterface(this, DESCRIPTOR);
+        }
+
+        public static IAccessibilityInteractionConnectionCallback asInterface(IBinder iBinder) {
+            if (iBinder == null) {
+                return null;
+            }
+            IInterface iInterfaceQueryLocalInterface = iBinder.queryLocalInterface(DESCRIPTOR);
+            return (iInterfaceQueryLocalInterface == null || !(iInterfaceQueryLocalInterface instanceof IAccessibilityInteractionConnectionCallback)) ? new Proxy(iBinder) : (IAccessibilityInteractionConnectionCallback) iInterfaceQueryLocalInterface;
+        }
+
+        @Override // android.os.IInterface
+        public IBinder asBinder() {
+            return this;
+        }
+
+        @Override // android.os.Binder
+        public boolean onTransact(int i2, Parcel parcel, Parcel parcel2, int i3) {
+            if (i2 == 1) {
+                parcel.enforceInterface(DESCRIPTOR);
+                setFindAccessibilityNodeInfoResult(parcel.readInt() != 0 ? AccessibilityNodeInfo.CREATOR.createFromParcel(parcel) : null, parcel.readInt());
+                return true;
+            }
+            if (i2 == 2) {
+                parcel.enforceInterface(DESCRIPTOR);
+                setFindAccessibilityNodeInfosResult(parcel.createTypedArrayList(AccessibilityNodeInfo.CREATOR), parcel.readInt());
+                return true;
+            }
+            if (i2 == 3) {
+                parcel.enforceInterface(DESCRIPTOR);
+                setPerformAccessibilityActionResult(parcel.readInt() != 0, parcel.readInt());
+                return true;
+            }
+            if (i2 != 1598968902) {
+                return super.onTransact(i2, parcel, parcel2, i3);
+            }
+            parcel2.writeString(DESCRIPTOR);
+            return true;
+        }
+    }
+
+    void setFindAccessibilityNodeInfoResult(AccessibilityNodeInfo accessibilityNodeInfo, int i2);
+
+    void setFindAccessibilityNodeInfosResult(List<AccessibilityNodeInfo> list, int i2);
+
+    void setPerformAccessibilityActionResult(boolean z2, int i2);
+}

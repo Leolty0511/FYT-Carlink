@@ -1,0 +1,89 @@
+package com.android.internal.telephony.cdma.sms;
+
+import android.app.m;
+import android.text.format.DateFormat;
+import android.util.SparseIntArray;
+import com.android.internal.telephony.SmsHeader;
+import com.android.internal.transition.EpicenterTranslateClipReveal;
+import com.android.internal.util.HexDump;
+
+/* JADX INFO: loaded from: classes3.dex */
+public class UserData {
+    public static final int ASCII_CR_INDEX = 13;
+    public static final int ASCII_MAP_BASE_INDEX = 32;
+    public static final int ASCII_MAP_MAX_INDEX;
+    public static final int ASCII_NL_INDEX = 10;
+    public static final int ENCODING_7BIT_ASCII = 2;
+    public static final int ENCODING_GSM_7BIT_ALPHABET = 9;
+    public static final int ENCODING_GSM_DCS = 10;
+    public static final int ENCODING_GSM_DCS_16BIT = 2;
+    public static final int ENCODING_GSM_DCS_7BIT = 0;
+    public static final int ENCODING_GSM_DCS_8BIT = 1;
+    public static final int ENCODING_IA5 = 3;
+    public static final int ENCODING_IS91_EXTENDED_PROTOCOL = 1;
+    public static final int ENCODING_KOREAN = 6;
+    public static final int ENCODING_LATIN = 8;
+    public static final int ENCODING_LATIN_HEBREW = 7;
+    public static final int ENCODING_OCTET = 0;
+    public static final int ENCODING_SHIFT_JIS = 5;
+    public static final int ENCODING_UNICODE_16 = 4;
+    public static final int IS91_MSG_TYPE_CLI = 132;
+    public static final int IS91_MSG_TYPE_SHORT_MESSAGE = 133;
+    public static final int IS91_MSG_TYPE_SHORT_MESSAGE_FULL = 131;
+    public static final int IS91_MSG_TYPE_VOICEMAIL_STATUS = 130;
+    public static final int PRINTABLE_ASCII_MIN_INDEX = 32;
+    static final byte UNENCODABLE_7_BIT_CHAR = 32;
+    public int msgEncoding;
+    public boolean msgEncodingSet = false;
+    public int msgType;
+    public int numFields;
+    public int paddingBits;
+    public byte[] payload;
+    public String payloadStr;
+    public SmsHeader userDataHeader;
+    public static final char[] ASCII_MAP = {' ', '!', '\"', '#', '$', '%', '&', DateFormat.QUOTE, '(', ')', '*', '+', ',', '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';', '<', '=', '>', '?', '@', DateFormat.CAPITAL_AM_PM, 'B', 'C', 'D', DateFormat.DAY, 'F', 'G', 'H', 'I', 'J', 'K', DateFormat.STANDALONE_MONTH, DateFormat.MONTH, 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[', '\\', ']', '^', '_', '`', DateFormat.AM_PM, 'b', 'c', DateFormat.DATE, 'e', 'f', 'g', DateFormat.HOUR, 'i', 'j', DateFormat.HOUR_OF_DAY, 'l', DateFormat.MINUTE, 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', EpicenterTranslateClipReveal.StateProperty.TARGET_X, 'y', DateFormat.TIME_ZONE, '{', '|', '}', '~'};
+    public static final SparseIntArray charToAscii = new SparseIntArray();
+
+    static {
+        int i2 = 0;
+        while (true) {
+            char[] cArr = ASCII_MAP;
+            if (i2 >= cArr.length) {
+                SparseIntArray sparseIntArray = charToAscii;
+                sparseIntArray.put(10, 10);
+                sparseIntArray.put(13, 13);
+                ASCII_MAP_MAX_INDEX = (cArr.length + 32) - 1;
+                return;
+            }
+            charToAscii.put(cArr[i2], i2 + 32);
+            i2++;
+        }
+    }
+
+    public static byte[] stringToAscii(String str) {
+        int length = str.length();
+        byte[] bArr = new byte[length];
+        for (int i2 = 0; i2 < length; i2++) {
+            int i3 = charToAscii.get(str.charAt(i2), -1);
+            if (i3 == -1) {
+                return null;
+            }
+            bArr[i2] = (byte) i3;
+        }
+        return bArr;
+    }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder("UserData ");
+        StringBuilder sb2 = new StringBuilder("{ msgEncoding=");
+        sb2.append(this.msgEncodingSet ? Integer.valueOf(this.msgEncoding) : "unset");
+        sb.append(sb2.toString());
+        StringBuilder sbM = m.m(m.m(m.m(new StringBuilder(", msgType="), this.msgType, sb, ", paddingBits="), this.paddingBits, sb, ", numFields="), this.numFields, sb, ", userDataHeader=");
+        sbM.append(this.userDataHeader);
+        sb.append(sbM.toString());
+        sb.append(", payload='" + HexDump.toHexString(this.payload) + "'");
+        sb.append(", payloadStr='" + this.payloadStr + "'");
+        sb.append(" }");
+        return sb.toString();
+    }
+}

@@ -1,0 +1,90 @@
+package android.service.persistentdata;
+
+import android.annotation.SuppressLint;
+import android.os.RemoteException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+/* JADX INFO: loaded from: classes2.dex */
+public class PersistentDataBlockManager {
+    public static final int FLASH_LOCK_LOCKED = 1;
+    public static final int FLASH_LOCK_UNKNOWN = -1;
+    public static final int FLASH_LOCK_UNLOCKED = 0;
+    private static final String TAG = "PersistentDataBlockManager";
+    private IPersistentDataBlockService sService;
+
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface FlashLockState {
+    }
+
+    public PersistentDataBlockManager(IPersistentDataBlockService iPersistentDataBlockService) {
+        this.sService = iPersistentDataBlockService;
+    }
+
+    public int getDataBlockSize() {
+        try {
+            return this.sService.getDataBlockSize();
+        } catch (RemoteException e2) {
+            throw e2.rethrowFromSystemServer();
+        }
+    }
+
+    public int getFlashLockState() {
+        try {
+            return this.sService.getFlashLockState();
+        } catch (RemoteException e2) {
+            throw e2.rethrowFromSystemServer();
+        }
+    }
+
+    @SuppressLint({"Doclava125"})
+    public long getMaximumDataBlockSize() {
+        try {
+            return this.sService.getMaximumDataBlockSize();
+        } catch (RemoteException e2) {
+            throw e2.rethrowFromSystemServer();
+        }
+    }
+
+    public boolean getOemUnlockEnabled() {
+        try {
+            return this.sService.getOemUnlockEnabled();
+        } catch (RemoteException e2) {
+            throw e2.rethrowFromSystemServer();
+        }
+    }
+
+    @SuppressLint({"Doclava125"})
+    public byte[] read() {
+        try {
+            return this.sService.read();
+        } catch (RemoteException e2) {
+            throw e2.rethrowFromSystemServer();
+        }
+    }
+
+    public void setOemUnlockEnabled(boolean z2) {
+        try {
+            this.sService.setOemUnlockEnabled(z2);
+        } catch (RemoteException e2) {
+            throw e2.rethrowFromSystemServer();
+        }
+    }
+
+    public void wipe() {
+        try {
+            this.sService.wipe();
+        } catch (RemoteException e2) {
+            throw e2.rethrowFromSystemServer();
+        }
+    }
+
+    @SuppressLint({"Doclava125"})
+    public int write(byte[] bArr) {
+        try {
+            return this.sService.write(bArr);
+        } catch (RemoteException e2) {
+            throw e2.rethrowFromSystemServer();
+        }
+    }
+}

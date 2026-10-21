@@ -1,0 +1,55 @@
+.class abstract Landroid/speech/tts/PlaybackQueueItem;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Ljava/lang/Runnable;
+
+
+# instance fields
+.field private final mCallerIdentity:Ljava/lang/Object;
+
+.field private final mDispatcher:Landroid/speech/tts/TextToSpeechService$UtteranceProgressDispatcher;
+
+
+# direct methods
+.method public constructor <init>(Landroid/speech/tts/TextToSpeechService$UtteranceProgressDispatcher;Ljava/lang/Object;)V
+    .locals 0
+
+    .line 1
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    .line 2
+    iput-object p1, p0, Landroid/speech/tts/PlaybackQueueItem;->mDispatcher:Landroid/speech/tts/TextToSpeechService$UtteranceProgressDispatcher;
+
+    .line 3
+    iput-object p2, p0, Landroid/speech/tts/PlaybackQueueItem;->mCallerIdentity:Ljava/lang/Object;
+
+    return-void
+.end method
+
+
+# virtual methods
+.method public getCallerIdentity()Ljava/lang/Object;
+    .locals 1
+
+    .line 1
+    iget-object v0, p0, Landroid/speech/tts/PlaybackQueueItem;->mCallerIdentity:Ljava/lang/Object;
+
+    return-object v0
+.end method
+
+.method public getDispatcher()Landroid/speech/tts/TextToSpeechService$UtteranceProgressDispatcher;
+    .locals 1
+
+    .line 1
+    iget-object v0, p0, Landroid/speech/tts/PlaybackQueueItem;->mDispatcher:Landroid/speech/tts/TextToSpeechService$UtteranceProgressDispatcher;
+
+    return-object v0
+.end method
+
+.method public abstract run()V
+.end method
+
+.method public abstract stop(Z)V
+.end method

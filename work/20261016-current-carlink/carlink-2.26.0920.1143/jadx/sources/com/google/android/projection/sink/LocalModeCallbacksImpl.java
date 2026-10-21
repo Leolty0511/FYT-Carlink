@@ -1,0 +1,35 @@
+package com.google.android.projection.sink;
+
+import com.google.android.projection.sink.ui.MainActivity;
+
+/* JADX INFO: loaded from: classes3.dex */
+public class LocalModeCallbacksImpl implements MainActivity.LocalModeCallbacks {
+    private static final String CLIENT_CERTIFICATE = "-----BEGIN CERTIFICATE-----\nMIIDQDCCAigCAgEQMA0GCSqGSIb3DQEBCwUAMFsxCzAJBgNVBAYTAlVTMRMwEQYD\nVQQIDApDYWxpZm9ybmlhMRYwFAYDVQQHDA1Nb3VudGFpbiBWaWV3MR8wHQYDVQQK\nDBZHb29nbGUgQXV0b21vdGl2ZSBMaW5rMCYXETE0MDcwNDAwMDAwMC0wNzAwFxE0\nODA4MDExMDE2MjMtMDcwMDBoMQswCQYDVQQGEwJVUzETMBEGA1UECAwKQ2FsaWZv\ncm5pYTEWMBQGA1UEBwwNTW91bnRhaW4gVmlldzEfMB0GA1UECgwWQW5kcm9pZC1B\ndXRvLURldmVsb3BlcjELMAkGA1UECwwCMDEwggEiMA0GCSqGSIb3DQEBAQUAA4IB\nDwAwggEKAoIBAQDVPJDd8tBSeKi+TQaJXITNXs52fDMMtfSaM69Gcw1r/FyS4y13\nNZzs/lEbPcAAR1mA61wnLOUyB0p0uHc6dOgwjVAYtr6IFpylNVh+wuuGHM2hx4eq\nt4F2Rfr/qLqYhAJxtA84kcmMNG3Z/xQ0fKOcFAdCTSIwxbet7Z5QqfC6zMcEu5k2\nE6KnVMaCfAcWW1pl1HAVMjUsrGSuRLqPNmUdx9zNUNxKjNRb1wG4RIC5CAUABVyg\n8AOQJh1H336WuVVzW9q+EpBgeUP/28biUirdo/3rT6b6j2hWIQ2bcT6OgyTGOCfg\nXTW/OZK0ZH8ySkK3JGlVvj9gN8jjhC43Md41AgMBAAEwDQYJKoZIhvcNAQELBQAD\nggEBADuYShWdB6m1vJdNRC/mxF4So6Xe1CJIOFMCyCch13/vFklfsUqzO86WId9u\noGcZM3Sq6E9YPSP+tZ6jy1Zzw0IOmTI1z2/DLO9dX5Tz3e+XIjxpSa3WooNruhXE\nI2Lz9WwaQyZBx3VW+2mbL354b9HYAJbZ+fyIBlNJdGmWoC7OejaV2shPYD56k7AK\nqtXwdPLAlzWhOZdN6E0Td0d6S40S1jeoTXJYez3SVJdTyDf+0JjobZK0JZV/Mevw\nfBkwgxaSa4Ukn+LY5wRDFaY5muQU9jDfPwvzGrxpI+fbUKomcWR4lKbhVdD29MLt\nU+CUyIwMQC5rg/5bpFjsn19b0RA=\n-----END CERTIFICATE-----\n";
+    private static final String PRIVATE_KEY = "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDVPJDd8tBSeKi+\nTQaJXITNXs52fDMMtfSaM69Gcw1r/FyS4y13NZzs/lEbPcAAR1mA61wnLOUyB0p0\nuHc6dOgwjVAYtr6IFpylNVh+wuuGHM2hx4eqt4F2Rfr/qLqYhAJxtA84kcmMNG3Z\n/xQ0fKOcFAdCTSIwxbet7Z5QqfC6zMcEu5k2E6KnVMaCfAcWW1pl1HAVMjUsrGSu\nRLqPNmUdx9zNUNxKjNRb1wG4RIC5CAUABVyg8AOQJh1H336WuVVzW9q+EpBgeUP/\n28biUirdo/3rT6b6j2hWIQ2bcT6OgyTGOCfgXTW/OZK0ZH8ySkK3JGlVvj9gN8jj\nhC43Md41AgMBAAECggEAUvw0ILxbiIz+lrjhP1nrMQWhcgkZ0OuLGuvcXZ1u7sSS\nvnN9ATSzMqQyqlhYvYMG+R4fift14wdlWZFkjTJsHmEQd92+vrWWFtFw9DwlbtcM\ny9YcHTs3PfE0IoTmwW42iUua1NgfyNmqmrkjgt2yyo4c2Reto69+sUiVYS0Ry5Aq\nR6o92PLyDt4Z9mXC54U0OkPef/3qMx/o8xPZY+i0Wi3hWAGZ2NVvS3GDHUVWU1O4\nAaZ0sJpPsdfvgpeiWDEdO9Pcd+YNo3KO3wxCcKle1E7Ve4RwjMtk/P3+HOWQcagn\nzQ4xUkeh0On6DB+uKHU7Z2rZR0cLJX/L2g/QRbSeoQKBgQDvRIPVLumIHmmp+umC\n2wiHc2DepZzznSCtWcYIDT1woPzEtJ3nW8B9gYvvP96zVSXgLIBpwKn4Z0N8h9Sl\n+fnj8C3p4rxb8w/2PCbNueH7Hk6HlnjoJcJfhdRuGiClEJ7NIUsW0Oeq6mAGg+fz\nk2nOpixTnyNXlXDZZWlerzB3vQKBgQDkJgfK5s50FssVlCv+OLua+YRFvxLpFP1o\nREv8A00syZ24c+NT5qADdFY6XEnxZatoSvzwzDqtrmeJoQvACGcZ8CIA6zXekuNx\nnxmKpg5opElt/zjPBNwc0GPMSt2zJQ5p9clCjzGRsQJE5NGElUb5p9D7lceyif9N\nGfTYsKhL2QKBgEsilNOJG8Sm6D98j3+MEK2YSb8g+px1pyFIo6s7nSOVKksK/Nr+\nMQA4ghzrTZ+7CV3QG7MZ0UY0Bzk/3kMQsKwnbAOaM9QcC9MjKHxJ9vDIn5hsZCNi\nWBtvBzpb8gxjn7qCzfWoPFerqePh4CDZFczS2fCYdJy4TOu3sNMO6IVxAoGASMZc\ny/sttdgjdcGq+s/MABZBfCID/TeF0cGfX0cKUhQJ7HGC/RtexVtRuhIAQDFHKOBq\nqMDsosQ0ILGvVtUXVi3EGvjsWRAP3wl6E0D+7aAiECVOULLjJ4nNm7fx2hgi7efK\nCCI3FJsa9zDqKFmZpz9BqU7QwYHFXym9cXWAaZkCgYAHwrlr8WN105nTbT9WSaY4\nDSzjGwBn28myz4PcKDMyEybojhhGHmznMrMrdsPwh0s0oYFWCVntedUrUdYW3Fxg\nRx2tbxrEGUxxiEOWP+dN2jnzRUnK50K/2xvRFh59hHCwYMtpNe3trn9AQSgVfYWP\nv49r6mcqWoJ24OVHF0amiw==\n-----END PRIVATE KEY-----\n";
+    private static final String ROOT_CERTIFICATE = "-----BEGIN CERTIFICATE-----\nMIIDiTCCAnGgAwIBAgIJAMFO56WkVE1CMA0GCSqGSIb3DQEBBQUAMFsxCzAJBgNV\nBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMRYwFAYDVQQHDA1Nb3VudGFpbiBW\naWV3MR8wHQYDVQQKDBZHb29nbGUgQXV0b21vdGl2ZSBMaW5rMB4XDTE0MDYwNjE4\nMjgxOVoXDTQ0MDYwNTE4MjgxOVowWzELMAkGA1UEBhMCVVMxEzARBgNVBAgMCkNh\nbGlmb3JuaWExFjAUBgNVBAcMDU1vdW50YWluIFZpZXcxHzAdBgNVBAoMFkdvb2ds\nZSBBdXRvbW90aXZlIExpbmswggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB\nAQDUH+iIbwwVb74NdI5eBv/ACFmh4ml/NOW7gUVWdYX50n8uQQsHHLCNIhk5VV2H\nhanvAZ/XXHPuVAPadE2HpnNqePKF/RDo4eJo/+rOief8gBYq/Z+OQTZeLdNm+GoI\nHBrEjU4Ms8IdLuFW0jF8LlIRgekjLHpc7duUl3QpwBlmAWQK40T/SZjprlmhyqfJ\ng1rxFdnGbrSibmCsTmb3m6WZyZUyrcwmd7t6q3pHbMABO+o02asPG/YPj/SJo4+i\nfb5/Nk56f3hH9pBiPKQXJnVUdVLKMXSRgydDBsGSBol4C0JL77MNDrMR5jdafJ4j\nmWmsa2+mnzoAv9AxEL9T0LiNAgMBAAGjUDBOMB0GA1UdDgQWBBS5dqvv8DPQiwrM\nfgn8xKR91k7wgjAfBgNVHSMEGDAWgBS5dqvv8DPQiwrMfgn8xKR91k7wgjAMBgNV\nHRMEBTADAQH/MA0GCSqGSIb3DQEBBQUAA4IBAQDKcnBsrbB0Jbz2VGJKP2lwYB6P\ndCTCCpQu7dVp61UQOX+zWfd2hnNMnLs/r1xPO+eyN0vmw7sD05phaIhbXVauKWZi\n9WqWHTaR+9s6CTyBOc1Mye0DMj+4vHt+WLmf0lYjkYUVYvR1EImX8ktXzkVmOqn+\ne30siqlZ8pQpsOgegIKfJ+pNQM8c3eXVv3KFMUgjZW33SziZL8IMsLvSO+1LtH37\nKqbTEMP6XUwVuZopgGvaHU74eT/WSRGlL7vX4OL5/UXXP4qsGH2Zp7uQlErv4H9j\nkMs37UL1vGb4M8RM7Eyu9/RulepSmqZUF+3i+3eby8iGq/3OWk9wgJf7AXnx\n-----END CERTIFICATE-----\n";
+
+    @Override // com.google.android.projection.sink.ui.MainActivity.LocalModeCallbacks
+    public String getClientCert() {
+        return CLIENT_CERTIFICATE;
+    }
+
+    @Override // com.google.android.projection.sink.ui.MainActivity.LocalModeCallbacks
+    public String getPrivateKey() {
+        return PRIVATE_KEY;
+    }
+
+    @Override // com.google.android.projection.sink.ui.MainActivity.LocalModeCallbacks
+    public String getRootCert() {
+        return ROOT_CERTIFICATE;
+    }
+
+    @Override // com.google.android.projection.sink.ui.MainActivity.LocalModeCallbacks
+    public boolean isLocalMode() {
+        return false;
+    }
+
+    @Override // com.google.android.projection.sink.ui.MainActivity.LocalModeCallbacks
+    public void startLocalMode(MainActivity mainActivity) {
+        throw new RuntimeException("Local mode not supported in this build.");
+    }
+}

@@ -1,0 +1,93 @@
+package android.hardware.location;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.Log;
+
+/* JADX INFO: loaded from: classes.dex */
+public final class GeofenceHardwareRequestParcelable implements Parcelable {
+    public static final Parcelable.Creator<GeofenceHardwareRequestParcelable> CREATOR = new Parcelable.Creator<GeofenceHardwareRequestParcelable>() { // from class: android.hardware.location.GeofenceHardwareRequestParcelable.1
+        /* JADX WARN: Can't rename method to resolve collision */
+        @Override // android.os.Parcelable.Creator
+        public GeofenceHardwareRequestParcelable createFromParcel(Parcel parcel) {
+            int i2 = parcel.readInt();
+            if (i2 != 0) {
+                Log.e("GeofenceHardwareRequest", String.format("Invalid Geofence type: %d", Integer.valueOf(i2)));
+                return null;
+            }
+            GeofenceHardwareRequest geofenceHardwareRequestCreateCircularGeofence = GeofenceHardwareRequest.createCircularGeofence(parcel.readDouble(), parcel.readDouble(), parcel.readDouble());
+            geofenceHardwareRequestCreateCircularGeofence.setLastTransition(parcel.readInt());
+            geofenceHardwareRequestCreateCircularGeofence.setMonitorTransitions(parcel.readInt());
+            geofenceHardwareRequestCreateCircularGeofence.setUnknownTimer(parcel.readInt());
+            geofenceHardwareRequestCreateCircularGeofence.setNotificationResponsiveness(parcel.readInt());
+            return new GeofenceHardwareRequestParcelable(parcel.readInt(), geofenceHardwareRequestCreateCircularGeofence);
+        }
+
+        /* JADX WARN: Can't rename method to resolve collision */
+        @Override // android.os.Parcelable.Creator
+        public GeofenceHardwareRequestParcelable[] newArray(int i2) {
+            return new GeofenceHardwareRequestParcelable[i2];
+        }
+    };
+    private int mId;
+    private GeofenceHardwareRequest mRequest;
+
+    public GeofenceHardwareRequestParcelable(int i2, GeofenceHardwareRequest geofenceHardwareRequest) {
+        this.mId = i2;
+        this.mRequest = geofenceHardwareRequest;
+    }
+
+    @Override // android.os.Parcelable
+    public int describeContents() {
+        return 0;
+    }
+
+    public int getId() {
+        return this.mId;
+    }
+
+    public int getLastTransition() {
+        return this.mRequest.getLastTransition();
+    }
+
+    public double getLatitude() {
+        return this.mRequest.getLatitude();
+    }
+
+    public double getLongitude() {
+        return this.mRequest.getLongitude();
+    }
+
+    public int getMonitorTransitions() {
+        return this.mRequest.getMonitorTransitions();
+    }
+
+    public int getNotificationResponsiveness() {
+        return this.mRequest.getNotificationResponsiveness();
+    }
+
+    public double getRadius() {
+        return this.mRequest.getRadius();
+    }
+
+    public int getType() {
+        return this.mRequest.getType();
+    }
+
+    public int getUnknownTimer() {
+        return this.mRequest.getUnknownTimer();
+    }
+
+    @Override // android.os.Parcelable
+    public void writeToParcel(Parcel parcel, int i2) {
+        parcel.writeInt(getType());
+        parcel.writeDouble(getLatitude());
+        parcel.writeDouble(getLongitude());
+        parcel.writeDouble(getRadius());
+        parcel.writeInt(getLastTransition());
+        parcel.writeInt(getMonitorTransitions());
+        parcel.writeInt(getUnknownTimer());
+        parcel.writeInt(getNotificationResponsiveness());
+        parcel.writeInt(getId());
+    }
+}

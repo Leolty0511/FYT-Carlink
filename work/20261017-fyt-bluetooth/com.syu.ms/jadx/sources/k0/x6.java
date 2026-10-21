@@ -1,0 +1,125 @@
+package k0;
+
+/* JADX INFO: loaded from: classes2.dex */
+public class x6 extends lt {
+
+    /* JADX INFO: renamed from: b, reason: collision with root package name */
+    public int f12036b;
+
+    /* JADX INFO: renamed from: c, reason: collision with root package name */
+    public int f12037c = 0;
+
+    /* JADX INFO: renamed from: d, reason: collision with root package name */
+    public int[][] f12038d = {new int[]{2, 5}, new int[]{3, 34}, new int[]{4, 35}, new int[]{7, 29}, new int[]{8, 6}, new int[]{16, 2}, new int[]{17, 2}, new int[]{18, 4}, new int[]{19, 3}, new int[]{20, 7}, new int[]{21, 8}, new int[]{22, 12}, new int[]{23, 34}, new int[]{24, 35}, new int[]{33, 2}, new int[]{34, 11}, new int[]{35, 18}, new int[]{41, 12}, new int[]{48, 18}, new int[]{49, 26}, new int[]{50, 1}, new int[]{51, 24}, new int[]{52, 55}, new int[]{54, 54}, new int[]{56, 34}, new int[]{57, 35}, new int[]{64, 32}, new int[]{65, 33}, new int[]{66, 20}, new int[]{67, 19}, new int[]{68, 40}, new int[]{69, 41}, new int[]{70, 42}, new int[]{71, 43}, new int[]{72, 44}, new int[]{73, 45}, new int[]{80, 21}, new int[]{81, 1}, new int[]{82, 38}, new int[]{83, 58}, new int[]{84, 25}, new int[]{85, 11}, new int[]{86, 3}, new int[]{87, 4}, new int[]{88, 34}, new int[]{89, 35}, new int[]{128, 25}, new int[]{42, 55}, new int[]{43, 0}, new int[]{44, 54}, new int[]{45, 18}, new int[]{46, 10}, new int[]{47, 62}};
+
+    @Override // k0.lt, y.c
+    public y.f M1(int i2, int[] iArr, float[] fArr, String[] strArr) {
+        return null;
+    }
+
+    @Override // k0.lt
+    public void S2() {
+        mt mtVar = this.f7886a;
+        mtVar.f8306a = null;
+        mtVar.f8310e = 0;
+        mtVar.f8311f = 0;
+        mtVar.f8312g = 1;
+        mtVar.f8314i = 0;
+        mtVar.f8320o = 0;
+    }
+
+    @Override // k0.lt
+    public void U2(byte[] bArr, int i2, int i3) {
+        int[][] iArr;
+        byte b2 = bArr[i2 + 1];
+        if (b2 == 2) {
+            if (nt.a()) {
+                int i4 = bArr[i2 + 2] & 255;
+                this.f12037c = i4;
+                int i5 = 0;
+                while (true) {
+                    iArr = this.f12038d;
+                    if (i5 >= iArr.length) {
+                        break;
+                    }
+                    int i6 = this.f12037c;
+                    if (i6 == iArr[i5][0]) {
+                        if (i6 == 0) {
+                            break;
+                        }
+                        this.f12036b = i5;
+                        break;
+                    }
+                    i5++;
+                }
+                if (i4 != 0) {
+                    if (i5 < iArr.length) {
+                        l0.b0.l0(iArr[i5][1], 0);
+                        return;
+                    }
+                    return;
+                } else {
+                    if (i5 <= iArr.length) {
+                        l0.b0.l0(iArr[this.f12036b][1], 1);
+                        return;
+                    }
+                    return;
+                }
+            }
+            return;
+        }
+        if (b2 == 41) {
+            qt.i(bArr[i2 + 2] & 255, bArr[i2 + 3] & 255, false, 5450);
+            return;
+        }
+        if (b2 == 48) {
+            if (nt.a()) {
+                u0.d.R2(l0.e0.m(bArr[i2 + 5]));
+                int i7 = i2 + 6;
+                u0.d.S2(l0.e0.m(bArr[i7]));
+                u0.d.T2(l0.e0.m(bArr[i7]));
+                u0.d.U2(l0.e0.m(bArr[i2 + 7]));
+                u0.d.D2(l0.e0.m(bArr[i2 + 2]));
+                int i8 = i2 + 3;
+                u0.d.E2(l0.e0.m(bArr[i8]));
+                u0.d.F2(l0.e0.m(bArr[i8]));
+                u0.d.G2(l0.e0.m(bArr[i2 + 4]));
+                return;
+            }
+            return;
+        }
+        if (b2 != 50) {
+            if (b2 == 54 && nt.a()) {
+                l0.f0.a(bArr[i2 + 2]);
+                return;
+            }
+            return;
+        }
+        if (nt.a()) {
+            u0.d.R2(l0.e0.m(bArr[i2 + 3]));
+            int i9 = i2 + 4;
+            u0.d.S2(l0.e0.m(bArr[i9]));
+            u0.d.T2(l0.e0.m(bArr[i9]));
+            u0.d.U2(l0.e0.m(bArr[i2 + 5]));
+            if (i3 > 7) {
+                u0.d.D2(l0.e0.m(bArr[i2 + 6]));
+                int i10 = i2 + 7;
+                u0.d.E2(l0.e0.m(bArr[i10]));
+                u0.d.F2(l0.e0.m(bArr[i10]));
+                u0.d.G2(l0.e0.m(bArr[i2 + 8]));
+            }
+        }
+    }
+
+    @Override // k0.lt
+    public void W2() {
+    }
+
+    @Override // k0.lt, y.c
+    public void Y1(y.b bVar, int i2, int i3) {
+    }
+
+    @Override // k0.lt, y.c
+    public void Z0(int i2, int[] iArr, float[] fArr, String[] strArr) {
+    }
+}

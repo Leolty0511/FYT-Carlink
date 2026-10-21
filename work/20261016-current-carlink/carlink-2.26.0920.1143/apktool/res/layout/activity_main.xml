@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@id/frame" android:background="#ff000000" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <include layout="@layout/video_layout" />
+    <include layout="@layout/connection_layout" />
+    <include layout="@layout/native_layout" />
+    <include layout="@layout/test_layout" />
+</RelativeLayout>

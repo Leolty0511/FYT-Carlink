@@ -1,0 +1,86 @@
+.class public Landroid/app/backup/AbsoluteFileBackupHelper;
+.super Landroid/app/backup/FileBackupHelperBase;
+.source "SourceFile"
+
+# interfaces
+.implements Landroid/app/backup/BackupHelper;
+
+
+# static fields
+.field private static final DEBUG:Z = false
+
+.field private static final TAG:Ljava/lang/String; = "AbsoluteFileBackupHelper"
+
+
+# instance fields
+.field public mContext:Landroid/content/Context;
+
+.field public mFiles:[Ljava/lang/String;
+
+
+# direct methods
+.method public varargs constructor <init>(Landroid/content/Context;[Ljava/lang/String;)V
+    .locals 0
+
+    .line 1
+    invoke-direct {p0, p1}, Landroid/app/backup/FileBackupHelperBase;-><init>(Landroid/content/Context;)V
+
+    .line 2
+    iput-object p1, p0, Landroid/app/backup/AbsoluteFileBackupHelper;->mContext:Landroid/content/Context;
+
+    .line 3
+    iput-object p2, p0, Landroid/app/backup/AbsoluteFileBackupHelper;->mFiles:[Ljava/lang/String;
+
+    return-void
+.end method
+
+
+# virtual methods
+.method public performBackup(Landroid/os/ParcelFileDescriptor;Landroid/app/backup/BackupDataOutput;Landroid/os/ParcelFileDescriptor;)V
+    .locals 1
+
+    .line 1
+    iget-object v0, p0, Landroid/app/backup/AbsoluteFileBackupHelper;->mFiles:[Ljava/lang/String;
+
+    invoke-static {p1, p2, p3, v0, v0}, Landroid/app/backup/FileBackupHelperBase;->performBackup_checked(Landroid/os/ParcelFileDescriptor;Landroid/app/backup/BackupDataOutput;Landroid/os/ParcelFileDescriptor;[Ljava/lang/String;[Ljava/lang/String;)V
+
+    return-void
+.end method
+
+.method public restoreEntity(Landroid/app/backup/BackupDataInputStream;)V
+    .locals 2
+
+    .line 1
+    invoke-virtual {p1}, Landroid/app/backup/BackupDataInputStream;->getKey()Ljava/lang/String;
+
+    move-result-object v0
+
+    .line 2
+    iget-object v1, p0, Landroid/app/backup/AbsoluteFileBackupHelper;->mFiles:[Ljava/lang/String;
+
+    invoke-virtual {p0, v0, v1}, Landroid/app/backup/FileBackupHelperBase;->isKeyInList(Ljava/lang/String;[Ljava/lang/String;)Z
+
+    move-result v1
+
+    if-eqz v1, :cond_0
+
+    .line 3
+    new-instance v1, Ljava/io/File;
+
+    invoke-direct {v1, v0}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+
+    .line 4
+    invoke-virtual {p0, v1, p1}, Landroid/app/backup/FileBackupHelperBase;->writeFile(Ljava/io/File;Landroid/app/backup/BackupDataInputStream;)Z
+
+    :cond_0
+    return-void
+.end method
+
+.method public bridge synthetic writeNewStateDescription(Landroid/os/ParcelFileDescriptor;)V
+    .locals 0
+
+    .line 1
+    invoke-super {p0, p1}, Landroid/app/backup/FileBackupHelperBase;->writeNewStateDescription(Landroid/os/ParcelFileDescriptor;)V
+
+    return-void
+.end method

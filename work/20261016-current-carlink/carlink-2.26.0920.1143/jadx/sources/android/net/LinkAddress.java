@@ -1,0 +1,156 @@
+package android.net;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.system.OsConstants;
+import android.util.Pair;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.InterfaceAddress;
+import java.net.UnknownHostException;
+
+/* JADX INFO: loaded from: classes.dex */
+public class LinkAddress implements Parcelable {
+    public static final Parcelable.Creator<LinkAddress> CREATOR = new Parcelable.Creator<LinkAddress>() { // from class: android.net.LinkAddress.1
+        /* JADX WARN: Can't rename method to resolve collision */
+        @Override // android.os.Parcelable.Creator
+        public LinkAddress createFromParcel(Parcel parcel) {
+            InetAddress byAddress;
+            try {
+                byAddress = InetAddress.getByAddress(parcel.createByteArray());
+            } catch (UnknownHostException unused) {
+                byAddress = null;
+            }
+            return new LinkAddress(byAddress, parcel.readInt(), parcel.readInt(), parcel.readInt());
+        }
+
+        /* JADX WARN: Can't rename method to resolve collision */
+        @Override // android.os.Parcelable.Creator
+        public LinkAddress[] newArray(int i2) {
+            return new LinkAddress[i2];
+        }
+    };
+    private InetAddress address;
+    private int flags;
+    private int prefixLength;
+    private int scope;
+
+    public LinkAddress(InetAddress inetAddress, int i2, int i3, int i4) {
+        init(inetAddress, i2, i3, i4);
+    }
+
+    private void init(InetAddress inetAddress, int i2, int i3, int i4) {
+        if (inetAddress == null || inetAddress.isMulticastAddress() || i2 < 0 || (((inetAddress instanceof Inet4Address) && i2 > 32) || i2 > 128)) {
+            throw new IllegalArgumentException("Bad LinkAddress params " + inetAddress + "/" + i2);
+        }
+        this.address = inetAddress;
+        this.prefixLength = i2;
+        this.flags = i3;
+        this.scope = i4;
+    }
+
+    private boolean isIPv6ULA() {
+        return isIPv6() && (this.address.getAddress()[0] & (-2)) == -4;
+    }
+
+    private static int scopeForUnicastAddress(InetAddress inetAddress) {
+        if (inetAddress.isAnyLocalAddress()) {
+            return OsConstants.RT_SCOPE_HOST;
+        }
+        if (inetAddress.isLoopbackAddress() || inetAddress.isLinkLocalAddress()) {
+            return OsConstants.RT_SCOPE_LINK;
+        }
+        return ((inetAddress instanceof Inet4Address) || !inetAddress.isSiteLocalAddress()) ? OsConstants.RT_SCOPE_UNIVERSE : OsConstants.RT_SCOPE_SITE;
+    }
+
+    @Override // android.os.Parcelable
+    public int describeContents() {
+        return 0;
+    }
+
+    public boolean equals(Object obj) {
+        if (!(obj instanceof LinkAddress)) {
+            return false;
+        }
+        LinkAddress linkAddress = (LinkAddress) obj;
+        return this.address.equals(linkAddress.address) && this.prefixLength == linkAddress.prefixLength && this.flags == linkAddress.flags && this.scope == linkAddress.scope;
+    }
+
+    public InetAddress getAddress() {
+        return this.address;
+    }
+
+    public int getFlags() {
+        return this.flags;
+    }
+
+    public int getNetworkPrefixLength() {
+        return getPrefixLength();
+    }
+
+    public int getPrefixLength() {
+        return this.prefixLength;
+    }
+
+    public int getScope() {
+        return this.scope;
+    }
+
+    public int hashCode() {
+        return (this.scope * 43) + (this.flags * 19) + (this.prefixLength * 11) + this.address.hashCode();
+    }
+
+    public boolean isGlobalPreferred() {
+        if (this.scope == OsConstants.RT_SCOPE_UNIVERSE && !isIPv6ULA()) {
+            int i2 = this.flags;
+            if (((OsConstants.IFA_F_DADFAILED | OsConstants.IFA_F_DEPRECATED) & i2) == 0 && ((OsConstants.IFA_F_TENTATIVE & i2) == 0 || (i2 & OsConstants.IFA_F_OPTIMISTIC) != 0)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isIPv4() {
+        return this.address instanceof Inet4Address;
+    }
+
+    public boolean isIPv6() {
+        return this.address instanceof Inet6Address;
+    }
+
+    public boolean isSameAddressAs(LinkAddress linkAddress) {
+        return this.address.equals(linkAddress.address) && this.prefixLength == linkAddress.prefixLength;
+    }
+
+    public String toString() {
+        return this.address.getHostAddress() + "/" + this.prefixLength;
+    }
+
+    @Override // android.os.Parcelable
+    public void writeToParcel(Parcel parcel, int i2) {
+        parcel.writeByteArray(this.address.getAddress());
+        parcel.writeInt(this.prefixLength);
+        parcel.writeInt(this.flags);
+        parcel.writeInt(this.scope);
+    }
+
+    public LinkAddress(InetAddress inetAddress, int i2) {
+        this(inetAddress, i2, 0, 0);
+        this.scope = scopeForUnicastAddress(inetAddress);
+    }
+
+    public LinkAddress(InterfaceAddress interfaceAddress) {
+        this(interfaceAddress.getAddress(), interfaceAddress.getNetworkPrefixLength());
+    }
+
+    public LinkAddress(String str) {
+        this(str, 0, 0);
+        this.scope = scopeForUnicastAddress(this.address);
+    }
+
+    public LinkAddress(String str, int i2, int i3) {
+        Pair<InetAddress, Integer> ipAndMask = NetworkUtils.parseIpAndMask(str);
+        init(ipAndMask.first, ipAndMask.second.intValue(), i2, i3);
+    }
+}

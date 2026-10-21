@@ -1,0 +1,274 @@
+package android.companion;
+
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.le.ScanFilter;
+import android.bluetooth.le.ScanResult;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.provider.OneTimeUseBuilder;
+import android.text.TextUtils;
+import com.android.internal.util.BitUtils;
+import com.android.internal.util.ObjectUtils;
+import com.android.internal.util.Preconditions;
+import java.nio.ByteOrder;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.regex.Pattern;
+
+/* JADX INFO: loaded from: classes.dex */
+public final class BluetoothLeDeviceFilter implements DeviceFilter<ScanResult> {
+    public static final Parcelable.Creator<BluetoothLeDeviceFilter> CREATOR = new Parcelable.Creator<BluetoothLeDeviceFilter>() { // from class: android.companion.BluetoothLeDeviceFilter.1
+        /* JADX WARN: Can't rename method to resolve collision */
+        @Override // android.os.Parcelable.Creator
+        public BluetoothLeDeviceFilter createFromParcel(Parcel parcel) {
+            Builder scanFilter = new Builder().setNamePattern(BluetoothDeviceFilterUtils.patternFromString(parcel.readString())).setScanFilter((ScanFilter) parcel.readParcelable(null));
+            byte[] bArrCreateByteArray = parcel.createByteArray();
+            byte[] bArrCreateByteArray2 = parcel.createByteArray();
+            if (bArrCreateByteArray != null) {
+                scanFilter.setRawDataFilter(bArrCreateByteArray, bArrCreateByteArray2);
+            }
+            String string = parcel.readString();
+            String string2 = parcel.readString();
+            int i2 = parcel.readInt();
+            int i3 = parcel.readInt();
+            int i4 = parcel.readInt();
+            int i5 = parcel.readInt();
+            boolean z2 = parcel.readBoolean();
+            if (string != null) {
+                if (i2 >= 0) {
+                    scanFilter.setRenameFromBytes(string, string2, i2, i3, z2 ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+                } else {
+                    scanFilter.setRenameFromName(string, string2, i4, i5);
+                }
+            }
+            return scanFilter.build();
+        }
+
+        /* JADX WARN: Can't rename method to resolve collision */
+        @Override // android.os.Parcelable.Creator
+        public BluetoothLeDeviceFilter[] newArray(int i2) {
+            return new BluetoothLeDeviceFilter[i2];
+        }
+    };
+    private static final boolean DEBUG = false;
+    private static final String LOG_TAG = "BluetoothLeDeviceFilter";
+    private static final int RENAME_PREFIX_LENGTH_LIMIT = 10;
+    private final Pattern mNamePattern;
+    private final byte[] mRawDataFilter;
+    private final byte[] mRawDataFilterMask;
+    private final int mRenameBytesFrom;
+    private final int mRenameBytesLength;
+    private final boolean mRenameBytesReverseOrder;
+    private final int mRenameNameFrom;
+    private final int mRenameNameLength;
+    private final String mRenamePrefix;
+    private final String mRenameSuffix;
+    private final ScanFilter mScanFilter;
+
+    public static final class Builder extends OneTimeUseBuilder<BluetoothLeDeviceFilter> {
+        private Pattern mNamePattern;
+        private byte[] mRawDataFilter;
+        private byte[] mRawDataFilterMask;
+        private int mRenameBytesLength;
+        private int mRenameNameLength;
+        private String mRenamePrefix;
+        private String mRenameSuffix;
+        private ScanFilter mScanFilter;
+        private int mRenameBytesFrom = -1;
+        private int mRenameNameFrom = -1;
+        private boolean mRenameBytesReverseOrder = false;
+
+        private void checkRangeNotEmpty(int i2) {
+            Preconditions.checkArgument(i2 > 0, "Range must be non-empty");
+        }
+
+        private void checkRenameNotSet() {
+            Preconditions.checkState(this.mRenamePrefix == null, "Renaming rule can only be set once");
+        }
+
+        private Builder setRename(String str, String str2) {
+            checkNotUsed();
+            Preconditions.checkArgument(TextUtils.length(str) <= BluetoothLeDeviceFilter.getRenamePrefixLengthLimit(), "Prefix is too long");
+            this.mRenamePrefix = str;
+            this.mRenameSuffix = str2;
+            return this;
+        }
+
+        public Builder setNamePattern(Pattern pattern) {
+            checkNotUsed();
+            this.mNamePattern = pattern;
+            return this;
+        }
+
+        public Builder setRawDataFilter(byte[] bArr, byte[] bArr2) {
+            checkNotUsed();
+            Preconditions.checkNotNull(bArr);
+            Preconditions.checkArgument(bArr2 == null || bArr.length == bArr2.length, "Mask and filter should be the same length");
+            this.mRawDataFilter = bArr;
+            this.mRawDataFilterMask = bArr2;
+            return this;
+        }
+
+        public Builder setRenameFromBytes(String str, String str2, int i2, int i3, ByteOrder byteOrder) {
+            checkRenameNotSet();
+            checkRangeNotEmpty(i3);
+            this.mRenameBytesFrom = i2;
+            this.mRenameBytesLength = i3;
+            this.mRenameBytesReverseOrder = byteOrder == ByteOrder.LITTLE_ENDIAN;
+            return setRename(str, str2);
+        }
+
+        public Builder setRenameFromName(String str, String str2, int i2, int i3) {
+            checkRenameNotSet();
+            checkRangeNotEmpty(i3);
+            this.mRenameNameFrom = i2;
+            this.mRenameNameLength = i3;
+            this.mRenameBytesReverseOrder = false;
+            return setRename(str, str2);
+        }
+
+        public Builder setScanFilter(ScanFilter scanFilter) {
+            checkNotUsed();
+            this.mScanFilter = scanFilter;
+            return this;
+        }
+
+        /* JADX WARN: Can't rename method to resolve collision */
+        @Override // android.provider.OneTimeUseBuilder
+        public BluetoothLeDeviceFilter build() {
+            markUsed();
+            return new BluetoothLeDeviceFilter(this.mNamePattern, this.mScanFilter, this.mRawDataFilter, this.mRawDataFilterMask, this.mRenamePrefix, this.mRenameSuffix, this.mRenameBytesFrom, this.mRenameBytesLength, this.mRenameNameFrom, this.mRenameNameLength, this.mRenameBytesReverseOrder);
+        }
+    }
+
+    public static int getRenamePrefixLengthLimit() {
+        return 10;
+    }
+
+    @Override // android.os.Parcelable
+    public int describeContents() {
+        return 0;
+    }
+
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || BluetoothLeDeviceFilter.class != obj.getClass()) {
+            return false;
+        }
+        BluetoothLeDeviceFilter bluetoothLeDeviceFilter = (BluetoothLeDeviceFilter) obj;
+        return this.mRenameBytesFrom == bluetoothLeDeviceFilter.mRenameBytesFrom && this.mRenameBytesLength == bluetoothLeDeviceFilter.mRenameBytesLength && this.mRenameNameFrom == bluetoothLeDeviceFilter.mRenameNameFrom && this.mRenameNameLength == bluetoothLeDeviceFilter.mRenameNameLength && this.mRenameBytesReverseOrder == bluetoothLeDeviceFilter.mRenameBytesReverseOrder && Objects.equals(this.mNamePattern, bluetoothLeDeviceFilter.mNamePattern) && Objects.equals(this.mScanFilter, bluetoothLeDeviceFilter.mScanFilter) && Arrays.equals(this.mRawDataFilter, bluetoothLeDeviceFilter.mRawDataFilter) && Arrays.equals(this.mRawDataFilterMask, bluetoothLeDeviceFilter.mRawDataFilterMask) && Objects.equals(this.mRenamePrefix, bluetoothLeDeviceFilter.mRenamePrefix) && Objects.equals(this.mRenameSuffix, bluetoothLeDeviceFilter.mRenameSuffix);
+    }
+
+    @Override // android.companion.DeviceFilter
+    public int getMediumType() {
+        return 1;
+    }
+
+    public Pattern getNamePattern() {
+        return this.mNamePattern;
+    }
+
+    public byte[] getRawDataFilter() {
+        return this.mRawDataFilter;
+    }
+
+    public byte[] getRawDataFilterMask() {
+        return this.mRawDataFilterMask;
+    }
+
+    public int getRenameBytesFrom() {
+        return this.mRenameBytesFrom;
+    }
+
+    public int getRenameBytesLength() {
+        return this.mRenameBytesLength;
+    }
+
+    public String getRenamePrefix() {
+        return this.mRenamePrefix;
+    }
+
+    public String getRenameSuffix() {
+        return this.mRenameSuffix;
+    }
+
+    public ScanFilter getScanFilter() {
+        return this.mScanFilter;
+    }
+
+    public int hashCode() {
+        return Objects.hash(this.mNamePattern, this.mScanFilter, this.mRawDataFilter, this.mRawDataFilterMask, this.mRenamePrefix, this.mRenameSuffix, Integer.valueOf(this.mRenameBytesFrom), Integer.valueOf(this.mRenameBytesLength), Integer.valueOf(this.mRenameNameFrom), Integer.valueOf(this.mRenameNameLength), Boolean.valueOf(this.mRenameBytesReverseOrder));
+    }
+
+    public boolean isRenameBytesReverseOrder() {
+        return this.mRenameBytesReverseOrder;
+    }
+
+    public String toString() {
+        return "BluetoothLEDeviceFilter{mNamePattern=" + this.mNamePattern + ", mScanFilter=" + this.mScanFilter + ", mRawDataFilter=" + Arrays.toString(this.mRawDataFilter) + ", mRawDataFilterMask=" + Arrays.toString(this.mRawDataFilterMask) + ", mRenamePrefix='" + this.mRenamePrefix + "', mRenameSuffix='" + this.mRenameSuffix + "', mRenameBytesFrom=" + this.mRenameBytesFrom + ", mRenameBytesLength=" + this.mRenameBytesLength + ", mRenameNameFrom=" + this.mRenameNameFrom + ", mRenameNameLength=" + this.mRenameNameLength + ", mRenameBytesReverseOrder=" + this.mRenameBytesReverseOrder + '}';
+    }
+
+    @Override // android.os.Parcelable
+    public void writeToParcel(Parcel parcel, int i2) {
+        parcel.writeString(BluetoothDeviceFilterUtils.patternToString(getNamePattern()));
+        parcel.writeParcelable(this.mScanFilter, i2);
+        parcel.writeByteArray(this.mRawDataFilter);
+        parcel.writeByteArray(this.mRawDataFilterMask);
+        parcel.writeString(this.mRenamePrefix);
+        parcel.writeString(this.mRenameSuffix);
+        parcel.writeInt(this.mRenameBytesFrom);
+        parcel.writeInt(this.mRenameBytesLength);
+        parcel.writeInt(this.mRenameNameFrom);
+        parcel.writeInt(this.mRenameNameLength);
+        parcel.writeBoolean(this.mRenameBytesReverseOrder);
+    }
+
+    private BluetoothLeDeviceFilter(Pattern pattern, ScanFilter scanFilter, byte[] bArr, byte[] bArr2, String str, String str2, int i2, int i3, int i4, int i5, boolean z2) {
+        this.mNamePattern = pattern;
+        this.mScanFilter = (ScanFilter) ObjectUtils.firstNotNull(scanFilter, ScanFilter.EMPTY);
+        this.mRawDataFilter = bArr;
+        this.mRawDataFilterMask = bArr2;
+        this.mRenamePrefix = str;
+        this.mRenameSuffix = str2;
+        this.mRenameBytesFrom = i2;
+        this.mRenameBytesLength = i3;
+        this.mRenameNameFrom = i4;
+        this.mRenameNameLength = i5;
+        this.mRenameBytesReverseOrder = z2;
+    }
+
+    @Override // android.companion.DeviceFilter
+    public String getDeviceDisplayName(ScanResult scanResult) {
+        if (this.mRenameBytesFrom < 0 && this.mRenameNameFrom < 0) {
+            return BluetoothDeviceFilterUtils.getDeviceDisplayNameInternal(scanResult.getDevice());
+        }
+        StringBuilder sb = new StringBuilder(TextUtils.emptyIfNull(this.mRenamePrefix));
+        if (this.mRenameBytesFrom >= 0) {
+            byte[] bytes = scanResult.getScanRecord().getBytes();
+            int i2 = this.mRenameBytesFrom;
+            int i3 = (this.mRenameBytesLength + i2) - 1;
+            boolean z2 = this.mRenameBytesReverseOrder;
+            int i4 = z2 ? -1 : 1;
+            for (int i5 = z2 ? i3 : i2; i2 <= i5 && i5 <= i3; i5 += i4) {
+                sb.append(Byte.toHexString(bytes[i5], true));
+            }
+        } else {
+            String deviceDisplayNameInternal = BluetoothDeviceFilterUtils.getDeviceDisplayNameInternal(scanResult.getDevice());
+            int i6 = this.mRenameNameFrom;
+            sb.append(deviceDisplayNameInternal.substring(i6, this.mRenameNameLength + i6));
+        }
+        sb.append(TextUtils.emptyIfNull(this.mRenameSuffix));
+        return sb.toString();
+    }
+
+    @Override // android.companion.DeviceFilter
+    public boolean matches(ScanResult scanResult) {
+        return matches(scanResult.getDevice()) && (this.mRawDataFilter == null || BitUtils.maskedEquals(scanResult.getScanRecord().getBytes(), this.mRawDataFilter, this.mRawDataFilterMask));
+    }
+
+    private boolean matches(BluetoothDevice bluetoothDevice) {
+        return BluetoothDeviceFilterUtils.matches(getScanFilter(), bluetoothDevice) && BluetoothDeviceFilterUtils.matchesName(getNamePattern(), bluetoothDevice);
+    }
+}

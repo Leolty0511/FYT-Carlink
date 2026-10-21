@@ -1,0 +1,73 @@
+.class public interface abstract Landroid/os/IDeviceIdleController;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Landroid/os/IInterface;
+
+
+# annotations
+.annotation system Ldalvik/annotation/MemberClasses;
+    value = {
+        Landroid/os/IDeviceIdleController$Stub;
+    }
+.end annotation
+
+
+# virtual methods
+.method public abstract addPowerSaveTempWhitelistApp(Ljava/lang/String;JILjava/lang/String;)V
+.end method
+
+.method public abstract addPowerSaveTempWhitelistAppForMms(Ljava/lang/String;ILjava/lang/String;)J
+.end method
+
+.method public abstract addPowerSaveTempWhitelistAppForSms(Ljava/lang/String;ILjava/lang/String;)J
+.end method
+
+.method public abstract addPowerSaveWhitelistApp(Ljava/lang/String;)V
+.end method
+
+.method public abstract exitIdle(Ljava/lang/String;)V
+.end method
+
+.method public abstract getAppIdTempWhitelist()[I
+.end method
+
+.method public abstract getAppIdUserWhitelist()[I
+.end method
+
+.method public abstract getAppIdWhitelist()[I
+.end method
+
+.method public abstract getAppIdWhitelistExceptIdle()[I
+.end method
+
+.method public abstract getFullPowerWhitelist()[Ljava/lang/String;
+.end method
+
+.method public abstract getFullPowerWhitelistExceptIdle()[Ljava/lang/String;
+.end method
+
+.method public abstract getSystemPowerWhitelist()[Ljava/lang/String;
+.end method
+
+.method public abstract getSystemPowerWhitelistExceptIdle()[Ljava/lang/String;
+.end method
+
+.method public abstract getUserPowerWhitelist()[Ljava/lang/String;
+.end method
+
+.method public abstract isPowerSaveWhitelistApp(Ljava/lang/String;)Z
+.end method
+
+.method public abstract isPowerSaveWhitelistExceptIdleApp(Ljava/lang/String;)Z
+.end method
+
+.method public abstract registerMaintenanceActivityListener(Landroid/os/IMaintenanceActivityListener;)Z
+.end method
+
+.method public abstract removePowerSaveWhitelistApp(Ljava/lang/String;)V
+.end method
+
+.method public abstract unregisterMaintenanceActivityListener(Landroid/os/IMaintenanceActivityListener;)V
+.end method

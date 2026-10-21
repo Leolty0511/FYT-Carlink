@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true" android:left="-10.0dip" android:top="-2.0dip" android:right="-10.0dip">
+        <shape>
+            <solid android:color="#33161617" />
+            <stroke android:width="1.0px" android:color="#66d8d5d5" />
+        </shape>
+    </item>
+    <item android:left="-10.0dip" android:top="-2.0dip" android:right="-10.0dip">
+        <shape>
+            <solid android:color="#00191c1e" />
+            <stroke android:width="1.0px" android:color="#66d8d5d5" />
+        </shape>
+    </item>
+</layer-list>

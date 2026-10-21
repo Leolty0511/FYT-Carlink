@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">服务</string>
+    <string name="flash_test_open">车载设置-工厂设置-应用读写Flash次数开关已打开</string>
+    <string name="ic_error">加密IC认证失败 CODE :</string>
+    <string name="image_conve_error">视频转换模组验证失败!!</string>
+    <string name="loud_off">LOUD已关闭</string>
+    <string name="loud_on">LOUD已打开</string>
+    <string name="mcu_match_old">MCU版本太旧，请重新升级MCU软件</string>
+    <string name="mcu_need_update">MCU需要升级!</string>
+    <string name="non_vertocal_screen">非竖屏平台</string>
+    <string name="platform_and_mcu_match_error">MCU和硬件平台不匹配，请重新升级正确的软件!</string>
+    <string name="please_reboot">请重启系统!</string>
+    <string name="ui_and_mcu_match_error">UI和MCU不匹配，请重新升级正确的软件！</string>
+    <string name="ui_and_mcu_match_error_360">使用的MCU软件与360平台软件不符!</string>
+    <string name="upgrade_mcu">请升级MCU正式版软件！</string>
+</resources>

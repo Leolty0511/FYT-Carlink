@@ -1,0 +1,338 @@
+.class public Lk0/u8$g;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Ljava/lang/Runnable;
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Lk0/u8;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x1
+    name = null
+.end annotation
+
+
+# instance fields
+.field public final synthetic a:Lk0/u8;
+
+
+# direct methods
+.method public constructor <init>(Lk0/u8;)V
+    .locals 0
+
+    .line 1
+    iput-object p1, p0, Lk0/u8$g;->a:Lk0/u8;
+
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    return-void
+.end method
+
+
+# virtual methods
+.method public run()V
+    .locals 20
+
+    .line 1
+    new-instance v0, Landroid/text/format/Time;
+
+    invoke-static {}, Landroid/text/format/Time;->getCurrentTimezone()Ljava/lang/String;
+
+    move-result-object v1
+
+    invoke-direct {v0, v1}, Landroid/text/format/Time;-><init>(Ljava/lang/String;)V
+
+    .line 2
+    invoke-virtual {v0}, Landroid/text/format/Time;->setToNow()V
+
+    .line 3
+    invoke-static {}, Lapp/App;->c()Lapp/App;
+
+    move-result-object v1
+
+    invoke-static {v1}, Landroid/text/format/DateFormat;->is24HourFormat(Landroid/content/Context;)Z
+
+    move-result v1
+
+    const/4 v2, 0x1
+
+    xor-int/2addr v1, v2
+
+    .line 4
+    iget v3, v0, Landroid/text/format/Time;->year:I
+
+    add-int/lit16 v3, v3, -0x7d0
+
+    int-to-byte v3, v3
+
+    .line 5
+    iget v4, v0, Landroid/text/format/Time;->month:I
+
+    add-int/2addr v4, v2
+
+    int-to-byte v4, v4
+
+    .line 6
+    iget v5, v0, Landroid/text/format/Time;->monthDay:I
+
+    int-to-byte v5, v5
+
+    .line 7
+    iget v6, v0, Landroid/text/format/Time;->hour:I
+
+    int-to-byte v6, v6
+
+    .line 8
+    iget v7, v0, Landroid/text/format/Time;->minute:I
+
+    int-to-byte v7, v7
+
+    .line 9
+    iget v0, v0, Landroid/text/format/Time;->second:I
+
+    int-to-byte v0, v0
+
+    .line 10
+    sget v8, Lk0/nt;->a:I
+
+    const v9, 0x60109
+
+    const/4 v10, 0x4
+
+    const/4 v11, 0x3
+
+    const/16 v12, 0xe3
+
+    const/4 v13, 0x5
+
+    const/4 v14, 0x2
+
+    const/4 v15, 0x0
+
+    const/16 v16, 0x7
+
+    if-ne v8, v9, :cond_0
+
+    and-int/lit8 v0, v1, 0x1
+
+    shl-int/lit8 v0, v0, 0x7
+
+    and-int/lit8 v1, v6, 0x1f
+
+    or-int/2addr v0, v1
+
+    int-to-byte v0, v0
+
+    new-array v1, v13, [I
+
+    aput v12, v1, v15
+
+    const/16 v3, -0x1f
+
+    aput v3, v1, v2
+
+    aput v14, v1, v14
+
+    aput v0, v1, v11
+
+    aput v7, v1, v10
+
+    .line 11
+    invoke-static {v1}, Lz/k;->s([I)V
+
+    goto/16 :goto_1
+
+    :cond_0
+    const v9, 0x50109
+
+    const/16 v17, -0x7d
+
+    const/16 v13, 0xa
+
+    const/16 v10, 0x9
+
+    const/16 v18, 0x8
+
+    const/16 v19, 0x6
+
+    if-ne v8, v9, :cond_1
+
+    new-array v0, v13, [I
+
+    aput v12, v0, v15
+
+    aput v17, v0, v2
+
+    aput v16, v0, v14
+
+    aput v3, v0, v11
+
+    const/4 v2, 0x4
+
+    aput v4, v0, v2
+
+    const/4 v2, 0x5
+
+    aput v5, v0, v2
+
+    aput v1, v0, v19
+
+    aput v6, v0, v16
+
+    aput v7, v0, v18
+
+    aput v15, v0, v10
+
+    .line 12
+    invoke-static {v0}, Lz/k;->s([I)V
+
+    goto/16 :goto_1
+
+    :cond_1
+    const v9, 0x90109
+
+    if-eq v8, v9, :cond_3
+
+    const v9, 0xa0109
+
+    if-eq v8, v9, :cond_3
+
+    const v9, 0xb0109
+
+    if-eq v8, v9, :cond_3
+
+    const v9, 0x150109
+
+    if-eq v8, v9, :cond_3
+
+    const v9, 0xd0109
+
+    if-eq v8, v9, :cond_3
+
+    const v9, 0xe0109
+
+    if-eq v8, v9, :cond_3
+
+    const v9, 0xf0109
+
+    if-eq v8, v9, :cond_3
+
+    const v9, 0x100109
+
+    if-eq v8, v9, :cond_3
+
+    const v9, 0x120109
+
+    if-eq v8, v9, :cond_3
+
+    const v9, 0x130109
+
+    if-eq v8, v9, :cond_3
+
+    const v9, 0x160109
+
+    if-eq v8, v9, :cond_3
+
+    const v9, 0x140109
+
+    if-eq v8, v9, :cond_3
+
+    const v9, 0x190109
+
+    if-eq v8, v9, :cond_3
+
+    const v9, 0x1c0109
+
+    if-eq v8, v9, :cond_3
+
+    const v9, 0x1d0109
+
+    if-eq v8, v9, :cond_3
+
+    const v9, 0x1a0109
+
+    if-ne v8, v9, :cond_2
+
+    goto :goto_0
+
+    :cond_2
+    new-array v0, v13, [I
+
+    aput v12, v0, v15
+
+    aput v17, v0, v2
+
+    aput v16, v0, v14
+
+    aput v3, v0, v11
+
+    const/4 v1, 0x4
+
+    aput v4, v0, v1
+
+    const/4 v1, 0x5
+
+    aput v15, v0, v1
+
+    aput v5, v0, v19
+
+    aput v6, v0, v16
+
+    aput v7, v0, v18
+
+    aput v15, v0, v10
+
+    .line 13
+    invoke-static {v0}, Lz/k;->s([I)V
+
+    goto :goto_1
+
+    :cond_3
+    :goto_0
+    new-array v8, v10, [I
+
+    aput v12, v8, v15
+
+    const/16 v9, -0x5a
+
+    aput v9, v8, v2
+
+    aput v19, v8, v14
+
+    aput v3, v8, v11
+
+    const/4 v2, 0x4
+
+    aput v4, v8, v2
+
+    const/4 v2, 0x5
+
+    aput v5, v8, v2
+
+    shl-int/lit8 v1, v1, 0x7
+
+    and-int/lit16 v1, v1, 0x80
+
+    int-to-byte v1, v1
+
+    and-int/lit8 v2, v6, 0x7f
+
+    or-int/2addr v1, v2
+
+    aput v1, v8, v19
+
+    aput v7, v8, v16
+
+    aput v0, v8, v18
+
+    .line 14
+    invoke-static {v8}, Lz/k;->s([I)V
+
+    :goto_1
+    return-void
+.end method

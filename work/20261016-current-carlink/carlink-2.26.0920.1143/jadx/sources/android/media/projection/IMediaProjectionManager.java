@@ -1,0 +1,236 @@
+package android.media.projection;
+
+import android.os.Binder;
+import android.os.IBinder;
+import android.os.IInterface;
+import android.os.Parcel;
+
+/* JADX INFO: loaded from: classes.dex */
+public interface IMediaProjectionManager extends IInterface {
+
+    public static abstract class Stub extends Binder implements IMediaProjectionManager {
+        private static final String DESCRIPTOR = "android.media.projection.IMediaProjectionManager";
+        static final int TRANSACTION_addCallback = 6;
+        static final int TRANSACTION_createProjection = 2;
+        static final int TRANSACTION_getActiveProjectionInfo = 4;
+        static final int TRANSACTION_hasProjectionPermission = 1;
+        static final int TRANSACTION_isValidMediaProjection = 3;
+        static final int TRANSACTION_removeCallback = 7;
+        static final int TRANSACTION_stopActiveProjection = 5;
+
+        public static class Proxy implements IMediaProjectionManager {
+            private IBinder mRemote;
+
+            public Proxy(IBinder iBinder) {
+                this.mRemote = iBinder;
+            }
+
+            @Override // android.media.projection.IMediaProjectionManager
+            public void addCallback(IMediaProjectionWatcherCallback iMediaProjectionWatcherCallback) {
+                Parcel parcelObtain = Parcel.obtain();
+                Parcel parcelObtain2 = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    parcelObtain.writeStrongBinder(iMediaProjectionWatcherCallback != null ? iMediaProjectionWatcherCallback.asBinder() : null);
+                    this.mRemote.transact(6, parcelObtain, parcelObtain2, 0);
+                    parcelObtain2.readException();
+                } finally {
+                    parcelObtain2.recycle();
+                    parcelObtain.recycle();
+                }
+            }
+
+            @Override // android.os.IInterface
+            public IBinder asBinder() {
+                return this.mRemote;
+            }
+
+            @Override // android.media.projection.IMediaProjectionManager
+            public IMediaProjection createProjection(int i2, String str, int i3, boolean z2) {
+                Parcel parcelObtain = Parcel.obtain();
+                Parcel parcelObtain2 = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    parcelObtain.writeInt(i2);
+                    parcelObtain.writeString(str);
+                    parcelObtain.writeInt(i3);
+                    parcelObtain.writeInt(z2 ? 1 : 0);
+                    this.mRemote.transact(2, parcelObtain, parcelObtain2, 0);
+                    parcelObtain2.readException();
+                    return IMediaProjection.Stub.asInterface(parcelObtain2.readStrongBinder());
+                } finally {
+                    parcelObtain2.recycle();
+                    parcelObtain.recycle();
+                }
+            }
+
+            @Override // android.media.projection.IMediaProjectionManager
+            public MediaProjectionInfo getActiveProjectionInfo() {
+                Parcel parcelObtain = Parcel.obtain();
+                Parcel parcelObtain2 = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    this.mRemote.transact(4, parcelObtain, parcelObtain2, 0);
+                    parcelObtain2.readException();
+                    return parcelObtain2.readInt() != 0 ? MediaProjectionInfo.CREATOR.createFromParcel(parcelObtain2) : null;
+                } finally {
+                    parcelObtain2.recycle();
+                    parcelObtain.recycle();
+                }
+            }
+
+            public String getInterfaceDescriptor() {
+                return Stub.DESCRIPTOR;
+            }
+
+            @Override // android.media.projection.IMediaProjectionManager
+            public boolean hasProjectionPermission(int i2, String str) {
+                Parcel parcelObtain = Parcel.obtain();
+                Parcel parcelObtain2 = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    parcelObtain.writeInt(i2);
+                    parcelObtain.writeString(str);
+                    this.mRemote.transact(1, parcelObtain, parcelObtain2, 0);
+                    parcelObtain2.readException();
+                    return parcelObtain2.readInt() != 0;
+                } finally {
+                    parcelObtain2.recycle();
+                    parcelObtain.recycle();
+                }
+            }
+
+            @Override // android.media.projection.IMediaProjectionManager
+            public boolean isValidMediaProjection(IMediaProjection iMediaProjection) {
+                Parcel parcelObtain = Parcel.obtain();
+                Parcel parcelObtain2 = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    parcelObtain.writeStrongBinder(iMediaProjection != null ? iMediaProjection.asBinder() : null);
+                    this.mRemote.transact(3, parcelObtain, parcelObtain2, 0);
+                    parcelObtain2.readException();
+                    return parcelObtain2.readInt() != 0;
+                } finally {
+                    parcelObtain2.recycle();
+                    parcelObtain.recycle();
+                }
+            }
+
+            @Override // android.media.projection.IMediaProjectionManager
+            public void removeCallback(IMediaProjectionWatcherCallback iMediaProjectionWatcherCallback) {
+                Parcel parcelObtain = Parcel.obtain();
+                Parcel parcelObtain2 = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    parcelObtain.writeStrongBinder(iMediaProjectionWatcherCallback != null ? iMediaProjectionWatcherCallback.asBinder() : null);
+                    this.mRemote.transact(7, parcelObtain, parcelObtain2, 0);
+                    parcelObtain2.readException();
+                } finally {
+                    parcelObtain2.recycle();
+                    parcelObtain.recycle();
+                }
+            }
+
+            @Override // android.media.projection.IMediaProjectionManager
+            public void stopActiveProjection() {
+                Parcel parcelObtain = Parcel.obtain();
+                Parcel parcelObtain2 = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    this.mRemote.transact(5, parcelObtain, parcelObtain2, 0);
+                    parcelObtain2.readException();
+                } finally {
+                    parcelObtain2.recycle();
+                    parcelObtain.recycle();
+                }
+            }
+        }
+
+        public Stub() {
+            attachInterface(this, DESCRIPTOR);
+        }
+
+        public static IMediaProjectionManager asInterface(IBinder iBinder) {
+            if (iBinder == null) {
+                return null;
+            }
+            IInterface iInterfaceQueryLocalInterface = iBinder.queryLocalInterface(DESCRIPTOR);
+            return (iInterfaceQueryLocalInterface == null || !(iInterfaceQueryLocalInterface instanceof IMediaProjectionManager)) ? new Proxy(iBinder) : (IMediaProjectionManager) iInterfaceQueryLocalInterface;
+        }
+
+        @Override // android.os.IInterface
+        public IBinder asBinder() {
+            return this;
+        }
+
+        @Override // android.os.Binder
+        public boolean onTransact(int i2, Parcel parcel, Parcel parcel2, int i3) {
+            if (i2 == 1598968902) {
+                parcel2.writeString(DESCRIPTOR);
+                return true;
+            }
+            switch (i2) {
+                case 1:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    boolean zHasProjectionPermission = hasProjectionPermission(parcel.readInt(), parcel.readString());
+                    parcel2.writeNoException();
+                    parcel2.writeInt(zHasProjectionPermission ? 1 : 0);
+                    return true;
+                case 2:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    IMediaProjection iMediaProjectionCreateProjection = createProjection(parcel.readInt(), parcel.readString(), parcel.readInt(), parcel.readInt() != 0);
+                    parcel2.writeNoException();
+                    parcel2.writeStrongBinder(iMediaProjectionCreateProjection != null ? iMediaProjectionCreateProjection.asBinder() : null);
+                    return true;
+                case 3:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    boolean zIsValidMediaProjection = isValidMediaProjection(IMediaProjection.Stub.asInterface(parcel.readStrongBinder()));
+                    parcel2.writeNoException();
+                    parcel2.writeInt(zIsValidMediaProjection ? 1 : 0);
+                    return true;
+                case 4:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    MediaProjectionInfo activeProjectionInfo = getActiveProjectionInfo();
+                    parcel2.writeNoException();
+                    if (activeProjectionInfo != null) {
+                        parcel2.writeInt(1);
+                        activeProjectionInfo.writeToParcel(parcel2, 1);
+                    } else {
+                        parcel2.writeInt(0);
+                    }
+                    return true;
+                case 5:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    stopActiveProjection();
+                    parcel2.writeNoException();
+                    return true;
+                case 6:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    addCallback(IMediaProjectionWatcherCallback.Stub.asInterface(parcel.readStrongBinder()));
+                    parcel2.writeNoException();
+                    return true;
+                case 7:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    removeCallback(IMediaProjectionWatcherCallback.Stub.asInterface(parcel.readStrongBinder()));
+                    parcel2.writeNoException();
+                    return true;
+                default:
+                    return super.onTransact(i2, parcel, parcel2, i3);
+            }
+        }
+    }
+
+    void addCallback(IMediaProjectionWatcherCallback iMediaProjectionWatcherCallback);
+
+    IMediaProjection createProjection(int i2, String str, int i3, boolean z2);
+
+    MediaProjectionInfo getActiveProjectionInfo();
+
+    boolean hasProjectionPermission(int i2, String str);
+
+    boolean isValidMediaProjection(IMediaProjection iMediaProjection);
+
+    void removeCallback(IMediaProjectionWatcherCallback iMediaProjectionWatcherCallback);
+
+    void stopActiveProjection();
+}

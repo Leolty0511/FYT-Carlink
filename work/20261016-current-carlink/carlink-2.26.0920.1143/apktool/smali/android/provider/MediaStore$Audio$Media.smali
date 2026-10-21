@@ -1,0 +1,254 @@
+.class public final Landroid/provider/MediaStore$Audio$Media;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Landroid/provider/MediaStore$Audio$AudioColumns;
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Landroid/provider/MediaStore$Audio;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x19
+    name = "Media"
+.end annotation
+
+
+# static fields
+.field public static final CONTENT_TYPE:Ljava/lang/String; = "vnd.android.cursor.dir/audio"
+
+.field public static final DEFAULT_SORT_ORDER:Ljava/lang/String; = "title_key"
+
+.field public static final ENTRY_CONTENT_TYPE:Ljava/lang/String; = "vnd.android.cursor.item/audio"
+
+.field public static final EXTERNAL_CONTENT_URI:Landroid/net/Uri;
+
+.field private static final EXTERNAL_PATHS:[Ljava/lang/String;
+
+.field public static final EXTRA_MAX_BYTES:Ljava/lang/String; = "android.provider.MediaStore.extra.MAX_BYTES"
+
+.field public static final INTERNAL_CONTENT_URI:Landroid/net/Uri;
+
+.field public static final RECORD_SOUND_ACTION:Ljava/lang/String; = "android.provider.MediaStore.RECORD_SOUND"
+
+
+# direct methods
+.method public static constructor <clinit>()V
+    .locals 2
+
+    .line 1
+    const-string v0, "SECONDARY_STORAGE"
+
+    .line 2
+    .line 3
+    invoke-static {v0}, Ljava/lang/System;->getenv(Ljava/lang/String;)Ljava/lang/String;
+
+    .line 4
+    .line 5
+    .line 6
+    move-result-object v0
+
+    .line 7
+    if-eqz v0, :cond_0
+
+    .line 8
+    .line 9
+    const-string v1, ":"
+
+    .line 10
+    .line 11
+    invoke-virtual {v0, v1}, Ljava/lang/String;->split(Ljava/lang/String;)[Ljava/lang/String;
+
+    .line 12
+    .line 13
+    .line 14
+    move-result-object v0
+
+    .line 15
+    sput-object v0, Landroid/provider/MediaStore$Audio$Media;->EXTERNAL_PATHS:[Ljava/lang/String;
+
+    .line 16
+    .line 17
+    goto :goto_0
+
+    .line 18
+    :cond_0
+    const/4 v0, 0x0
+
+    .line 19
+    new-array v0, v0, [Ljava/lang/String;
+
+    .line 20
+    .line 21
+    sput-object v0, Landroid/provider/MediaStore$Audio$Media;->EXTERNAL_PATHS:[Ljava/lang/String;
+
+    .line 22
+    .line 23
+    :goto_0
+    const-string/jumbo v0, "internal"
+
+    .line 24
+    .line 25
+    .line 26
+    invoke-static {v0}, Landroid/provider/MediaStore$Audio$Media;->getContentUri(Ljava/lang/String;)Landroid/net/Uri;
+
+    .line 27
+    .line 28
+    .line 29
+    move-result-object v0
+
+    .line 30
+    sput-object v0, Landroid/provider/MediaStore$Audio$Media;->INTERNAL_CONTENT_URI:Landroid/net/Uri;
+
+    .line 31
+    .line 32
+    const-string v0, "external"
+
+    .line 33
+    .line 34
+    invoke-static {v0}, Landroid/provider/MediaStore$Audio$Media;->getContentUri(Ljava/lang/String;)Landroid/net/Uri;
+
+    .line 35
+    .line 36
+    .line 37
+    move-result-object v0
+
+    .line 38
+    sput-object v0, Landroid/provider/MediaStore$Audio$Media;->EXTERNAL_CONTENT_URI:Landroid/net/Uri;
+
+    .line 39
+    .line 40
+    return-void
+.end method
+
+.method public constructor <init>()V
+    .locals 0
+
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    return-void
+.end method
+
+.method public static getContentUri(Ljava/lang/String;)Landroid/net/Uri;
+    .locals 2
+
+    new-instance v0, Ljava/lang/StringBuilder;
+
+    const-string v1, "content://media/"
+
+    invoke-direct {v0, v1}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V
+
+    invoke-virtual {v0, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    const-string p0, "/audio/media"
+
+    invoke-virtual {v0, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object p0
+
+    invoke-static {p0}, Landroid/net/Uri;->parse(Ljava/lang/String;)Landroid/net/Uri;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method public static getContentUriForPath(Ljava/lang/String;)Landroid/net/Uri;
+    .locals 4
+
+    .line 1
+    sget-object v0, Landroid/provider/MediaStore$Audio$Media;->EXTERNAL_PATHS:[Ljava/lang/String;
+
+    .line 2
+    .line 3
+    array-length v1, v0
+
+    .line 4
+    const/4 v2, 0x0
+
+    .line 5
+    :goto_0
+    if-ge v2, v1, :cond_1
+
+    .line 6
+    .line 7
+    aget-object v3, v0, v2
+
+    .line 8
+    .line 9
+    invoke-virtual {p0, v3}, Ljava/lang/String;->startsWith(Ljava/lang/String;)Z
+
+    .line 10
+    .line 11
+    .line 12
+    move-result v3
+
+    .line 13
+    if-eqz v3, :cond_0
+
+    .line 14
+    .line 15
+    sget-object p0, Landroid/provider/MediaStore$Audio$Media;->EXTERNAL_CONTENT_URI:Landroid/net/Uri;
+
+    .line 16
+    .line 17
+    return-object p0
+
+    .line 18
+    :cond_0
+    add-int/lit8 v2, v2, 0x1
+
+    .line 19
+    .line 20
+    goto :goto_0
+
+    .line 21
+    :cond_1
+    invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
+
+    .line 22
+    .line 23
+    .line 24
+    move-result-object v0
+
+    .line 25
+    invoke-virtual {v0}, Ljava/io/File;->getPath()Ljava/lang/String;
+
+    .line 26
+    .line 27
+    .line 28
+    move-result-object v0
+
+    .line 29
+    invoke-virtual {p0, v0}, Ljava/lang/String;->startsWith(Ljava/lang/String;)Z
+
+    .line 30
+    .line 31
+    .line 32
+    move-result p0
+
+    .line 33
+    if-eqz p0, :cond_2
+
+    .line 34
+    .line 35
+    sget-object p0, Landroid/provider/MediaStore$Audio$Media;->EXTERNAL_CONTENT_URI:Landroid/net/Uri;
+
+    .line 36
+    .line 37
+    goto :goto_1
+
+    .line 38
+    :cond_2
+    sget-object p0, Landroid/provider/MediaStore$Audio$Media;->INTERNAL_CONTENT_URI:Landroid/net/Uri;
+
+    .line 39
+    .line 40
+    :goto_1
+    return-object p0
+.end method

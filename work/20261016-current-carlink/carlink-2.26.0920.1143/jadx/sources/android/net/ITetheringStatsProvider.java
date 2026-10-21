@@ -1,0 +1,114 @@
+package android.net;
+
+import android.os.Binder;
+import android.os.IBinder;
+import android.os.IInterface;
+import android.os.Parcel;
+
+/* JADX INFO: loaded from: classes.dex */
+public interface ITetheringStatsProvider extends IInterface {
+    public static final int QUOTA_UNLIMITED = -1;
+
+    public static abstract class Stub extends Binder implements ITetheringStatsProvider {
+        private static final String DESCRIPTOR = "android.net.ITetheringStatsProvider";
+        static final int TRANSACTION_getTetherStats = 1;
+        static final int TRANSACTION_setInterfaceQuota = 2;
+
+        public static class Proxy implements ITetheringStatsProvider {
+            private IBinder mRemote;
+
+            public Proxy(IBinder iBinder) {
+                this.mRemote = iBinder;
+            }
+
+            @Override // android.os.IInterface
+            public IBinder asBinder() {
+                return this.mRemote;
+            }
+
+            public String getInterfaceDescriptor() {
+                return Stub.DESCRIPTOR;
+            }
+
+            @Override // android.net.ITetheringStatsProvider
+            public NetworkStats getTetherStats(int i2) {
+                Parcel parcelObtain = Parcel.obtain();
+                Parcel parcelObtain2 = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    parcelObtain.writeInt(i2);
+                    this.mRemote.transact(1, parcelObtain, parcelObtain2, 0);
+                    parcelObtain2.readException();
+                    return parcelObtain2.readInt() != 0 ? NetworkStats.CREATOR.createFromParcel(parcelObtain2) : null;
+                } finally {
+                    parcelObtain2.recycle();
+                    parcelObtain.recycle();
+                }
+            }
+
+            @Override // android.net.ITetheringStatsProvider
+            public void setInterfaceQuota(String str, long j2) {
+                Parcel parcelObtain = Parcel.obtain();
+                Parcel parcelObtain2 = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    parcelObtain.writeString(str);
+                    parcelObtain.writeLong(j2);
+                    this.mRemote.transact(2, parcelObtain, parcelObtain2, 0);
+                    parcelObtain2.readException();
+                } finally {
+                    parcelObtain2.recycle();
+                    parcelObtain.recycle();
+                }
+            }
+        }
+
+        public Stub() {
+            attachInterface(this, DESCRIPTOR);
+        }
+
+        public static ITetheringStatsProvider asInterface(IBinder iBinder) {
+            if (iBinder == null) {
+                return null;
+            }
+            IInterface iInterfaceQueryLocalInterface = iBinder.queryLocalInterface(DESCRIPTOR);
+            return (iInterfaceQueryLocalInterface == null || !(iInterfaceQueryLocalInterface instanceof ITetheringStatsProvider)) ? new Proxy(iBinder) : (ITetheringStatsProvider) iInterfaceQueryLocalInterface;
+        }
+
+        @Override // android.os.IInterface
+        public IBinder asBinder() {
+            return this;
+        }
+
+        @Override // android.os.Binder
+        public boolean onTransact(int i2, Parcel parcel, Parcel parcel2, int i3) {
+            if (i2 == 1) {
+                parcel.enforceInterface(DESCRIPTOR);
+                NetworkStats tetherStats = getTetherStats(parcel.readInt());
+                parcel2.writeNoException();
+                if (tetherStats != null) {
+                    parcel2.writeInt(1);
+                    tetherStats.writeToParcel(parcel2, 1);
+                } else {
+                    parcel2.writeInt(0);
+                }
+                return true;
+            }
+            if (i2 != 2) {
+                if (i2 != 1598968902) {
+                    return super.onTransact(i2, parcel, parcel2, i3);
+                }
+                parcel2.writeString(DESCRIPTOR);
+                return true;
+            }
+            parcel.enforceInterface(DESCRIPTOR);
+            setInterfaceQuota(parcel.readString(), parcel.readLong());
+            parcel2.writeNoException();
+            return true;
+        }
+    }
+
+    NetworkStats getTetherStats(int i2);
+
+    void setInterfaceQuota(String str, long j2);
+}

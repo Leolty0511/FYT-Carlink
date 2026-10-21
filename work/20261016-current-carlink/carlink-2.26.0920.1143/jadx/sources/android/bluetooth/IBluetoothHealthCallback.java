@@ -1,0 +1,132 @@
+package android.bluetooth;
+
+import android.os.Binder;
+import android.os.IBinder;
+import android.os.IInterface;
+import android.os.Parcel;
+import android.os.ParcelFileDescriptor;
+
+/* JADX INFO: loaded from: classes.dex */
+public interface IBluetoothHealthCallback extends IInterface {
+
+    public static abstract class Stub extends Binder implements IBluetoothHealthCallback {
+        private static final String DESCRIPTOR = "android.bluetooth.IBluetoothHealthCallback";
+        static final int TRANSACTION_onHealthAppConfigurationStatusChange = 1;
+        static final int TRANSACTION_onHealthChannelStateChange = 2;
+
+        public static class Proxy implements IBluetoothHealthCallback {
+            private IBinder mRemote;
+
+            public Proxy(IBinder iBinder) {
+                this.mRemote = iBinder;
+            }
+
+            @Override // android.os.IInterface
+            public IBinder asBinder() {
+                return this.mRemote;
+            }
+
+            public String getInterfaceDescriptor() {
+                return Stub.DESCRIPTOR;
+            }
+
+            @Override // android.bluetooth.IBluetoothHealthCallback
+            public void onHealthAppConfigurationStatusChange(BluetoothHealthAppConfiguration bluetoothHealthAppConfiguration, int i2) {
+                Parcel parcelObtain = Parcel.obtain();
+                Parcel parcelObtain2 = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    if (bluetoothHealthAppConfiguration != null) {
+                        parcelObtain.writeInt(1);
+                        bluetoothHealthAppConfiguration.writeToParcel(parcelObtain, 0);
+                    } else {
+                        parcelObtain.writeInt(0);
+                    }
+                    parcelObtain.writeInt(i2);
+                    this.mRemote.transact(1, parcelObtain, parcelObtain2, 0);
+                    parcelObtain2.readException();
+                } finally {
+                    parcelObtain2.recycle();
+                    parcelObtain.recycle();
+                }
+            }
+
+            @Override // android.bluetooth.IBluetoothHealthCallback
+            public void onHealthChannelStateChange(BluetoothHealthAppConfiguration bluetoothHealthAppConfiguration, BluetoothDevice bluetoothDevice, int i2, int i3, ParcelFileDescriptor parcelFileDescriptor, int i4) {
+                Parcel parcelObtain = Parcel.obtain();
+                Parcel parcelObtain2 = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    if (bluetoothHealthAppConfiguration != null) {
+                        parcelObtain.writeInt(1);
+                        bluetoothHealthAppConfiguration.writeToParcel(parcelObtain, 0);
+                    } else {
+                        parcelObtain.writeInt(0);
+                    }
+                    if (bluetoothDevice != null) {
+                        parcelObtain.writeInt(1);
+                        bluetoothDevice.writeToParcel(parcelObtain, 0);
+                    } else {
+                        parcelObtain.writeInt(0);
+                    }
+                    parcelObtain.writeInt(i2);
+                    parcelObtain.writeInt(i3);
+                    if (parcelFileDescriptor != null) {
+                        parcelObtain.writeInt(1);
+                        parcelFileDescriptor.writeToParcel(parcelObtain, 0);
+                    } else {
+                        parcelObtain.writeInt(0);
+                    }
+                    parcelObtain.writeInt(i4);
+                    this.mRemote.transact(2, parcelObtain, parcelObtain2, 0);
+                    parcelObtain2.readException();
+                } finally {
+                    parcelObtain2.recycle();
+                    parcelObtain.recycle();
+                }
+            }
+        }
+
+        public Stub() {
+            attachInterface(this, DESCRIPTOR);
+        }
+
+        public static IBluetoothHealthCallback asInterface(IBinder iBinder) {
+            if (iBinder == null) {
+                return null;
+            }
+            IInterface iInterfaceQueryLocalInterface = iBinder.queryLocalInterface(DESCRIPTOR);
+            return (iInterfaceQueryLocalInterface == null || !(iInterfaceQueryLocalInterface instanceof IBluetoothHealthCallback)) ? new Proxy(iBinder) : (IBluetoothHealthCallback) iInterfaceQueryLocalInterface;
+        }
+
+        @Override // android.os.IInterface
+        public IBinder asBinder() {
+            return this;
+        }
+
+        @Override // android.os.Binder
+        public boolean onTransact(int i2, Parcel parcel, Parcel parcel2, int i3) {
+            if (i2 == 1) {
+                parcel.enforceInterface(DESCRIPTOR);
+                onHealthAppConfigurationStatusChange(parcel.readInt() != 0 ? BluetoothHealthAppConfiguration.CREATOR.createFromParcel(parcel) : null, parcel.readInt());
+                parcel2.writeNoException();
+                return true;
+            }
+            if (i2 != 2) {
+                if (i2 != 1598968902) {
+                    return super.onTransact(i2, parcel, parcel2, i3);
+                }
+                parcel2.writeString(DESCRIPTOR);
+                return true;
+            }
+            parcel.enforceInterface(DESCRIPTOR);
+            onHealthChannelStateChange(parcel.readInt() != 0 ? BluetoothHealthAppConfiguration.CREATOR.createFromParcel(parcel) : null, parcel.readInt() != 0 ? BluetoothDevice.CREATOR.createFromParcel(parcel) : null, parcel.readInt(), parcel.readInt(), parcel.readInt() != 0 ? ParcelFileDescriptor.CREATOR.createFromParcel(parcel) : null, parcel.readInt());
+            parcel2.writeNoException();
+            return true;
+        }
+    }
+
+    void onHealthAppConfigurationStatusChange(BluetoothHealthAppConfiguration bluetoothHealthAppConfiguration, int i2);
+
+    void onHealthChannelStateChange(BluetoothHealthAppConfiguration bluetoothHealthAppConfiguration, BluetoothDevice bluetoothDevice, int i2, int i3, ParcelFileDescriptor parcelFileDescriptor, int i4);
+}

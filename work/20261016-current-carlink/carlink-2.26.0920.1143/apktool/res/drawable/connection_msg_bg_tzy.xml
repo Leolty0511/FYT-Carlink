@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <padding android:left="@dimen/connecting_text_padding_h" android:top="@dimen/connecting_text_padding_v" android:right="@dimen/connecting_text_padding_h" android:bottom="@dimen/connecting_text_padding_v" />
+    <size android:height="@dimen/connecting_bg_height" android:width="@dimen/check_button_width" />
+    <solid android:color="#1accddff" />
+    <corners android:radius="@dimen/connecting_bg_radius" />
+</shape>

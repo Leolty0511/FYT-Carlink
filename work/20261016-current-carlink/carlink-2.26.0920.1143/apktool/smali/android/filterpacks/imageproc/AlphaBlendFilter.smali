@@ -1,0 +1,88 @@
+.class public Landroid/filterpacks/imageproc/AlphaBlendFilter;
+.super Landroid/filterpacks/imageproc/ImageCombineFilter;
+.source "SourceFile"
+
+
+# instance fields
+.field private final mAlphaBlendShader:Ljava/lang/String;
+
+
+# direct methods
+.method public constructor <init>(Ljava/lang/String;)V
+    .locals 3
+
+    .line 1
+    const-string/jumbo v0, "overlay"
+
+    .line 2
+    .line 3
+    .line 4
+    const-string/jumbo v1, "mask"
+
+    .line 5
+    .line 6
+    .line 7
+    const-string/jumbo v2, "source"
+
+    .line 8
+    .line 9
+    .line 10
+    filled-new-array {v2, v0, v1}, [Ljava/lang/String;
+
+    .line 11
+    .line 12
+    .line 13
+    move-result-object v0
+
+    .line 14
+    const-string v1, "blended"
+
+    .line 15
+    .line 16
+    const-string/jumbo v2, "weight"
+
+    .line 17
+    .line 18
+    .line 19
+    invoke-direct {p0, p1, v0, v1, v2}, Landroid/filterpacks/imageproc/ImageCombineFilter;-><init>(Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+
+    .line 20
+    .line 21
+    .line 22
+    const-string/jumbo p1, "precision mediump float;\nuniform sampler2D tex_sampler_0;\nuniform sampler2D tex_sampler_1;\nuniform sampler2D tex_sampler_2;\nuniform float weight;\nvarying vec2 v_texcoord;\nvoid main() {\n  vec4 colorL = texture2D(tex_sampler_0, v_texcoord);\n  vec4 colorR = texture2D(tex_sampler_1, v_texcoord);\n  float blend = texture2D(tex_sampler_2, v_texcoord).r * weight;\n  gl_FragColor = colorL * (1.0 - blend) + colorR * blend;\n}\n"
+
+    .line 23
+    .line 24
+    .line 25
+    iput-object p1, p0, Landroid/filterpacks/imageproc/AlphaBlendFilter;->mAlphaBlendShader:Ljava/lang/String;
+
+    .line 26
+    .line 27
+    return-void
+.end method
+
+
+# virtual methods
+.method public getNativeProgram(Landroid/filterfw/core/FilterContext;)Landroid/filterfw/core/Program;
+    .locals 1
+
+    new-instance p1, Ljava/lang/RuntimeException;
+
+    const-string v0, "TODO: Write native implementation for AlphaBlend!"
+
+    invoke-direct {p1, v0}, Ljava/lang/RuntimeException;-><init>(Ljava/lang/String;)V
+
+    throw p1
+.end method
+
+.method public getShaderProgram(Landroid/filterfw/core/FilterContext;)Landroid/filterfw/core/Program;
+    .locals 2
+
+    new-instance v0, Landroid/filterfw/core/ShaderProgram;
+
+    const-string/jumbo v1, "precision mediump float;\nuniform sampler2D tex_sampler_0;\nuniform sampler2D tex_sampler_1;\nuniform sampler2D tex_sampler_2;\nuniform float weight;\nvarying vec2 v_texcoord;\nvoid main() {\n  vec4 colorL = texture2D(tex_sampler_0, v_texcoord);\n  vec4 colorR = texture2D(tex_sampler_1, v_texcoord);\n  float blend = texture2D(tex_sampler_2, v_texcoord).r * weight;\n  gl_FragColor = colorL * (1.0 - blend) + colorR * blend;\n}\n"
+
+    invoke-direct {v0, p1, v1}, Landroid/filterfw/core/ShaderProgram;-><init>(Landroid/filterfw/core/FilterContext;Ljava/lang/String;)V
+
+    return-object v0
+.end method

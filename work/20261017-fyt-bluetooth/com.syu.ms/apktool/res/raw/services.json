@@ -1,0 +1,92 @@
+[
+  {
+    "pkg": "com.syu.us", "action": "com.syu.us.keepAlive", "keep_alive": true
+  },
+  {
+    "pkg": "com.syu.ss", "action": "com.syu.ss.keepAlive", "keep_alive": true
+  },
+  {
+    "pkg": "com.syu.canbus", "action": "com.syu.canbus.keepAlive", "keep_alive": true
+  },
+  {
+    "pkg": "com.syu.cs", "action": "com.syu.cs", "keep_alive": true, "description": "keep_alive 表示启动的服务是否需保活"
+  },
+  {
+    "pkg": "com.huawei.dmsdpdevice", "action": "com.huawei.dmsdpdevice.DMSDP_DEVICE_SERVICE", "keep_alive": true
+  },
+  {
+    "pkg": "com.baony.avm360", "action": "com.baony.ui.service.AVMCanBusService", "keep_alive": true
+  },
+  {
+    "pkg": "com.syu.forwardcamera", "action": "com.baony.ui.service.AVMCanBusService", "keep_alive": true
+  },
+  {
+    "pkg": "com.syu.carlink", "action": "com.syu.carlink", "keep_alive": true
+  },
+  {
+    "pkg": "com.syu.av", "action": "com.syu.av.keepAlive", "keep_alive": true
+  },
+  {
+    "pkg": "com.syu.panoramic", "action": "com.syu.panoramic.keepAlive", "keep_alive": true
+  },
+  {
+    "pkg": "com.syu.app", "action": "com.syu.app.keepAlive", "keep_alive": true
+  },
+  {
+    "pkg": "com.syu.market", "action": "com.syu.market.StartPushService", "keep_alive": false
+  },
+  {
+    "pkg": "com.syu.widget", "action": "com.syu.widget.RestartService2", "keep_alive": false
+  },
+  {
+    "pkg": "com.syu.widget", "action": "com.syu.widget.RestartService", "keep_alive": false
+  },
+  {
+    "pkg": "com.syu.music", "action": "com.syu.music.Widget", "keep_alive": false
+  },
+  {
+    "pkg": "com.syu.dvr", "action": "com.syu.dvr.StartDvrService", "keep_alive": false
+  },
+  {
+    "pkg": "com.syu.voice", "action": "com.syu.voice.VoiceService", "keep_alive": false, "description": "startup用于指定延时启动的时间"
+  },
+  {
+    "pkg": "com.txznet.txz", "action": "com.txznet.adapter.BootService", "keep_alive": false
+  },
+  {
+    "pkg": "com.syu.air", "action": "com.syu.air.AirService", "keep_alive": false
+  },
+  {
+    "pkg": "com.ankai.cardvr", "action": "com.ankai.cardvr.service.ProxyService", "keep_alive": false
+  },
+  {
+    "title": "亿卡", "pkg": "com.ecar.assistantnew", "action": "com.ecar.assistantnew.service.BootService", "keep_alive": false
+  },
+  {
+    "pkg": "com.mapgoo.diruite", "action": "intent.action.mapgoo.data.sync", "keep_alive": false
+  },
+  {
+    "title": "同行者国外语音适配服务", "pkg": "com.txznet.smartadapter", "action": "txz.action.START_SMART_ADAPTER", "keep_alive": false
+  },
+  {
+    "pkg": "com.synmoon.carkit", "action": "com.synmoon.carkit.service.StartUvcService", "keep_alive": false
+  },
+  {
+    "pkg": "com.ankai.ardvr", "action": "com.ankai.binddvr.IDvrService", "keep_alive": false
+  },
+  {
+    "title": "CarLife", "pkg": "com.ap.carlife", "action": "com.ap.carlife.RecordService", "keep_alive": false
+  },
+  {
+    "title": "威驰服务", "pkg": "com.hiworld.customer.service", "action": "com.hiworld.customer.service.HiworldService", "keep_alive": false
+  },
+  {
+    "title": "Tpms服务", "pkg": "com.syt.tmps", "class":"com.tmps.TpmsService", "action": "com.tmps.TpmsService", "keep_alive": false
+  },
+  {
+    "pkg": "com.fvsm.camera", "class":"com.fvsm.camera.service.ForegroundService", "keep_alive": false
+  },
+  {
+    "pkg": "com.ucloudlink.uservice", "action":"com.ucloudlink.cloudsim.framework.service", "keep_alive": false
+  }
+]

@@ -1,0 +1,7 @@
+package android.content;
+
+/* JADX INFO: loaded from: classes.dex */
+public final class ComponentNameProto {
+    public static final long CLASS_NAME = 1159641169922L;
+    public static final long PACKAGE_NAME = 1159641169921L;
+}

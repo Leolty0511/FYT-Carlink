@@ -1,0 +1,182 @@
+.class Landroid/util/ArrayMap$1;
+.super Landroid/util/MapCollections;
+.source "SourceFile"
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingMethod;
+    value = Landroid/util/ArrayMap;->getCollection()Landroid/util/MapCollections;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x1
+    name = null
+.end annotation
+
+.annotation system Ldalvik/annotation/Signature;
+    value = {
+        "Landroid/util/MapCollections<",
+        "TK;TV;>;"
+    }
+.end annotation
+
+
+# instance fields
+.field public final synthetic this$0:Landroid/util/ArrayMap;
+
+
+# direct methods
+.method public constructor <init>(Landroid/util/ArrayMap;)V
+    .locals 0
+
+    .line 1
+    iput-object p1, p0, Landroid/util/ArrayMap$1;->this$0:Landroid/util/ArrayMap;
+
+    invoke-direct {p0}, Landroid/util/MapCollections;-><init>()V
+
+    return-void
+.end method
+
+
+# virtual methods
+.method public colClear()V
+    .locals 1
+
+    .line 1
+    iget-object v0, p0, Landroid/util/ArrayMap$1;->this$0:Landroid/util/ArrayMap;
+
+    invoke-virtual {v0}, Landroid/util/ArrayMap;->clear()V
+
+    return-void
+.end method
+
+.method public colGetEntry(II)Ljava/lang/Object;
+    .locals 1
+
+    .line 1
+    iget-object v0, p0, Landroid/util/ArrayMap$1;->this$0:Landroid/util/ArrayMap;
+
+    iget-object v0, v0, Landroid/util/ArrayMap;->mArray:[Ljava/lang/Object;
+
+    shl-int/lit8 p1, p1, 0x1
+
+    add-int/2addr p1, p2
+
+    aget-object p1, v0, p1
+
+    return-object p1
+.end method
+
+.method public colGetMap()Ljava/util/Map;
+    .locals 1
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "()",
+            "Ljava/util/Map<",
+            "TK;TV;>;"
+        }
+    .end annotation
+
+    .line 1
+    iget-object v0, p0, Landroid/util/ArrayMap$1;->this$0:Landroid/util/ArrayMap;
+
+    return-object v0
+.end method
+
+.method public colGetSize()I
+    .locals 1
+
+    .line 1
+    iget-object v0, p0, Landroid/util/ArrayMap$1;->this$0:Landroid/util/ArrayMap;
+
+    iget v0, v0, Landroid/util/ArrayMap;->mSize:I
+
+    return v0
+.end method
+
+.method public colIndexOfKey(Ljava/lang/Object;)I
+    .locals 2
+
+    if-nez p1, :cond_0
+
+    .line 1
+    iget-object p1, p0, Landroid/util/ArrayMap$1;->this$0:Landroid/util/ArrayMap;
+
+    invoke-virtual {p1}, Landroid/util/ArrayMap;->indexOfNull()I
+
+    move-result p1
+
+    goto :goto_0
+
+    :cond_0
+    iget-object v0, p0, Landroid/util/ArrayMap$1;->this$0:Landroid/util/ArrayMap;
+
+    invoke-virtual {p1}, Ljava/lang/Object;->hashCode()I
+
+    move-result v1
+
+    invoke-virtual {v0, p1, v1}, Landroid/util/ArrayMap;->indexOf(Ljava/lang/Object;I)I
+
+    move-result p1
+
+    :goto_0
+    return p1
+.end method
+
+.method public colIndexOfValue(Ljava/lang/Object;)I
+    .locals 1
+
+    .line 1
+    iget-object v0, p0, Landroid/util/ArrayMap$1;->this$0:Landroid/util/ArrayMap;
+
+    invoke-virtual {v0, p1}, Landroid/util/ArrayMap;->indexOfValue(Ljava/lang/Object;)I
+
+    move-result p1
+
+    return p1
+.end method
+
+.method public colPut(Ljava/lang/Object;Ljava/lang/Object;)V
+    .locals 1
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "(TK;TV;)V"
+        }
+    .end annotation
+
+    .line 1
+    iget-object v0, p0, Landroid/util/ArrayMap$1;->this$0:Landroid/util/ArrayMap;
+
+    invoke-virtual {v0, p1, p2}, Landroid/util/ArrayMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+
+    return-void
+.end method
+
+.method public colRemoveAt(I)V
+    .locals 1
+
+    .line 1
+    iget-object v0, p0, Landroid/util/ArrayMap$1;->this$0:Landroid/util/ArrayMap;
+
+    invoke-virtual {v0, p1}, Landroid/util/ArrayMap;->removeAt(I)Ljava/lang/Object;
+
+    return-void
+.end method
+
+.method public colSetValue(ILjava/lang/Object;)Ljava/lang/Object;
+    .locals 1
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "(ITV;)TV;"
+        }
+    .end annotation
+
+    .line 1
+    iget-object v0, p0, Landroid/util/ArrayMap$1;->this$0:Landroid/util/ArrayMap;
+
+    invoke-virtual {v0, p1, p2}, Landroid/util/ArrayMap;->setValueAt(ILjava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object p1
+
+    return-object p1
+.end method

@@ -1,0 +1,99 @@
+package android.app;
+
+import android.R;
+import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.View;
+import android.widget.ExpandableListAdapter;
+import android.widget.ExpandableListView;
+
+/* JADX INFO: loaded from: classes.dex */
+public class ExpandableListActivity extends Activity implements ExpandableListView.OnChildClickListener, ExpandableListView.OnGroupCollapseListener, ExpandableListView.OnGroupExpandListener {
+    public ExpandableListAdapter mAdapter;
+    public boolean mFinishedStart = false;
+    public ExpandableListView mList;
+
+    private void ensureList() {
+        if (this.mList != null) {
+            return;
+        }
+        setContentView(R.layout.expandable_list_content);
+    }
+
+    public ExpandableListAdapter getExpandableListAdapter() {
+        return this.mAdapter;
+    }
+
+    public ExpandableListView getExpandableListView() {
+        ensureList();
+        return this.mList;
+    }
+
+    public long getSelectedId() {
+        return this.mList.getSelectedId();
+    }
+
+    public long getSelectedPosition() {
+        return this.mList.getSelectedPosition();
+    }
+
+    @Override // android.widget.ExpandableListView.OnChildClickListener
+    public boolean onChildClick(ExpandableListView expandableListView, View view, int i2, int i3, long j2) {
+        return false;
+    }
+
+    @Override // android.app.Activity, android.view.Window.Callback
+    public void onContentChanged() {
+        super.onContentChanged();
+        View viewFindViewById = findViewById(R.id.empty);
+        ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.list);
+        this.mList = expandableListView;
+        if (expandableListView == null) {
+            throw new RuntimeException("Your content must have a ExpandableListView whose id attribute is 'android.R.id.list'");
+        }
+        if (viewFindViewById != null) {
+            expandableListView.setEmptyView(viewFindViewById);
+        }
+        this.mList.setOnChildClickListener(this);
+        this.mList.setOnGroupExpandListener(this);
+        this.mList.setOnGroupCollapseListener(this);
+        if (this.mFinishedStart) {
+            setListAdapter(this.mAdapter);
+        }
+        this.mFinishedStart = true;
+    }
+
+    @Override // android.app.Activity, android.view.View.OnCreateContextMenuListener
+    public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+    }
+
+    @Override // android.widget.ExpandableListView.OnGroupCollapseListener
+    public void onGroupCollapse(int i2) {
+    }
+
+    @Override // android.widget.ExpandableListView.OnGroupExpandListener
+    public void onGroupExpand(int i2) {
+    }
+
+    @Override // android.app.Activity
+    public void onRestoreInstanceState(Bundle bundle) {
+        ensureList();
+        super.onRestoreInstanceState(bundle);
+    }
+
+    public void setListAdapter(ExpandableListAdapter expandableListAdapter) {
+        synchronized (this) {
+            ensureList();
+            this.mAdapter = expandableListAdapter;
+            this.mList.setAdapter(expandableListAdapter);
+        }
+    }
+
+    public boolean setSelectedChild(int i2, int i3, boolean z2) {
+        return this.mList.setSelectedChild(i2, i3, z2);
+    }
+
+    public void setSelectedGroup(int i2) {
+        this.mList.setSelectedGroup(i2);
+    }
+}

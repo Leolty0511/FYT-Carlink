@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/pref_simulation_title">
+        <EditTextPreference
+            android:maxLines="1"
+            android:singleLine="true"
+            android:selectAllOnFocus="true"
+            android:title="@string/pref_simulation_start"
+            android:key="simulation_start"/>
+        <EditTextPreference
+            android:maxLines="1"
+            android:singleLine="true"
+            android:selectAllOnFocus="true"
+            android:title="@string/pref_simulation_end"
+            android:key="simulation_end"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_simulate_quirks_title">
+        <CheckBoxPreference
+            android:title="@string/pref_missing_accuracy"
+            android:key="missing_accuracy"/>
+        <CheckBoxPreference
+            android:title="@string/pref_missing_bearing"
+            android:key="missing_bearing"/>
+        <CheckBoxPreference
+            android:title="@string/pref_missing_speed"
+            android:key="missing_speed"/>
+    </PreferenceCategory>
+</PreferenceScreen>

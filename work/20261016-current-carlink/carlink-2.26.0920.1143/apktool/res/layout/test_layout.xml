@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:id="@id/tools" android:background="@color/background_debug_controls" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentRight="true"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <GridLayout android:id="@id/sim_dpad" android:layout_width="wrap_content" android:layout_height="wrap_content">
+            <Button android:id="@id/rotary_ccw" android:layout_column="0" android:text="@string/rotary_ccw_label" android:layout_row="0" />
+            <Button android:id="@id/dpad_up" android:layout_column="1" android:text="@string/dpad_up_label" android:layout_row="0" />
+            <Button android:id="@id/rotary_cw" android:layout_column="2" android:text="@string/rotary_cw_label" android:layout_row="0" />
+            <Button android:id="@id/dpad_left" android:layout_column="0" android:text="@string/dpad_left_label" android:layout_row="1" />
+            <Button android:id="@id/dpad_center" android:layout_column="1" android:text="@string/dpad_center_label" android:layout_row="1" />
+            <Button android:id="@id/dpad_right" android:layout_column="2" android:text="@string/dpad_right_label" android:layout_row="1" />
+            <Button android:id="@id/rotary_ccw_fling" android:layout_column="0" android:text="@string/rotary_ccw_fling_label" android:layout_row="2" />
+            <Button android:id="@id/dpad_down" android:layout_column="1" android:text="@string/dpad_down_label" android:layout_row="2" />
+            <Button android:id="@id/rotary_cw_fling" android:layout_column="2" android:text="@string/rotary_cw_fling_label" android:layout_row="2" />
+        </GridLayout>
+        <View android:id="@id/touchpad" android:background="#99ffffff" android:layout_width="256.0dip" android:layout_height="256.0dip" />
+    </LinearLayout>
+    <ScrollView android:layout_width="wrap_content" android:layout_height="wrap_content">
+        <LinearLayout android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="wrap_content">
+            <TextView android:id="@id/fps" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+            <LinearLayout android:orientation="horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                <Button android:id="@id/native_transient_audio" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/label_native_transient" />
+                <ToggleButton android:id="@id/audio_focus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checked="true" android:textOn="AF On" android:textOff="AF Off" />
+                <ToggleButton android:id="@id/video_focus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checked="false" android:textOn="VF On" android:textOff="VF Off" />
+                <ToggleButton android:id="@id/nav_focus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checked="true" android:textOn="NavFcs Phone" android:textOff="NavFcs Car" />
+                <Button android:id="@id/byebye_button" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/byebye" />
+                <Button android:id="@id/disconnect_gvve_button" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/disconnect_gvve" />
+            </LinearLayout>
+            <LinearLayout android:id="@id/simulated_location_controls" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentRight="true">
+                <LinearLayout android:orientation="horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                    <Button android:layout_gravity="center_horizontal" android:id="@id/simulated_location_faster" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/simulated_location_faster" />
+                    <TextView android:layout_gravity="center_horizontal" android:id="@id/simulated_location_current_speed" android:paddingTop="@dimen/speed_controls_speed_label_padding" android:paddingBottom="@dimen/speed_controls_speed_label_padding" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    <Button android:layout_gravity="center_horizontal" android:id="@id/simulated_location_slower" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/simulated_location_slower" />
+                    <Button android:layout_gravity="center_horizontal" android:id="@id/simulated_location_reset" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/simulated_location_reset" />
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout android:orientation="horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                <Button android:id="@id/bvra_button" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/bvra" />
+                <Button android:id="@id/nav_button" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/nav" />
+                <Button android:id="@id/media_button" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/media" />
+                <Button android:id="@id/tel_button" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tel" />
+                <Button android:id="@id/back_button" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/back" />
+            </LinearLayout>
+            <LinearLayout android:orientation="horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                <ToggleButton android:id="@id/night_mode_auto" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checked="true" android:textOn="@string/nm_auto" android:textOff="@string/nm_auto" />
+                <ToggleButton android:id="@id/night_mode_day" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textOn="@string/nm_day" android:textOff="@string/nm_day" />
+                <ToggleButton android:id="@id/night_mode_night" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textOn="@string/nm_night" android:textOff="@string/nm_night" />
+            </LinearLayout>
+            <LinearLayout android:orientation="horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                <Button android:id="@id/call" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/call" />
+                <Button android:id="@id/end_call" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/end_call" />
+                <Button android:id="@id/media_prev" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/media_prev" />
+                <Button android:id="@id/media_next" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/media_next" />
+                <Button android:id="@id/media_play" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/media_play" />
+                <Button android:id="@id/media_pause" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/media_pause" />
+                <Button android:id="@id/media_play_pause" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/media_play_pause" />
+            </LinearLayout>
+            <LinearLayout android:orientation="horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                <ToggleButton android:id="@id/keyboard_lockout_auto" android:layout_width="fill_parent" android:layout_height="wrap_content" android:checked="true" android:textOn="@string/keyboard_lockout_auto" android:textOff="@string/keyboard_lockout_auto" />
+                <ToggleButton android:id="@id/keyboard_lockout_force" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textOn="@string/keyboard_lockout_force" android:textOff="@string/keyboard_lockout_force" />
+                <ToggleButton android:id="@id/keyboard_lockout_override" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textOn="@string/keyboard_lockout_override" android:textOff="@string/keyboard_lockout_override" />
+            </LinearLayout>
+            <LinearLayout android:orientation="horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                <ToggleButton android:id="@id/bluetooth_already_paired_toggle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checked="false" android:textOn="@string/bluetooth_car_already_paired" android:textOff="@string/bluetooth_car_not_paired" />
+                <Button android:id="@id/bluetooth_pairing_response_button" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/bluetooth_pairing_response" />
+                <EditText android:id="@id/bluetooth_auth_data_text" android:layout_width="120.0dip" android:layout_height="wrap_content" android:inputType="textNoSuggestions" />
+                <Button android:id="@id/bluetooth_auth_data_button" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/bluetooth_auth_data" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+    <LinearLayout android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="wrap_content">
+        <TextView android:textSize="8.0pt" android:id="@id/navigation_label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/instrument_cluster_label" />
+        <TextView android:id="@id/navigation_text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/none" />
+        <ImageView android:id="@id/navigation_image" android:layout_width="@dimen/navigation_image" android:layout_height="@dimen/navigation_image" android:scaleType="fitCenter" android:alpha="0.5" />
+        <TextView android:id="@id/media_status_text" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        <ImageView android:id="@id/media_album_art" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        <TextView android:id="@id/media_browser_root_text" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        <TextView android:id="@id/media_browser_source_text" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        <TextView android:id="@id/media_browser_list_text" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        <TextView android:id="@id/media_browser_song_text" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        <TextView android:id="@id/phone_status_text" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        <ImageView android:id="@id/phone_status_photo" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+    </LinearLayout>
+</LinearLayout>

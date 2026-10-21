@@ -1,0 +1,14 @@
+#出了声音,但是人为的认为没有出声音的应用,就是不处理声音状态的应用
+com.goodocom.gocsdk
+com.iflytek.speechcloud
+android.process.acore
+com.android.phone
+com.android.keychain
+com.android.systemui
+#com.syu.tire	#我们自己的应用,代码中按类别进行处理
+org.prowl.torque
+com.comit.gooddriver
+com.glsx.ddbox #嘀嘀虎在前台，主动切通道
+com.android.dialer#拨号主动切通道
+com.zjinnova.zlink
+com.mapgoo.carlauncher				#万普

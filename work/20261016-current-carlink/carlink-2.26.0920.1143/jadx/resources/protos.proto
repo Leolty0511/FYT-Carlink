@@ -1,0 +1,5545 @@
+// LINT: LEGACY_NAMES
+// Copyright 2014 Google Inc. All Rights Reserved.
+syntax = "proto2";
+
+package gal;
+
+import "common.proto";
+import "energy_model.proto";
+
+option java_outer_classname = "Protos";
+option java_package = "com.google.android.projection.proto";
+
+// Use lite runtime for C++ generated code, to minimize dependencies.
+option optimize_for = LITE_RUNTIME;
+
+/**
+ * @header
+ * <font style='float:left'>Google Confidential & Proprietary</font>
+ * <font style='float:right'>DRAFT</font>
+ */
+
+/**
+ * @footer
+ * <img src='./images/google.png' style='float:left'/>
+ * <font style='float:right; line-height:50px;'>Android Auto Projection (AAP)
+ * Protocol Specification</font>
+ */
+
+/**
+ * @cover
+ * <p align='right'>
+ * <img src='./images/aa_logo_green.png'/ style='padding-top: 200px'>
+ * <p class="title">Android Auto Projection (AAP)</p>
+ * <p class="subtitle">Protocol Specification</p>
+ * <p align='right' style='padding-right:12px'>Version: @version</p>
+ * <p align='right' style='padding: 0 12px 150px 0'>Updated: @date</p>
+ */
+
+/**
+ * @section Introduction
+ * <p>This document describes the Android Auto Projection (AAP) protocol that
+ enables communication
+ * between Android mobile devices and in-vehicle head units running the AAP
+ Receiver Library.
+ * To ensure compatibility between all Android devices and all vehicle head
+ units, the AAP
+ * Receiver Library implements the protocol buffer protocol. Head unit
+ integration code interacts
+ * with AAP by calling the Receiver Library API; projected applications interact
+ with the AAP by
+ * calling the Car Service API.
+ * <div class="note"> Use this document for <b>reference only</b> and <b>do not
+ modify</b> or
+ * re-implement any portion of this protocol. Google-defined services/protocol
+ buffers must not be
+ * modified by entities other than Google.</div>
+ * <p>AAPv1.0 includes the following assumptions:
+ * <ul>
+ *   <li><b>Transport</b>. The transport layer provides reliable in-order
+ delivery with low and
+ *        consistent latency on a local link.</li>
+ *   <li><b>Display</b>. Vehicles may advertise one display (the head unit
+ display) for video
+ *        projection. AAP does not handle additional displays such as back seat
+ entertainment
+ *        displays or a video display in the instrument cluster.</li>
+ *   <li> <b>Input</b>. Vehicles can use one of two touchscreen configurations:
+ touchscreen on
+ *        the advertised display or no touchscreen.</li>
+ *   <li><b>Telephone</b>. Bluetooth is used to route all call audio.</li>
+ *   <li><b>Sensors</b>. Sensors must meet a baseline accuracy to be advertised.
+ For example, do
+ *        not advertise a compass that cannot provide a bearing in degrees.</li>
+ *   <li><b>Custom Services</b>. AAP API allows for sending vendor specific
+ services over the AAP
+ *        transport layer (no protocol modifications required to transport
+ proprietary vendor data).
+ *        Vendor-specific services must use reverse domain name format (such as
+ *        com.make.model.serviceName).</li>
+
+ * </ul>
+ * <p>Unless otherwise stated, all encoding is network order (big-endian).
+ */
+/**
+ * @section Framing
+ * <p>Frames are the lowest-level AAP packet type and comprise logical messages
+ * that are implicitly carried over a channel. Using frames enables messages to
+ * be fragmented and prioritized based on a channel number before sending on a
+ * transport.</p> <p><img src='./images/message-layout.png'/></p><br> <p>A frame
+ * header contains the following fields:</p> <p><img
+ * src='./images/frame-layout.png'/></p>
+ * @startTable
+ * Field Name           |Size   | Description
+ * Channel Id           |1 byte | Identifies the channel to which the frame
+ * belongs. Fragment Information |2 bits | Indicates the message fragment this
+ * frame represents and the presence of the optional Message Length field.
+ * Channel Control      |1 bit  | Indicates the message is a Channel Control
+ * message. Encrypted            |1 bit  | Indicates whether the payload is
+ * encrypted or not. Reserved             |4 bits | Reserved for future use.
+ * Must be set to 0 when sending and ignored on receipt. Frame Length         |2
+ * bytes| Length of the frame data, excluding frame header. Message Length |4
+ * bytes| Optional, length of the message before fragmentation. Present only in
+ * the first frame of a fragmented message.
+ * @endTable
+ * <h2>Fragmentation</h2>
+ * <p>Message fragmentation must not be used until version negotiation is
+ * complete, after which messages are fragmented on a per-channel basis. The
+ * Fragment Information field has the following interpretation:</p>
+ * @startTable
+ * Bit 0| Bit 1| Interpretation
+ * 1    | 1    | No fragmentation. Fragment length is equal to message length,
+ * so message length field is omitted. 1    | 0    | First fragment. Future
+ * frames on this channel must be defragmented to form the original message.
+ * Message Length field is included in this frame. 0    | 1    | Last fragment.
+ * The original message may be reconstructed on receipt of this frame. Message
+ * Length field is omitted. 0    | 0    | Continuation fragment. This frame is
+ * not the first fragment or the last fragment of a message. Message Length
+ * field is omitted.
+ * @endTable
+ * <h2>Channels & Priorities</h2>
+ * <p>Channels are used to establish ordered communication to a service. Every
+ * channel has a priority, and both the sender and receiver may reorder frames
+ * on different channels to implement prioritization. To guarantee in-order
+ * delivery, do not reorder frames of the same channel.</p>
+ * @startTable
+ * Channel Control Bit|Interpretation
+ * 0                  |Normal frame for the service using the channel.
+ * 1                  |Frame is part of a Control message specific to this
+ * channel.
+ * @endTable
+ * <p>After a channel is established, both sender and receiver use the same
+ * channel number with the same priority.</p>
+ * @startTable
+ * Channel Number|Use
+ * 0             |Static: Control channel.
+ * 1...255       |Dynamically allocated.
+ * @endTable
+ * <p>Channel 0 always has the highest priority (-128).</p>
+ */
+
+/**
+ * @section Control Messages
+ * <p>AAP supports two (2) types of control messages:</p>
+ * <ul>
+ *   <li><b>Global</b>. Sent on channel 0 and unrelated to a specific channel
+ * (Channel Control bit in frame header is not set. </li> <li><b>Channel</b>.
+ * Sent on a specific channel (Channel Control bit in frame header is set). Sent
+ * in-band to prevent reorder of channel control and data, but delivered
+ * directly to the service attached to a channel.</li>
+ * </ul>
+ * <p>Control messages use the following encoding scheme:</p>
+ * @startTable
+ * Field |Size     |Description
+ * Type  |2 bytes  |Numeric identifier that describes the message type.
+ * Data  |variable |Type-specific data (some messages use encoded parameters
+ * while others use a protocol buffer).
+ * @endTable
+ * <h2>Frame Errors</h2>
+ * <p>If a frame is received that cannot be decoded into a message, a framing
+ * error must be sent on channel 0. This error is fatal and the link should be
+ * reset to restart the protocol.</p> <h3>FramingError</h3> <p>@startTable Field
+ * |Size   |Description FramingError [0xFFFF]|2 bytes|Constant that describes
+ * the type of this message.
+ * @endTable</p>
+ * <h2> Unexpected Messages </h2>
+ * <p>This message is not specific to channel 0 but is discussed here because it
+ * is applicable throughout this document. <b>This message can be sent on any
+ * channel</b> by either side when it sees a message that is of valid form but
+ * cannot handle the message because it believes the message is invalid for the
+ * current state. Due to the lack of strong correlation between the sent and
+ * received messages, this message should be considered fatal and the link
+ * reset.</p> <h3> UnexpectedMessage</h3> <p>@startTable Field |Size
+ * |Description UnexpectedMessage [0x00FF]|2 bytes  |Constant that describes the
+ * type of message.
+ * @endTable</p>
+ * <h2>Version Negotiation</h2>
+ * <p>Version negotiation is the first communication step, initiated by the
+ * vehicle when it detects a USB connection has been established. Negotiation is
+ * performed globally on channel 0 with the following requirements:</p> <ul>
+ *   <li>All AAP versions (current and future) must follow version negotiation
+ * and framing as specified in AAPv1.0.</li> <li>After the mobile device has
+ * sent VersionResponse, all messages (including framing) follow the format
+ * specified by the selected protocol version.</li> <li>Mobile devices and
+ * vehicle head units implementing the same major number must be compatible
+ *       irrespective of minor number. Changes that break backward compatibility
+ * require a major number revision.</li> <li>Vehicle head units must support at
+ * minimum of one [major, minor] version pair. However the mobile device may
+ * support multiple [major, minor] version pairs.</li> <li>Devices respond with
+ * a status code to indicate whether the version negotiation completed
+ * successfully or not. In case of error, communication between the mobile
+ * device and the vehicle head unit stops.</li>
+ * </ul>
+ * @startSequenceDiagram Version Negotiation
+ * identifier A: Device
+ * identifier B: Vehicle
+ * message B->A: VersionRequest
+ * message A->B: VersionResponse
+ * @endSequenceDiagram
+ * <h3>VersionRequest</h3>
+ * <p>@startTable
+ * Field        |Size   |Description
+ * Type         |2 bytes|0x0001
+ * Major Version|2 bytes|Major version of the protocol supported by the vehicle
+ * head unit. Minor Version|2 bytes|Minor version of the protocol supported by
+ * the vehicle head unit.
+ * Options      |0-N bytes|An encoded VersionRequestOptions proto specifying
+ * options (may be empty if no options are requested).
+ * @endTable</p>
+ * <h3>VersionResponse</h3>
+ * <p>@startTable
+ * Field        |Size   |Description
+ * Type         |2 bytes|0x0002
+ * Major Version|2 bytes|Major version of the protocol that has been selected by
+ * the mobile device. Minor Version|2 bytes|Minor version of the protocol
+ * selected by the mobile device. Status       |2 bytes|Indicates the status of
+ * the version negotiation.
+ * @endTable</p>
+ * <div class="note"><b>NOTE</b>: If the mobile device can support the major
+ * version supported by the vehicle head unit, the device must send the same
+ * major version as sent by the vehicle. If the device cannot support the same
+ * major version, it must send the highest major version it does support (for
+ * debugging) and cease communication. The minor version of the protocol
+ * selected by the device may be different from the version sent by the
+ * vehicle.</div> <h2>Authentication</h2> <p>After version negotiation,
+ * authentication occurs using a TLSv1.2 handshake encapsulated over AAP on
+ * channel 0. To provide mutual authentication, the handshake uses client and
+ * server certificates; after the handshake completes, all messages are sent
+ * over the established SSL channel with the Encrypted bit is set. Messages that
+ * fail to set the Encrypted bit are discarded.</p>
+ * @startSequenceDiagram Authentication
+ * identifier A: Device
+ * identifier B: Vehicle
+ * message B->A: EncapsulatedSSL, SSL handshake data
+ * message A->B: EncapsulatedSSL, SSL handshake data
+ * spacer: ... SSL handshake proceeds to completion ...
+ * message B->A: AuthComplete, status
+ * @endSequenceDiagram
+ * <p>The vehicle head unit (SSL client) initiates a handshake with the mobile
+ * device (SSL server). At the end of the handshake, both client and server
+ * verify the certificates in use are signed by the Google CA. If signed, the
+ * session proceeds; if not signed, the session does not continue.</p>
+ * <h3>EncapsulatedSSL</h3>
+ * <p>@startTable
+ * Field   | Value
+ * Type    | 0x0003
+ * Payload | Unaltered SSL records.
+ * @endTable</p>
+ */
+
+/**
+ * @suppress
+ */
+enum ControlMessageType {
+  MESSAGE_VERSION_REQUEST = 0x0001;
+  MESSAGE_VERSION_RESPONSE = 0x0002;
+  MESSAGE_ENCAPSULATED_SSL = 0x0003;
+  MESSAGE_AUTH_COMPLETE = 0x0004;
+  MESSAGE_SERVICE_DISCOVERY_REQUEST = 0x0005;
+  MESSAGE_SERVICE_DISCOVERY_RESPONSE = 0x0006;
+  MESSAGE_CHANNEL_OPEN_REQUEST = 0x0007;
+  MESSAGE_CHANNEL_OPEN_RESPONSE = 0x0008;
+  MESSAGE_CHANNEL_CLOSE_NOTIFICATION = 0x0009;
+  MESSAGE_PING_REQUEST = 0x000B;
+  MESSAGE_PING_RESPONSE = 0x000C;
+  MESSAGE_NAV_FOCUS_REQUEST = 0x000D;
+  MESSAGE_NAV_FOCUS_NOTIFICATION = 0x000E;
+  MESSAGE_BYEBYE_REQUEST = 0x000F;
+  MESSAGE_BYEBYE_RESPONSE = 0x0010;
+  MESSAGE_VOICE_SESSION_NOTIFICATION = 0x0011;
+  MESSAGE_AUDIO_FOCUS_REQUEST = 0x0012;
+  MESSAGE_AUDIO_FOCUS_NOTIFICATION = 0x0013;
+  MESSAGE_CAR_CONNECTED_DEVICES_REQUEST = 0x0014;
+  MESSAGE_CAR_CONNECTED_DEVICES_RESPONSE = 0x0015;
+  MESSAGE_USER_SWITCH_REQUEST = 0x0016;
+  MESSAGE_BATTERY_STATUS_NOTIFICATION = 0x0017;
+  MESSAGE_CALL_AVAILABILITY_STATUS = 0x0018;
+  MESSAGE_USER_SWITCH_RESPONSE = 0x0019;
+  MESSAGE_SERVICE_DISCOVERY_UPDATE = 0x001A;
+  MESSAGE_UNEXPECTED_MESSAGE = 0x00FF;
+  MESSAGE_INTERNAL_ERROR = 0x0FFF;
+  MESSAGE_FRAMING_ERROR = 0xFFFF;
+}
+
+/**
+ * @suppress
+ */
+enum FragInfo {
+  FRAG_CONTINUATION = 0;
+  FRAG_FIRST = 1;
+  FRAG_LAST = 2;
+  FRAG_UNFRAGMENTED = 3;
+}
+
+/**
+ * @type MESSAGE_VERSION_REQUEST
+ * <p>This message is used to specify extended options for the GAL version
+ * request. It follows the major and minor versions in the packed encoding of
+ * MESSAGE_VERSION_REQUEST. If no additional options are requested, this message
+ * may be empty, in which case no bytes will follow the major/minor version.</p>
+ */
+message VersionRequestOptions {
+  /**
+   * Snapshot version. If specified, the head unit is running a pre-release
+   * version of the requested protocol. This is intended for use while a
+   * protocol revision is under active development. Setting this flag will
+   * prevent a head unit from passing certification.
+   *
+   * If set, the exact value of this field is unspecified, but may be used to
+   * differentiate between different pre-release versions of a given protocol.
+   */
+  optional int64 snapshot_version = 1;
+}
+
+/**
+ * @type MESSAGE_VERSION_RESPONSE
+ * <p>This message is used to specify extended options for the GAL version
+ * response. It follows the major, minor versions and message status in the
+ * packed encoding of MESSAGE_VERSION_RESPONSE. If no additional options are
+ * requested, this message may be empty, in which case no bytes will follow the
+ * major/minor version.</p>
+ */
+message VersionResponseOptions {
+  /**
+   * <p>This requests that the head unit updates the specified connection
+   * parameters. Only values which are populated are changed. The updated
+   * head unit configuration is sent with the ServiceDiscoveryResponse message.
+   */
+  optional ConnectionConfiguration connection_configuration = 1;
+}
+
+/**
+ * @type MESSAGE_AUTH_COMPLETE
+ * <p>This message is used to indicate the status of the authentication
+ * exchange. Authentication succeeds on when both the SSL handshake and the SSL
+ * certificate checks pass.</p>
+ */
+message AuthResponse {
+  required int32 status = 1;
+}
+
+/**
+ * <h2>Service Discovery</h2>
+ * <p>A service is an endpoint for communication between the vehicle and mobile
+ * device. The vehicle head unit advertises a set of provided services and the
+ * mobile device selects and connects an available channel to a service
+ * (management commands specified in Connection Management). Service discovery
+ * is global and occurs on channel 0.</p> <p>Service names typically contain
+ * <em>Source</em> (for services that produce data such as sensors) or
+ * <em>Sink</em> (for services that consume data such as video).
+ */
+/**
+ * @type MESSAGE_SERVICE_DISCOVERY_REQUEST
+ * <p>During setup, a mobile device sends this message to request a list of
+ * services from the vehicle. The message includes a set of icons (small,
+ * medium, large) and label text the head unit can display to enable users to
+ * quickly switch to projected mode.
+ */
+message ServiceDiscoveryRequest {
+  /** 32x32 icon. */
+  optional bytes small_icon = 1;
+  /** 64x64  icon. */
+  optional bytes medium_icon = 2;
+  /** 128x128  icon. */
+  optional bytes large_icon = 3;
+  /** Text to display next to icon. */
+  optional string label_text = 4;
+  /** A friendly device name. */
+  optional string device_name = 5;
+  /** Phone info (such as instance id). */
+  optional common.PhoneInfo phone_info = 6;
+}
+
+/**
+ * @type MESSAGE_SERVICE_DISCOVERY_RESPONSE
+ * <p>During setup, a vehicle sends this message to list the services it
+ * supports, vehicle information such as make/model/year, head unit information
+ * such as make/model/build/version, and other data.
+ */
+message ServiceDiscoveryResponse {
+  /** List of services (one per element) supported by the vehicle. */
+  repeated Service services = 1;
+  /** Vehicle make. */
+  optional string make = 2 [deprecated = true];
+  /** Vehicle model. */
+  optional string model = 3 [deprecated = true];
+  /** Model year. */
+  optional string year = 4 [deprecated = true];
+  /**
+   * Identifier for the vehicle (does not need to be the VIN) that is ideally
+   * regenerated for every factory reset performed on the head unit.
+   */
+  optional string vehicle_id = 5 [deprecated = true];
+  /**
+   * Indicates the position (left, right, center) of the steering wheel, which
+   * may influence the position of UI elements.
+   */
+  optional DriverPosition driver_position = 6;
+  /** Head unit make. */
+  optional string head_unit_make = 7 [deprecated = true];
+  /** Head unit model. */
+  optional string head_unit_model = 8 [deprecated = true];
+  /** Head unit software build. */
+  optional string head_unit_software_build = 9 [deprecated = true];
+  /** Head unit software version. */
+  optional string head_unit_software_version = 10 [deprecated = true];
+  /** Deprecated, use SessionConfiguration flag CAN_PLAY_NATIVE_MEDIA_DURING_VR.
+   */
+  optional bool can_play_native_media_during_vr = 11 [deprecated = true];
+  // REMOVED, use session_configuration and UI_CONFIG_HIDE_CLOCK
+  // optional bool hide_projected_clock = 12;
+  /**
+   * Options the HU can use to configure the behavior of the MD during
+   * projection. Deprecated, use UiConfig#ui_elements instead.
+   */
+  optional int32 session_configuration = 13 [deprecated = true];
+  /**
+   * A string which the MD will display as-is to refer to the native software
+   * experience (e.g. "Return to [display_name]").
+   */
+  optional string display_name = 14;
+  /**
+   * A flag which indicates that the HU is only probing whether or not the MD
+   * supports AAP. When this field is set, the services field will be ignored.
+   *
+   * <p>If this field is true, the MD will not display any UI to the user and
+   * will terminate the connection with a ByeBye message indicating the MD's
+   * support for AAP - one of NOT_SUPPORTED, NOT_CURRENTLY_SUPPORTED, or
+   * PROBE_SUPPORTED.
+   */
+  optional bool probe_for_support = 15;
+
+  /**
+   * A collection of configuration values (such as ping frequency, tcp timeout
+   * etc) used in this session. */
+  optional ConnectionConfiguration connection_configuration = 16;
+
+  /** HeadUnit info (such as model, vehicle_id). */
+  optional common.HeadUnitInfo headunit_info = 17;
+
+  /** Reserved for vehicle type. */
+  reserved 18;
+}
+
+/**
+ * @type MESSAGE_SERVICE_DISCOVERY_UPDATE
+ * <p>After setup, a vehicle may send this message to update services it has
+ * already declared support for. This can be sent unsolicited any time after
+ * service discovery is complete
+ */
+message ServiceDiscoveryUpdate {
+  /** Service whose discovery info may have changed */
+  optional Service service = 1;
+}
+
+/**
+ * <p>Protocol buffers do not support inheritance but do support composition,
+ * enabling the message to represent many different service types. A service
+ * object should include an ID and a minimum of one other field.
+ */
+message Service {
+  // Identifier used to open a channel to the specified service
+  /**
+   * Identifier used to open a channel to the specified service.
+   * Supports values between 1 and 254; values 0 and 255 are reserved.
+   */
+  required int32 id = 1;
+  // Exactly one of these *must* be specified. The optional
+  // notation is only an artifact of expressing this as a
+  // protocol buffer.
+  // TODO: Use oneof for the following optional fields.
+  optional SensorSourceService sensor_source_service = 2;
+  optional MediaSinkService media_sink_service = 3;
+  optional InputSourceService input_source_service = 4;
+  optional MediaSourceService media_source_service = 5;
+  optional BluetoothService bluetooth_service = 6;
+  optional RadioService radio_service = 7;
+  optional NavigationStatusService navigation_status_service = 8;
+  optional MediaPlaybackStatusService media_playback_service = 9;
+  optional PhoneStatusService phone_status_service = 10;
+  optional MediaBrowserService media_browser_service = 11;
+  optional VendorExtensionService vendor_extension_service = 12;
+  optional GenericNotificationService generic_notification_service = 13;
+  optional WifiProjectionService wifi_projection_service = 14;
+}
+
+/** <p>The DriverPosition field indicates the supported driver positions in the
+ * vehicle. */
+enum DriverPosition {
+  /** Driver sits on the left. Ex. US */
+  DRIVER_POSITION_LEFT = 0;
+  /** Driver sits on the right. Ex. UK */
+  DRIVER_POSITION_RIGHT = 1;
+  /** Driver sits in the center. Ex. Formula 1. */
+  DRIVER_POSITION_CENTER = 2;
+  /** Driver position is not known. Strongly discouraged. */
+  DRIVER_POSITION_UNKNOWN = 3;
+}
+
+/**
+ * <p>The HU can use the following bitmask components to configure the behavior
+ * of the MD during projection.
+ */
+enum SessionConfiguration {
+  /**
+   * This message is not used on protocol 4.3 and newer.
+   * Use UiConfig#ui_elements to specify the components prefixed by UI_CONFIG
+   * instead.
+   */
+  option deprecated = true;
+
+  /** Tells the MD to not display any clock in the projected UI. */
+  UI_CONFIG_HIDE_CLOCK = 0x1;
+  /** Tells the MD to hide the projected UI's signal indicator. */
+  UI_CONFIG_HIDE_PHONE_SIGNAL = 0x2;
+  /** Tells the MD to hide the projected UI's battery level indicator. */
+  UI_CONFIG_HIDE_BATTERY_LEVEL = 0x4;
+  /**
+   * Indicates if the vehicle can play native media while running voice
+   * recognition. When unspecified, the default value is false.
+   */
+  CAN_PLAY_NATIVE_MEDIA_DURING_VR = 0x8;
+}
+
+/**
+ * The ConnectionConfiguration message contains the parameters which are sent
+ * between MD/HU to control the configuration parameters of a GAL session.
+ */
+message ConnectionConfiguration {
+  /* Configuration values relating to PING behaviors. */
+  optional PingConfiguration ping_configuration = 1;
+  /* Configuration values relating to WiFi TCP connections. */
+  optional WirelessTcpConfiguration wireless_tcp_configuration = 2;
+}
+
+/**
+ * The parameters used to specify the frequency and timeout values of ping
+ * messages from the HU to the MD.
+ */
+message PingConfiguration {
+  /**
+   * The duration before a head unit must close the connection due to
+   * ping timeout. (default 3000ms).
+   */
+  optional uint32 timeout_ms = 1;
+
+  /* The duration between PING messages being sent. (Default 1000ms) */
+  optional uint32 interval_ms = 2;
+
+  /**
+   * The minimum latency for the HU to notify a user of a poor connection.
+   * (Default 200ms)
+   */
+  optional uint32 high_latency_threshold_ms = 3;
+
+  /**
+   * The required number of pings above ping_warning_ms before notifying HU of a
+   * poor connection, or the minimum number of pings below ping_warning_ms
+   * before notifying the HU of a restored connection. (Default 5)
+   */
+  optional uint32 tracked_ping_count = 4;
+}
+
+/**
+ * Contains the parameters used to specify TCP socket parameters for a wireless
+ * connection.
+ **/
+message WirelessTcpConfiguration {
+  /* Deprecated, use socket_receive_buffer_size instead. */
+  optional uint32 socket_receive_buffer_size_kb = 1 [deprecated = true];
+
+  /* Deprecated, use socket_send_buffer_size instead. */
+  optional uint32 socket_send_buffer_size_kb = 2 [deprecated = true];
+
+  /* Read timeout before the connection should be closed. (Default 5000) */
+  optional uint32 socket_read_timeout_ms = 3;
+
+  /* Size of the socket receive buffer in bytes. (Default 16384, Max 65536) */
+  optional uint32 socket_receive_buffer_size = 4;
+
+  /* Size of the socket send buffer in bytes. (Default 16384) */
+  optional uint32 socket_send_buffer_size = 5;
+}
+
+/**
+ * <p>Optimally, location values are specified from raw GPS data. However, if
+ * doing so is technically infeasible, these flags can be used to indicate to
+ * the MD what sort of transformations are performed on the GPS data before the
+ * location data is sent to the MD.
+ */
+enum LocationCharacterization {
+  /** Prior location samples have been used to refine the raw GPS data (e.g. a
+   * Kalman Filter). */
+  PRIOR_LOCATIONS = 0x1;
+  /** Gyroscope data has been used to refine the raw GPS data. */
+  GYROSCOPE_FUSION = 0x2;
+  /** Accelerometer data has been used to refine the raw GPS data. */
+  ACCELEROMETER_FUSION = 0x4;
+  /** Compass data has been used to refine the raw GPS data. */
+  COMPASS_FUSION = 0x8;
+  /** Wheel speed has been used to refine the raw GPS data. */
+  WHEEL_SPEED_FUSION = 0x10;
+  /** Steering angle has been used to refine the raw GPS data. */
+  STEERING_ANGLE_FUSION = 0x20;
+  /** Car speed has been used to refine the raw GPS data. */
+  CAR_SPEED_FUSION = 0x40;
+  /**
+   * Some effort is made to dead-reckon location. In particular, this means that
+   * relative changes in location have meaning when no GPS satellite is
+   * available.
+   */
+  DEAD_RECKONED = 0x80;
+  /** Location is based solely on GPS satellite signals without fusion of other
+   * information. */
+  RAW_GPS_ONLY = 0x100;
+}
+
+/**
+ * <p>A mobile device uses the SensorSourceService to get values from vehicle
+ * sensors.
+ */
+message SensorSourceService {
+  /** List of advertised sensors. */
+  repeated Sensor sensors = 1;
+  /** Specifies the sensor type. */
+  message Sensor {
+    required SensorType sensor_type = 1;
+  }
+  /**
+   * A bitmask of LocationCharacterization flags that describes filtering and/or
+   * fusion that is performed on GPS data before it is sent to the MD. Note that
+   * this value is an overall declaration, and thus applies to all location data
+   * sent to the MD.
+   */
+  optional uint32 location_characterization = 2;
+  /**
+   * A list of all FuelTypes on which the vehicle can operate.
+   */
+  repeated FuelType supported_fuel_types = 3;
+
+  /**
+   * An ordered list of all connector/plug types supported for charging the
+   * EV/Hybrid vehicle. The list is ordered by preferred connectors first.
+   * So, if the list contains EV_CONNECTOR_TYPE_CHADEMO followed by
+   * EV_CONNECTOR_TYPE_J1772, that means CHADEMO is preferred over J1772 for
+   * charging.
+   *
+   * If this field is populated, then the supported_fuel_types
+   * list above must contain FUEL_TYPE_ELECTRIC value.
+   */
+  repeated EvConnectorType supported_ev_connector_types = 4;
+}
+
+/** <p>AAP supports the following sensor types (vehicles may advertise a subset
+ * of this list): */
+enum SensorType {
+  SENSOR_LOCATION = 1;
+  SENSOR_COMPASS = 2;
+  SENSOR_SPEED = 3;
+  SENSOR_RPM = 4;
+  SENSOR_ODOMETER = 5;
+  SENSOR_FUEL = 6;
+  SENSOR_PARKING_BRAKE = 7;
+  SENSOR_GEAR = 8;
+  SENSOR_OBDII_DIAGNOSTIC_CODE = 9;
+  SENSOR_NIGHT_MODE = 10;
+  SENSOR_ENVIRONMENT_DATA = 11;
+  SENSOR_HVAC_DATA = 12;
+  SENSOR_DRIVING_STATUS_DATA = 13;
+  SENSOR_DEAD_RECKONING_DATA = 14;
+  SENSOR_PASSENGER_DATA = 15;
+  SENSOR_DOOR_DATA = 16;
+  SENSOR_LIGHT_DATA = 17;
+  SENSOR_TIRE_PRESSURE_DATA = 18;
+  SENSOR_ACCELEROMETER_DATA = 19;
+  SENSOR_GYROSCOPE_DATA = 20;
+  SENSOR_GPS_SATELLITE_DATA = 21;
+  SENSOR_TOLL_CARD = 22;
+  SENSOR_VEHICLE_ENERGY_MODEL_DATA = 23;
+  SENSOR_TRAILER_DATA = 24;
+}
+
+/** <p>List of fuel types on which a vehicle can run. */
+enum FuelType {
+  /**
+   * Fuel type to use if the HU does not know on which types of fuel the vehicle
+   * runs. The use of this value is generally discouraged outside of aftermarket
+   * units.
+   */
+  FUEL_TYPE_UNKNOWN = 0;
+  /** Unleaded gasoline */
+  FUEL_TYPE_UNLEADED = 1;
+  /** Leaded gasoline */
+  FUEL_TYPE_LEADED = 2;
+  /** Diesel #1 */
+  FUEL_TYPE_DIESEL_1 = 3;
+  /** Diesel #2 */
+  FUEL_TYPE_DIESEL_2 = 4;
+  /** Biodiesel */
+  FUEL_TYPE_BIODIESEL = 5;
+  /** 85% ethanol/gasoline blend */
+  FUEL_TYPE_E85 = 6;
+  /** Liquified petroleum gas */
+  FUEL_TYPE_LPG = 7;
+  /** Compressed natural gas */
+  FUEL_TYPE_CNG = 8;
+  /** Liquified natural gas */
+  FUEL_TYPE_LNG = 9;
+  /** Electric */
+  FUEL_TYPE_ELECTRIC = 10;
+  /** Hydrogen fuel cell */
+  FUEL_TYPE_HYDROGEN = 11;
+  /**
+   * Fuel type to use when no other types apply. Before using this value, work
+   * with Google to see if the FuelType enum can be extended with an appropriate
+   * value.
+   */
+  FUEL_TYPE_OTHER = 12;
+}
+
+/**
+ * <p>Enum to identify standard connector types available on EV or Hybrid
+ * vehicles for electric charging.
+ * See http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=6872107 for
+ * additional information/context on EV charging connector types.
+ */
+enum EvConnectorType {
+  /**
+   * Default type if the vehicle does not know or report the EV connector
+   * type.
+   */
+  EV_CONNECTOR_TYPE_UNKNOWN = 0;
+  /** IEC 62196 Type 1 connector */
+  EV_CONNECTOR_TYPE_J1772 = 1;
+  /** IEC 62196 Type 2 connector */
+  EV_CONNECTOR_TYPE_MENNEKES = 2;
+  EV_CONNECTOR_TYPE_CHADEMO = 3;
+  /** Combined Charging System (AC and DC). Based on SAE Type-1 J-1772 connector
+   */
+  EV_CONNECTOR_TYPE_COMBO_1 = 4;
+  /** Combined Charging System (AC and DC). Based on Type-2 Mennekes
+   * connector */
+  EV_CONNECTOR_TYPE_COMBO_2 = 5;
+
+  EV_CONNECTOR_TYPE_TESLA_ROADSTER = 6 [deprecated = true];
+  EV_CONNECTOR_TYPE_TESLA_HPWC = 7 [deprecated = true];
+  EV_CONNECTOR_TYPE_TESLA_SUPERCHARGER = 8;
+  EV_CONNECTOR_TYPE_GBT = 9;
+
+  /**
+   * Connector type to use when no other types apply. Before using this
+   * value, work with Google to see if the EvConnectorType enum can be
+   * extended with an appropriate value.
+   */
+  EV_CONNECTOR_TYPE_OTHER = 101;
+}
+
+/**
+ * <p>A media sink accepts data from the mobile device. Can be an audio
+ * sink or a video sink (but not both).
+ */
+message MediaSinkService {
+  /**
+   * Codec type of this media sink.
+   *
+   * Required to be set for audio services.
+   *
+   * For video services this field is generally not used. It is never set in the
+   * receiver_lib, and all video services are assumed to be using the
+   * MEDIA_CODEC_VIDEO_H264_BP codec (which is the only video codec currently
+   * supported). In the event that this field is somehow set for a video
+   * service, its value may only be MEDIA_CODEC_VIDEO_H264_BP.
+   */
+  optional MediaCodecType available_type = 1 [default = MEDIA_CODEC_AUDIO_PCM];
+  /** Type of audio stream (if an audio sink). */
+  optional AudioStreamType audio_type = 2;
+  /** Audio configuration (if an audio sink). */
+  repeated AudioConfiguration audio_configs = 3;
+  /** Video configuration (if a video sink). */
+  repeated VideoConfiguration video_configs = 4;
+  /** Deprecated and unused. */
+  optional bool available_while_in_call = 5 [deprecated = true];
+
+  /**
+   * Display number, starts at 0 and should be the same for all end points that
+   * refer to the same display. Used for video sink only, should be left
+   * unset for audio sinks.
+   */
+  optional uint32 display_id = 6;
+
+  /**
+   * Specify the type of display. For the first display (display_id = 0),
+   * display_type must be DISPLAY_TYPE_MAIN. Used for video sinks only,
+   * should be left unset for audio sinks.
+   */
+  optional DisplayType display_type = 7;
+
+  /**
+   * For video sinks with display_type AUXILIARY, specifies the content that
+   * will be shown on the display at startup. Must be one of KEYCODE_NAVIGATION
+   * or KEYCODE_TURN_CARD. Must be left unset for audio sinks, and for video
+   * sinks with a display_type other than AUXILIARY.
+   */
+  optional KeyCode initial_content_keycode = 8;
+}
+
+message VideoConfiguration {
+  /** Supported video resolution. */
+  optional VideoCodecResolutionType codec_resolution = 1;
+  /** Supported maximum frame rate. */
+  optional VideoFrameRateType frame_rate = 2;
+  /** Number of pixels in the X axis in which content will not render. */
+  optional uint32 width_margin = 3;
+  /** Number of pixels in the Y axis in which content will not render. */
+  optional uint32 height_margin = 4;
+  /** Bucketed density, in dots-per-inch (DPI). */
+  optional uint32 density = 5;
+  /**
+   * Additional number of frames for video decoder to display a frame. By
+   * default, this is 0 which means that decoder can display the last frame
+   * without getting more frames.
+   */
+  optional uint32 decoder_additional_depth = 6;
+  /**
+   * The average screen-to-eye distance in millimeters. The MD will use this
+   * value to provide a more usable projected interface.
+   */
+  optional uint32 viewing_distance = 7;
+  /**
+   * The aspect ratio of the physical pixel width over height, multiplied by
+   * 1e4. The Android device will make a best effort attempt to compensate for
+   * the non-square pixels. However due to hardware limitations of the device,
+   * power constraints, and user experience considerations, it may not be
+   * possible to fully compensate for pixels whose aspect ratio differs
+   * significantly from 1.
+   */
+  optional uint32 pixel_aspect_ratio_e4 = 8;
+  /**
+   * Actual physical dots-per-inch of the screen.
+   * Calculated by (vertical_codec_resolution - height_margin) /
+   * vertical_physical_size of rendered video.
+   */
+  optional uint32 real_density = 9;
+  /**
+   * The video codec type for this video configuration.
+   *
+   * This field must be set to MEDIA_CODEC_VIDEO_H264_BP, the only video codec
+   * currently supported.
+   */
+  optional MediaCodecType video_codec_type = 10;
+  /**
+   * Initial UI configuration. Can be updated with an UpdateUiConfigRequest
+   */
+  optional UiConfig ui_config = 11;
+}
+
+/**
+ * The UiConfig includes updatable parts of the video configuration.
+ * These fields can be updated by calling UpdateUiConfigRequest.
+ * In the future, more fields may be added to this message,
+ * but codec and resolution should not be added here. If we need
+ * to change those, we will use service rediscovery instead.
+ */
+message UiConfig {
+  /**
+   * If present in SDR, overrides width_margin and height_margin in version 1.6
+   * of the protocol, and can be used to place the image off-center inside the
+   * video. Note that this value can be used to resize the drawable area of the
+   * display dynamically with UpdateUiConfigRequest.
+   * If not present in SDR, width_margin and height_margin will be used instead.
+   */
+  optional Insets margins = 1;
+  /**
+   * The content insets specifies an area of the screen where it
+   * is safe to put information. The area outside of the content insets
+   * may or may not be visible. The content insets is counted from inside
+   * the |margin| above.
+   * If not present in SDR, defaults to all zeroes.
+   */
+  optional Insets content_insets = 2;
+  /**
+   * The insets may be updated dynamically through the UpdateUiConfigRequest
+   * protocol message, but each inset dimension in |content_insets| must always
+   * be less or equal to the corresponding value in |stable_content_insets|.
+   * If not present in SDR, defaults to all zeroes.
+   */
+  optional Insets stable_content_insets = 3;
+  /**
+   * The UI theme of the display specifies the colors that will be used to
+   * render the projected UI - either a light theme suitable for daytime use or
+   * blending into light-themed UIs, a dark theme suitable for nighttime use or
+   * blending into dark-themed UIs, or an automatically-selected theme that
+   * allows the MD to select the theme, based on the HU's global
+   * SENSOR_NIGHT_MODE sensor.
+   *
+   * If not present in SDR, defaults to UI_THEME_AUTOMATIC. Note that this value
+   * cannot be updated later with UpdateUiConfigRequest.
+   */
+  optional UiTheme ui_theme = 4;
+  /**
+   * The UI elements that are present on the HU, through
+   * the native UI or a hardware button. Each element in the list must be
+   * distinct. Note that this field may be updated dynamically with
+   * UpdateUiConfigRequest.
+   * If not present in SDR, defaults to an empty list.
+   */
+  repeated UiElement ui_elements = 5;
+  /**
+   * The actions that can currently be taken on the HU. Currently, the supported
+   * actions are mutually exclusive, so the list may contain at most one value.
+   * Note that this field may be updated dynamically with UpdateUiConfigRequest.
+   * If not present in SDR, defaults to an empty list.
+   */
+  repeated Action actions = 6;
+}
+
+/** <p>An Insets instance holds four integer offsets which describe changes
+ * to the four edges of a Rectangle. Positive values move edges towards the
+ * center of the rectangle.</p>
+ */
+message Insets {
+  optional uint32 top = 1;
+  optional uint32 bottom = 2;
+  optional uint32 left = 3;
+  optional uint32 right = 4;
+}
+
+/**
+ * The possible element types that are present to the user through
+ * the native UI or a hardware button.
+ */
+enum UiElement {
+  UI_ELEMENT_UNKNOWN = 0;
+  UI_ELEMENT_CLOCK = 1;
+  UI_ELEMENT_BATTERY_LEVEL = 2;
+  UI_ELEMENT_PHONE_SIGNAL = 3;
+  UI_ELEMENT_NATIVE_UI_AFFORDANCE = 4;
+  UI_ELEMENT_NAVIGATION_TURN_DATA_AVAILABLE = 5;
+}
+
+/**
+ * An action that can be taken on the HU.
+ */
+message Action {
+  optional ActionType action_type = 1;
+}
+
+/**
+ * The possible action types that can be taken on the HU. Currently, the action
+ * types are mutually exclusive.
+ */
+enum ActionType {
+  ACTION_UNKNOWN = 0;
+  ACTION_RESIZE_TO_SMALLER = 1;
+  ACTION_RESIZE_TO_LARGER = 2;
+}
+
+/** <p>AAP supports the following resolutions:</p> */
+enum VideoCodecResolutionType {
+  VIDEO_800x480 = 1;
+  VIDEO_1280x720 = 2;
+  VIDEO_1920x1080 = 3;
+  VIDEO_2560x1440 = 4;
+  VIDEO_3840x2160 = 5;
+  VIDEO_720x1280 = 6;
+  VIDEO_1080x1920 = 7;
+  VIDEO_1440x2560 = 8;
+  VIDEO_2160x3840 = 9;
+}
+
+/** <p>AAP supports the following frame rates: */
+enum VideoFrameRateType {
+  VIDEO_FPS_60 = 1;
+  VIDEO_FPS_30 = 2;
+}
+
+/**
+ * <p>A media source generates data. For example, a microphone is media source.
+ */
+message MediaSourceService {
+  optional MediaCodecType available_type = 1 [default = MEDIA_CODEC_AUDIO_PCM];
+  optional AudioConfiguration audio_config = 2;
+  /**
+   * Indicates whether the source is available during an active phone call. Used
+   * for audio source only. When unspecified, default value is false.
+   */
+  optional bool available_while_in_call = 3;
+}
+/** <p>AAP supports the following sampling rates, number of bits, and number of
+ * channels: */
+message AudioConfiguration {
+  /** 16000, 44100, or 48000 Hz */
+  required uint32 sampling_rate = 1;
+  /** 8, 16, or 24 bits */
+  required uint32 number_of_bits = 2;
+  /** 1 = mono, 2 = stereo */
+  required uint32 number_of_channels = 3;
+}
+
+/**
+ * <p>AAP supports the following audio and video codecs:
+ */
+enum MediaCodecType {
+  /** Raw PCM Frames. */
+  MEDIA_CODEC_AUDIO_PCM = 1;
+  /** Raw AAC Frames. */
+  MEDIA_CODEC_AUDIO_AAC_LC = 2;
+  /** H264 NAL units. */
+  MEDIA_CODEC_VIDEO_H264_BP = 3;
+  /** AAC frames which include ADTS headers. */
+  MEDIA_CODEC_AUDIO_AAC_LC_ADTS = 4;
+  /** VP9 codec */
+  MEDIA_CODEC_VIDEO_VP9 = 5;
+  /** AV1 codec */
+  MEDIA_CODEC_VIDEO_AV1 = 6;
+  /** H265 codec */
+  MEDIA_CODEC_VIDEO_H265 = 7;
+}
+
+/**
+ * <p>AAP supports the following audio stream types:
+ */
+enum AudioStreamType {
+  AUDIO_STREAM_GUIDANCE = 1;
+  AUDIO_STREAM_SYSTEM_AUDIO = 2;
+  AUDIO_STREAM_MEDIA = 3;
+  /** TELEPHONY is for future extension and should not be used for now. */
+  AUDIO_STREAM_TELEPHONY = 4;
+}
+
+/**
+ * <p>AAP supports the following display types:
+ */
+enum DisplayType {
+  /** Main display, assumed to be front-center in the car. */
+  DISPLAY_TYPE_MAIN = 0;
+  /** Instrument cluster display, assumed to be in front of the driver. */
+  DISPLAY_TYPE_CLUSTER = 1;
+  /** Auxiliary display, assumed to be in front of the driver. */
+  DISPLAY_TYPE_AUXILIARY = 2;
+}
+
+/**
+ * <p>The HU can control how the UI is rendered by selecting a UI theme:
+ */
+enum UiTheme {
+  /**
+   * Automatic theme.
+   *
+   * When this theme is selected, the MD will select an appropriate theme for
+   * the UI, based on the HU's SENSOR_NIGHT_MODE sensor reports, possibly
+   * alongside other inputs.
+   */
+  UI_THEME_AUTOMATIC = 0;
+
+  /**
+   * Light theme.
+   *
+   * When this theme is selected, the MD will render the projected UI with
+   * light background colors and dark text. This theme is suitable for use in
+   * the daytime or other high-brightness environments.
+   */
+  UI_THEME_LIGHT = 1;
+
+  /**
+   * Dark mode.
+   *
+   * When this theme is selected, the MD will render the projected UI with dark
+   * background colors and light text. This theme is suitable for use at night,
+   * in tunnels, or in other low-ambient-brightness environments.
+   */
+  UI_THEME_DARK = 2;
+}
+
+/**
+ * <p>The type of a touchscreen.
+ */
+enum TouchScreenType {
+  CAPACITIVE = 1;
+  RESISTIVE = 2;
+  INFRARED = 3;
+}
+
+/**
+ * <p>The InputSourceService enables vehicles to report human input on touch and
+ * non-touch input devices to mobile devices.
+ */
+message InputSourceService {
+  /** List of supported keycodes supported (see Appendix II). */
+  repeated int32 keycodes_supported = 1 [packed = true];
+  /**
+   * AAPv1.0 supports a single touch screen (the one connected to the vehicle
+   * head unit display). Marked repeated for future expansion.
+   */
+  repeated TouchScreen touchscreen = 2;
+
+  /**
+   * AAPv1.0 supports a single touchpad (the one connected to the primary
+   * vehicle display). Marked repeated for future expansion. The touchpad
+   * resolution can be smaller than the touchscreen resolution. All reported
+   * TouchEvents should be absolute within the declared coordinate space.
+   */
+  repeated TouchPad touchpad = 3;
+  /**
+   * List of supported feedback events. If FEEDBACK_DRAG_START is supported,
+   * FEEDBACK_DRAG_END must be supported as well.
+   */
+  repeated FeedbackEvent feedback_events_supported = 4;
+
+  /**
+   * The display that these inputs are related to.
+   */
+  optional uint32 display_id = 5;
+
+  message TouchScreen {
+    /** Width in pixels. */
+    required int32 width = 1;
+    /** Height in pixels. */
+    required int32 height = 2;
+    /** Type of the touchscreen */
+    optional TouchScreenType type = 3;
+    /**
+     * EXPERIMENTAL SUPPORT ONLY. Contact the GAL team if you would like to
+     * use this feature.
+     *
+     * Set this to true if this touchscreen should be treated as a secondary
+     * input and the UI should be optimized for non-touch. If not set to
+     * true, the touchscreen will be the primary input.
+     */
+    optional bool is_secondary = 4;
+  }
+
+  message TouchPad {
+    /** Width in pixels. */
+    required int32 width = 1;
+    /** Height in pixels. */
+    required int32 height = 2;
+    /**
+     * Set to true if this touchpad should be used to navigate through the UI.
+     * If not set to true, this touchpad will only be used for tasks such as
+     * handwriting input.
+     */
+    optional bool ui_navigation = 3;
+    /** Width in mm. */
+    optional int32 physical_width = 4;
+    /** Height in mm. */
+    optional int32 physical_height = 5;
+    /**
+     * EXPERIMENTAL SUPPORT ONLY. Contact the GAL team if you would like to
+     * use this feature.
+     *
+     * If both ui_navigation and this flag are true, then the touchpad will
+     * map to the screen in terms absolute coordinates when navigating
+     * through the UI. If ui_navigation is true and this flag is false, then
+     * touchpad movements will be interpreted as gestures. If ui_navigation
+     * is false, this flag has no effect.
+     */
+    optional bool ui_absolute = 6;
+    /**
+     * EXPERIMENTAL SUPPORT ONLY. Contact the GAL team if you would like to
+     * use this feature.
+     *
+     * Set to true if a tap on the touchpad should be a select event. When
+     * set to false, a tap on the touchpad should not be a select event.
+     */
+    optional bool tap_as_select = 7;
+    /**
+     * A number from 1 to 10 (inclusive) to configure the touchpad's
+     * sensitivity. Larger numbers are more sensitive, requiring smaller
+     * inputs to trigger movement. This only applies when ui_navigation is
+     * true and does not affect usages like handwriting input.
+     */
+    optional int32 sensitivity = 8;
+  }
+}
+
+/**
+ * <p>The BluetoothPairingMethod service enables a mobile device to
+ * automatically pair a Bluetooth connection with the vehicle.</p>
+ */
+message BluetoothService {
+  /** Bluetooth MAC address of the vehicle. */
+  required string car_address = 1;
+  /** Supported pairing methods. */
+  repeated BluetoothPairingMethod supported_pairing_methods = 2 [packed = true];
+}
+
+/**
+ * <p>AAP supports the following pairing methods:
+ */
+enum BluetoothPairingMethod {
+  /** Do not use. */
+  BLUETOOTH_PAIRING_UNAVAILABLE = -1;
+
+  /** Secure simple pairing. */
+  BLUETOOTH_PAIRING_OOB = 1;
+  /** Both sides display a number, user authorizes. */
+  BLUETOOTH_PAIRING_NUMERIC_COMPARISON = 2;
+  /** Passkey based pairing. */
+  BLUETOOTH_PAIRING_PASSKEY_ENTRY = 3;
+  /** Pin based pairing. */
+  BLUETOOTH_PAIRING_PIN = 4;
+}
+
+/**
+ * <p>The RadioService enables mobile devices to tune and get details for
+ * in-vehicle radio tuners.
+ */
+message RadioService {
+  /** Properties for all the radios. */
+  repeated RadioProperties radio_properties = 1;
+}
+
+message RadioProperties {
+  /** Non zero unique id for this radio. */
+  required int32 radio_id = 1;
+  required RadioType type = 2;
+  /**
+   * List of channel ranges (allows for gaps).  The unit depends on the radio
+   * type, for example, the unit for AM/FM radio is in hertz.
+   */
+  repeated Range channel_range = 3;
+  /**
+   * List of channel spacing values supported by this radio.  The unit depends
+   * on the radio type, for example, the unit for AM/FM radio is in hertz.
+   */
+  repeated int32 channel_spacings = 4;
+  /** Currently used channel spacing. */
+  required int32 channel_spacing = 5;
+  /**
+   * Background tuner availability for this radio for things like retrieving
+   * program list in the background.
+   */
+  optional bool background_tuner = 6;
+  optional ItuRegion region = 7;
+  /** RDS support */
+  optional RdsType rds = 8;
+  /** Alternative frequency switching support */
+  optional bool af_switch = 9;
+  /** Traffic announcement support */
+  optional bool ta = 10;
+  /** Traffic service support */
+  optional TrafficServiceType traffic_service = 11;
+  /** Radio audio is looped back to SoC (not currently used). */
+  optional bool audio_loopback = 12;
+  /** Radio only muting support */
+  optional bool mute_capability = 13;
+  /** 0 = no presets access, 1 = read only, 2 = read and write */
+  optional int32 station_presets_access = 14;
+}
+
+enum TrafficServiceType {
+  NO_TRAFFIC_SERVICE = 0;
+  TMC_TRAFFIC_SERVICE = 1;
+}
+
+enum RdsType {
+  NO_RDS = 0;
+  /** World */
+  RDS = 1;
+  /** North America */
+  RBDS = 2;
+}
+
+message Range {
+  required int32 min = 1;
+  required int32 max = 2;
+}
+
+/**
+ * <p>AAP supports the following radio types:
+ */
+enum RadioType {
+  AM_RADIO = 0;
+  FM_RADIO = 1;
+  AM_HD_RADIO = 2;
+  FM_HD_RADIO = 3;
+  DAB_RADIO = 4;
+  XM_RADIO = 5;
+}
+
+enum ItuRegion {
+  RADIO_REGION_NONE = 0;
+  RADIO_REGION_ITU_1 = 1;
+  RADIO_REGION_ITU_2 = 2;
+  RADIO_REGION_OIRT = 3;
+  RADIO_REGION_JAPAN = 4;
+  RADIO_REGION_KOREA = 5;
+}
+
+/**
+ * <p>The NavigationStatusService enables the mobile device to provide metadata
+ * about turn-by-turn navigation to the vehicle for display in the vehicle
+ * instrument cluster.
+ */
+message NavigationStatusService {
+  /** <p>Minimum interval between screen updates in ms. */
+  required int32 minimum_interval_ms = 1;
+  required InstrumentClusterType type = 2;
+  optional ImageOptions image_options = 3;
+  // TODO: Add fields for media play-state/metadata/browsing.
+  enum InstrumentClusterType {
+    /**
+     * PNG image sent in Navigation Next Turn events with enumerations
+     * describing the next turn.
+     */
+    IMAGE = 1;
+    /**
+     * Only the enumerations describing the next turn are sent in Navigation
+     * Next Turn events.
+     */
+    ENUM = 2;
+  }
+  message ImageOptions {
+    /** Height in pixels of the image sent in Navigation Next Turn events. */
+    required int32 height = 1;
+    /**
+     * Width in pixels of the image sent in Navigation Next Turn events. For
+     * best results, height should be equal to width (otherwise squares become
+     * rectangles, circles become ellipses, etc).
+     */
+    required int32 width = 2;
+    /** Colour depth of the image in bits.  Legal values are 8, 16 and 32. */
+    required int32 colour_depth_bits = 3;
+  }
+}
+/**
+ * <p>The MediaPlaybackStatusService enables a mobile device to send details of
+ * the currently playing media to the vehicle for display in the vehicle
+ * instrument cluster.
+ */
+message MediaPlaybackStatusService {}
+/**
+ * <p>The PhoneStatusService enables a mobile device to send details of active
+ * phone calls to the vehicle for display in the vehicle instrument cluster.
+ */
+message PhoneStatusService {}
+/**
+ * <p>The MediaBrowserService enables a vehicle to request details for mobile
+ * device media sources.
+ */
+message MediaBrowserService {}
+// See the section on Vendor extensions for details.
+/**
+ * <p>The VendorExtensionService enables implementation of vendor specific
+ * services over AAP. These services are not interpreted and are treated as raw
+ * byte transports, so the application that opens a channel to such a service
+ * must interpret the contents. <div class="note">NOTE: Payload of each vendor
+ * extension message is restricted to 512KB unless that specific extension or
+ * message explicitly allows bigger data. </div>
+ */
+message VendorExtensionService {
+  /** Must use the form <em>com.make.model.serviceName<em>. */
+  required string service_name = 1;
+  repeated string package_white_list = 2;
+  /** Use to describe the service. */
+  optional bytes data = 3;
+}
+
+/**
+ * <p>The GenericNotificationService enables the establishment of a
+ * bi-directional notification system.
+ */
+message GenericNotificationService {}
+
+/**
+ * <h2>Channel Setup</h2>
+ * <p>After discovering a service, a mobile device can establish a channel to
+ * the service using the Service ID from the ServiceDiscoveryResponse. Only the
+ * mobile device can open and close channels, making it responsible for dynamic
+ * allocation of Channel ID. The device may reuse Channel ID after receiving a
+ * successful ChannelCloseResponse. <p>Channel setup is performed with channel
+ * control messages (the frame contains the channel number, and the channel
+ * control bit is set). Setup and teardown proceeds as follows:</p>
+ * @startSequenceDiagram Channel Setup & Teardown
+ * identifier A: Device
+ * identifier B: Vehicle
+ * message A->B: ChannelOpenRequest, priority, serviceId
+ * message B->A: ChannelOpenResponse, status
+ * spacer: ... messages exchanged over the channel ...
+ * message A->B: ChannelCloseRequest
+ * message B->A: ChannelCloseResponse, status
+ * @endSequenceDiagram
+ * <div class="note">NOTE: The Channel ID appears in the frame header of all
+ * channel control messages.</div>
+ */
+/**
+ * @type MESSAGE_CHANNEL_OPEN_REQUEST
+ * <p>This message is sent over the channel to be opened.
+ */
+message ChannelOpenRequest {
+  /** -128 is the highest priority, 127 is the lowest priority. */
+  required sint32 priority = 1;
+  /** Service ID from the ServiceDiscoveryResponse. */
+  required int32 service_id = 2;
+}
+
+/**
+ * @type MESSAGE_CHANNEL_OPEN_RESPONSE
+ * <p>This message is sent over the channel to be opened (regardless of whether
+ * the channel was opened successfully or not).
+ */
+message ChannelOpenResponse {
+  /** Status of the channel open operation. */
+  required MessageStatus status = 1;
+}
+
+/**
+ * @type MESSAGE_CHANNEL_CLOSE_NOTIFICATION
+ * <p>This message is sent over the channel to be closed. Data is implicit
+ * (message does not contain fields).
+ */
+message ChannelCloseNotification {}
+
+/**
+ * <h2>Navigation Focus</h2>
+ * <p>Navigation focus ensures a single turn-by-turn navigation system is
+ * running at any time. Each side (vehicle and mobile device) should ensure that
+ * it has navigation focus before starting turn-by-turn navigation, with the
+ * side that loses navigation focus terminating its navigation guidance. The
+ * vehicle has ultimate authority over which side has navigation focus.
+ */
+
+enum NavFocusType {
+  /** Vehicle head unit can run turn-by-turn navigation. */
+  NAV_FOCUS_NATIVE = 1;
+  /** Mobile device can run turn-by-turn navigation. */
+  NAV_FOCUS_PROJECTED = 2;
+}
+
+/**
+ * @type MESSAGE_NAV_FOCUS_REQUEST
+ * <p>This message is sent by the mobile device to request navigation focus. A
+ * device cannot begin turn-by-turn navigation until it has received a response
+ * to this message. The HU must respond with a NavFocusNotification, regardless
+ * of whether or not it grants the request.
+ */
+message NavFocusRequestNotification {
+  /** This can be projected to gain focus or native to release focus. */
+  optional NavFocusType focus_type = 1;
+}
+
+/**
+ * @type MESSAGE_NAV_FOCUS_NOTIFICATION
+ * <p>This message can be sent unsolicited or in response to a
+ * NavFocusRequestNotification. If user initiates turn-by-turn navigation from
+ * the native interface, the head unit immediately sends this message to prompt
+ * the mobile device to terminate its turn-by-turn navigation. When responding
+ * to a NavigationFocusRequestNotification, the head unit should first turn off
+ * its own turn-by-turn navigation then send the device the message that grants
+ * navigation focus.
+ */
+message NavFocusNotification {
+  required NavFocusType focus_type = 1;
+}
+
+/**
+ * <h2>Diagnostics</h2>
+ * <p>AAP includes ping request and response messages for running diagnostics.
+ */
+
+/**
+ * @type MESSAGE_PING_REQUEST
+ * <p>This message can be sent by the HU or MD. The recipient of this message
+ * must send a PingResponse as soon as possible and should capture a bugreport
+ * if requested, but should otherwise take no actions. In particular, any
+ * connection health monitoring a device does should rely solely on the
+ * PingRequests it sends and the PingResponses it receives, and not on the
+ * PingRequests it receives.
+ */
+message PingRequest {
+  /** Local timestamp of the sender in milliseconds. */
+  required int64 timestamp = 1;
+  /** Indicates whether the other side should save a bug report. */
+  optional bool bug_report = 2;
+  /**
+   * For passing raw data bytes. This is an optional field for testing
+   * throughput and latency.
+   */
+  optional bytes data = 3;
+}
+
+/**
+ * @type MESSAGE_PING_RESPONSE
+ * <p>This message is sent in response to a PingRequest. The timestamp and data
+ * fields should be copied from the PingRequest to serve as a unique identifier
+ * and to inform the sender of the ping-computed round trip time.
+ */
+message PingResponse {
+  required int64 timestamp = 1;
+  optional bytes data = 2;
+}
+
+/**
+ * <h2>ByeBye</h2>
+ * <p>AAP includes messages that enable each side (vehicle and mobile device) to
+ * notify the other side that projection is complete and to provide a reason for
+ * completion. The ByeByeRequest receiver replies with a ByeByeResponse, after
+ * which message exchange ceases and projection stops.
+ */
+
+/**
+ * @type MESSAGE_BYEBYE_REQUEST
+ * <p>This message notifies the other side that projection is finished due to
+ * the supplied reason.
+ */
+message ByeByeRequest {
+  required ByeByeReason reason = 1;
+}
+enum ByeByeReason {
+  /**
+   * User selected to finish projection mode; receiver should not automatically
+   * re-start projection. If connectivity was USB, mobile device may do
+   * re-enumeration but the vehicle should not restart AOAP unless the user has
+   * explicitly disconnected then re-connected the USB cable.
+   */
+  USER_SELECTION = 1;
+  /**
+   * User selected to terminate the current AAP connection and initiate a new
+   * connection with another mobile device.
+   */
+  DEVICE_SWITCH = 2;
+  /**
+   * The MD does not support AAP, and it is safe to assume that the MD will
+   * never support AAP.
+   */
+  NOT_SUPPORTED = 3;
+  /**
+   * The MD does not currently support AAP but supported might be added in the
+   * future.
+   */
+  NOT_CURRENTLY_SUPPORTED = 4;
+  /** Only sent as a response to a probe request - the device supports AAP. */
+  PROBE_SUPPORTED = 5;
+}
+/**
+ * @type MESSAGE_BYEBYE_RESPONSE
+ * <p>This message is sent in response to a ByeByeRequest. After sending this
+ * message, AAP stops.
+ */
+message ByeByeResponse {}
+
+/**
+ * <h2>Voice Session Notification</h2>
+ * <p> Voice session notification messages enable the mobile device to notify
+ * the head unit of the voice session status (session started or session ended).
+ */
+
+/**
+ * @type MESSAGE_VOICE_SESSION_NOTIFICATION
+ * <p>This message is sent by the mobile device to signal the start and end of a
+ * voice recognition session running on the device. The device should send any
+ * short presses of the BVRA button to the mobile device during an active
+ * session.
+ */
+message VoiceSessionNotification {
+  /** The status of the voice session. */
+  optional VoiceSessionStatus status = 1;
+}
+/**
+ * <p>Defines state of a voice recognition session running on the mobile device.
+ */
+enum VoiceSessionStatus {
+  /** New voice recognition session has started. */
+  VOICE_SESSION_START = 1;
+  /** Current voice recognition session has ended. */
+  VOICE_SESSION_END = 2;
+}
+
+/**
+ * @type MESSAGE_CAR_CONNECTED_DEVICES_REQUEST
+ * <p>This message is sent by the mobile device to request a list of
+ * connected devices.
+ */
+message CarConnectedDevicesRequest {}
+
+/**
+ * @type MESSAGE_CAR_CONNECTED_DEVICES_RESPONSE
+ * <p>This message is sent by the head unit with a list of connected devices.
+ */
+message CarConnectedDevices {
+  // A list of ALL discovered mobile devices connected to the head unit to which
+  // the head unit can initiate an AAP connection. This list MUST NOT include
+  // the mobile device currently projecting.
+  repeated ConnectedDevice connected_devices = 1;
+
+  // False when responding to a CarConnectedDevicesRequest;
+  // true when unsolicited.
+  optional bool unsolicited = 2;
+
+  // False if the HU is still discovering nearby mobile devices and this is not
+  // the final list of connected devices. True if the HU has finished the
+  // device discovery process and this is the final list.
+  optional bool final_list = 3 [default = true];
+}
+
+message ConnectedDevice {
+  // Name of the device that will be displayed to the user.
+  optional string device_name = 1;
+  // Device ID, it should be unique and recognizable in UserSwitchRequest.
+  optional int32 device_id = 2;
+}
+
+/**
+ * @type MESSAGE_USER_SWITCH_REQUEST
+ * <p>This message is sent by the mobile device to request to switch to another
+ * mobile device for Android Auto projection.
+ */
+message UserSwitchRequest {
+  /**
+   * This message is sent by the mobile device to request that the head unit
+   * terminate the current AAP connection and initiate a new connection with
+   * the specified device. The head unit should respond to this message with
+   * MESSAGE_USER_SWITCH_RESPONSE with the status of the switch request.
+   * If successful, the head unit should then terminate the existing
+   * connection by sending a ByeByeRequest with reason DEVICE_SWITCH.
+   */
+  optional ConnectedDevice selected_device = 1;
+}
+
+/**
+ * @type MESSAGE_USER_SWITCH_RESPONSE
+ * <p> This message is sent by the head unit in response to
+ * MESSAGE_USER_SWITCH_RESPONSE, detailing the status of the switch request.
+ */
+message UserSwitchResponse {
+  /** Result of the user switch request */
+  optional UserSwitchStatus status = 1;
+  /** Mobile device that was sent by UserSwitchResponse */
+  optional ConnectedDevice selected_device = 2;
+}
+
+/**
+ * Status codes to be sent with UserSwitchResponse
+ */
+enum UserSwitchStatus {
+  /** User switch successful, to be followed with a ByeByeRequest */
+  STATUS_OK = 0;
+  /** Phone never connects RFCOMM to the HU **/
+  ERROR_NO_RFCOMM_CONNECTION = -1;
+  /** Bluetooth RFCOMM connection was closed before the HU requested start */
+  ERROR_BT_CLOSED_BEFORE_START = -2;
+  /** Bluetooth RFCOMM connection was closed after the HU requested start */
+  ERROR_BT_CLOSED_AFTER_START = -3;
+  /** Phone's Bluetooth RFCOMM protocol version isn't compatible */
+  ERROR_INCOMPATIBLE_PHONE_PROTOCOL_VERSION = -4;
+  /** Phone responds to start request with error */
+  ERROR_PHONE_UNABLE_TO_CONNECT_WIFI = -5;
+  /** Another UserSwitchRequest is received while attempting to switch */
+  ERROR_MULTIPLE_USER_SWITCH_REQUEST = -6;
+  /** Internal head unit error, unable to perform user switch */
+  ERROR_HU_INTERNAL = -7;
+  /** User switch request is malformed or invalid */
+  ERROR_INVALID_REQUEST = -8;
+  /** Not receiving UserSwitchResponse from the HU within 25 seconds. */
+  ERROR_REQUEST_TIMEOUT = -9;
+}
+
+/**
+ * @type MESSAGE_BATTERY_STATUS_NOTIFICATION
+ * <p> This message is used by the mobile device to notify the head unit of
+ * current battery life conditions, at the discretion of the mobile device.
+ * The head unit MUST not interpret the battery level or time remaining
+ * to determine whether the battery is in critical condition.
+ */
+message BatteryStatusNotification {
+  /** Current battery level from 0 (empty) to 100 (full) */
+  required uint32 battery_level = 1;
+  /** Estimated time remaining in seconds */
+  optional uint32 time_remaining_s = 2;
+  /** Whether the battery is critically low, as determined by the mobile device
+   */
+  optional bool critical_battery = 3;
+}
+
+/**
+ * @type MESSAGE_CALL_AVAILABILITY_STATUS
+ * This message is used by the HU to notify the MD about phone call availability
+ * status. For example, it should be used to notify the MD when placing a phone
+ * call over HFP becomes unavailable/available due to a call from another device
+ * starting/stopping.
+ */
+message CallAvailabilityStatus {
+  optional bool call_available = 1;
+}
+
+/**
+ * @section Sensors
+ * <p>Vehicle sensor input uses a publish-subscription (pub-sub) model. The
+ * mobile device subscribes to an advertised sensor using a previously-opened
+ * channel to the SensorSourceService; (to which the vehicle publishes regular
+ * updates). Multiple sensor values may be batched together. To stop receiving
+ * updates, the mobile device can unsubscribe from a sensor or close the
+ * channel. <p>The mobile device uses min_update_period to dictate how often it
+ * must receive updates. Typically, if a value is already available (such as
+ * gear position or speed), the value is sent instantaneously. However, for
+ * values such as GPS, it may might take a while to establish a lock.
+ * <p>@startSequenceDiagram Sensor Subscription
+ * identifier A: Device
+ * identifier B: Vehicle
+ * message A->B: SensorRequest, sensor_id, min_update_period
+ * message B->A: SensorResponse, status
+ * message B->A: SensorBatch < values >
+ * message B->A: SensorBatch < values >
+ * spacer: ... regular updates at configured intervals ...
+ * message A->B: SensorRequest, sensor_id, MAX_INT
+ * message B->A: SensorResponse, status
+ * @endSequenceDiagram</p>
+ */
+
+/**
+ * @type SENSOR_MESSAGE_REQUEST
+ * <p>This message is sent by the mobile device to subscribe to a sensor value.
+ */
+message SensorRequest {
+  /** Sensor to subscribe. */
+  required SensorType type = 1;
+  /** Frequency of updates. */
+  required int64 min_update_period = 2;
+}
+
+/**
+ * @type SENSOR_MESSAGE_RESPONSE
+ * <p>This message is sent by the vehicle to indicate status of a previous
+ * sensor request.
+ */
+message SensorResponse {
+  /** Status of the sensor request. */
+  required MessageStatus status = 1;
+}
+
+/**
+ * @type SENSOR_MESSAGE_BATCH
+ * <p>This message represents a collection of sensor values. Typically,
+ * individual values are sent as soon as possible, but sending multiple values
+ * in a batch is supported.
+ */
+message SensorBatch {
+  repeated LocationData location_data = 1;
+  repeated CompassData compass_data = 2;
+  repeated SpeedData speed_data = 3;
+  repeated RpmData rpm_data = 4;
+  repeated OdometerData odometer_data = 5;
+  repeated FuelData fuel_data = 6;
+  repeated ParkingBrakeData parking_brake_data = 7;
+  repeated GearData gear_data = 8;
+  repeated DiagnosticsData diagnostics_data = 9;
+  repeated NightModeData night_mode_data = 10;
+  repeated EnvironmentData environment_data = 11;
+  repeated HvacData hvac_data = 12;
+  repeated DrivingStatusData driving_status_data = 13;
+  repeated DeadReckoningData dead_reckoning_data = 14;
+  repeated PassengerData passenger_data = 15;
+  repeated DoorData door_data = 16;
+  repeated LightData light_data = 17;
+  repeated TirePressureData tire_pressure_data = 18;
+  repeated AccelerometerData accelerometer_data = 19;
+  repeated GyroscopeData gyroscope_data = 20;
+  repeated GpsSatelliteData gps_satellite_data = 21;
+  repeated TollCardData toll_card_data = 22;
+  repeated energy_model.VehicleEnergyModelData vehicle_energy_model_data = 23;
+  repeated TrailerData trailer_data = 24;
+}
+
+/** <p>Type of error happened to a sensor */
+enum SensorErrorType {
+  /** Sensor has recovered from previous error and is functioning normally. */
+  SENSOR_OK = 1;
+  /** Sensor is failing transiently and will recover soon. */
+  SENSOR_ERROR_TRANSIENT = 2;
+  /** Sensor is failing and it is not likely that it will recover. */
+  SENSOR_ERROR_PERMANENT = 3;
+}
+
+/**
+ * @type SENSOR_MESSAGE_ERROR
+ * <p>This message reports error state of a sensor. Car should send this message
+ * if subscribed sensor is not working or when sensor has recovered from such
+ * error.
+ */
+message SensorError {
+  required SensorType sensor_type = 1;
+  required SensorErrorType sensor_error_type = 2;
+}
+
+/**
+ * <p>Vehicles can report the following location data:
+ */
+message LocationData {
+  /** Deprecated. This data is timestamped when received by the MD. */
+  optional uint64 timestamp = 1 [deprecated = true];
+  /** Latitude multiplied by 1e7. */
+  required int32 latitude_e7 = 2;
+  /** Longitude multiplied by 1e7. */
+  required int32 longitude_e7 = 3;
+  /** Accuracy in meters multiplied by 1e3. */
+  optional uint32 accuracy_e3 = 4;
+  /** Altitude in meters above sea level multiplied by 1e2. */
+  optional int32 altitude_e2 = 5;
+  /** Speed in m/s multiplied by 1e3. */
+  optional int32 speed_e3 = 6;
+  /** Bearing in degrees multiplied by 1e6. */
+  optional int32 bearing_e6 = 7;
+}
+
+/** <p>Vehicles can report the following compass heading data: */
+message CompassData {
+  /** Compass bearing, in degrees (0, 360) multiplied by 1e6 (vehicle facing
+   * direction). */
+  required int32 bearing_e6 = 1;
+  /** Vehicle pitch, in degrees (-90, 90) multiplied by 1e6. Nose down is
+   * positive. */
+  optional int32 pitch_e6 = 2;
+  /** Vehicle roll, in degrees (-180, 180) multiplied by 1e6. Right door down is
+   * positive. */
+  optional int32 roll_e6 = 3;
+}
+
+/** <p>Vehicles can report the following speed data: */
+message SpeedData {
+  /** Speed in meters per second multiplied by 1e3. */
+  required int32 speed_e3 = 1;
+  /** Cruise control status. */
+  optional bool cruise_engaged = 2;
+  // Deprecated, wrong type.
+  // optional bool cruise_set_speed = 3;
+  /** Cruise control set speed, in m/s. */
+  optional int32 cruise_set_speed = 4;
+}
+
+/** <p>Vehicles can report the following engine rpm data: */
+message RpmData {
+  /** Engine RPM value multiplied by 1e3. */
+  required int32 rpm_e3 = 1;
+}
+
+/** <p>Vehicles can report the following odometer data: */
+message OdometerData {
+  /** Odometer distance in km (tenths). */
+  required int32 kms_e1 = 1;
+  /** Distance travelled since ignition was turned on. */
+  optional int32 trip_kms_e1 = 2;
+}
+
+/** <p>Vehicles can report the following fuel and range data: */
+message FuelData {
+  /** Fuel level, as a percentage. */
+  optional int32 fuel_level = 1;
+  /** Remaining range, in km. */
+  optional int32 range = 2;
+  /** Low fuel warning. */
+  optional bool low_fuel_warning = 3;
+}
+
+/** <p>Vehicles can report parking brake status. */
+message ParkingBrakeData {
+  /** True when brake engaged, false when brake disengaged. */
+  required bool parking_brake = 1;
+}
+
+/** <p>Vehicles can report the current gear status: */
+message GearData {
+  /** Current gear. */
+  required Gear gear = 1;
+}
+/** <p>Vehicles can report one of the following gears as the current gear: */
+enum Gear {
+  GEAR_NEUTRAL = 0;
+  GEAR_1 = 1;
+  GEAR_2 = 2;
+  GEAR_3 = 3;
+  GEAR_4 = 4;
+  GEAR_5 = 5;
+  GEAR_6 = 6;
+  GEAR_7 = 7;
+  GEAR_8 = 8;
+  GEAR_9 = 9;
+  GEAR_10 = 10;
+
+  GEAR_DRIVE = 100;
+  GEAR_PARK = 101;
+  GEAR_REVERSE = 102;
+}
+
+/** <p>Vehicles can report the following OBDII style diagnostic trouble codes:
+ */
+message DiagnosticsData {
+  /** Trouble code. */
+  optional bytes dtc = 1;
+}
+
+/**
+ * <p>Vehicles can indicate whether the UI should render in day or night mode.
+ *
+ * <p>This sensor input will be used by the MD to determine the UI theme for
+ * displays that specify UI_THEME_AUTOMATIC, or that do not explicitly specify
+ * a theme. By default, the MD relies exclusively on this sensor to make that
+ * determination, showing a dark theme in night mode and a light theme in day
+ * mode. However, the user may override this setting to be controlled by phone
+ * brightness sensors, sun position, or other factors.
+ */
+message NightModeData {
+  /**
+   * True when vehicle is in night mode; false when vehicle is in day mode.*/
+  optional bool night_mode = 1;
+}
+/** <div class="note">NOTE: Night mode does not necessarily require night; e.g.
+ * vehicle could be in a tunnel or other low-light environment such as a parking
+ * garage.</div>
+ */
+
+/** <p>Vehicles can report the following external conditions information: */
+message EnvironmentData {
+  /** External temperature, in degrees centigrade multiplied by 1e3. */
+  optional int32 temperature_e3 = 1;
+  /** External pressure in kPA multiplied by 1e3. */
+  optional int32 pressure_e3 = 2;
+  /** Rain detection level. 0 means no rain. */
+  optional int32 rain = 3;
+}
+
+/** <p>Vehicles can report the following HVAC (cabin) unit information: */
+message HvacData {
+  /** Target cabin temperature in celcius multiplied by 1e3. */
+  optional int32 target_temperature_e3 = 1;
+  /** Current cabin temperature in celcius multiplied by 1e3. */
+  optional int32 current_temperature_e3 = 2;
+}
+
+/**
+ * <p>Vehicles can report the following bitmask components to express
+ * restrictions (use to avoid driver distraction).
+ */
+enum DrivingStatus {
+  /** No restrictions. */
+  DRIVE_STATUS_UNRESTRICTED = 0x0;
+  /** No video playback allowed. */
+  DRIVE_STATUS_NO_VIDEO = 0x1;
+  /** No keyboard or rotary controller input allowed. */
+  DRIVE_STATUS_NO_KEYBOARD_INPUT = 0x2;
+  /** No voice input allowed. */
+  DRIVE_STATUS_NO_VOICE_INPUT = 0x4;
+  /** No setup/configuration allowed. */
+  DRIVE_STATUS_NO_CONFIG = 0x8;
+  /** Limit displayed message length. */
+  DRIVE_STATUS_LIMIT_MESSAGE_LEN = 0x10;
+}
+
+/**
+ * <p>Vehicles can report the current driving status to enable mobile device
+ * applications to select the appropriate interaction.
+ */
+message DrivingStatusData {
+  required int32 status = 1;
+}
+
+/**
+ * <p>Vehicles can report the value of parameters used for dead reckoning (when
+ * GPS lock is not available).
+ */
+message DeadReckoningData {
+  /** Steering angle, in tenths of a degree multiplied by 10. Left is negative.
+   */
+  optional int32 steering_angle_e1 = 1;
+  /** Speed, in metres per section (m/s) multiplied by 1e3 for all wheels.
+   * Starts at front left and continues clockwise. */
+  repeated int32 wheel_speed_e3 = 2;
+}
+
+/**
+ * <p>Vehicles can report the state of lights such as head lights and turn
+ * indicator lights.
+ */
+message LightData {
+  /** State of the head lights (off, on, high).*/
+  optional HeadLightState head_light_state = 1;
+  /** State of the turn signals (none, left, right).*/
+  optional TurnIndicatorState turn_indicator_state = 2;
+  /** State of the hazard light. When on, do not report a turn indicator state.
+   */
+  optional bool hazard_lights_on = 3;
+}
+enum HeadLightState {
+  /** Head lights off.*/
+  HEAD_LIGHT_STATE_OFF = 1;
+  /** Head lights on (day running, low beam).*/
+  HEAD_LIGHT_STATE_ON = 2;
+  /** High beams on.*/
+  HEAD_LIGHT_STATE_HIGH = 3;
+}
+
+enum TurnIndicatorState {
+  /** Turn signals are off or hazard lights are on.*/
+  TURN_INDICATOR_NONE = 1;
+  /** Left turn signal is on.*/
+  TURN_INDICATOR_LEFT = 2;
+  /** Right turn signal is on.*/
+  TURN_INDICATOR_RIGHT = 3;
+}
+
+/**
+ * <p>Vehicles can report data about vehicle passengers.
+ */
+message PassengerData {
+  /** Passenger status (true when one or more passengers are present, false when
+   * no passengers are present).*/
+  optional bool passenger_present = 1;
+}
+
+/**
+ * <p>Vehicles can report data about doors, hood, and trunk.
+ */
+message DoorData {
+  /** Hood/Bonnet status (true when open; false when closed).*/
+  optional bool hood_open = 1;
+  /** Trunk/Boot status (true when open; false when closed).*/
+  optional bool trunk_open = 2;
+  /** Door status (true when open; false when closed). Starts at front left door
+   * and continues clockwise.
+   */
+  repeated bool door_open = 3;
+}
+
+/**
+ * <p>Vehicles can report tire pressures.
+ */
+message TirePressureData {
+  /** Tire pressure in psi multiplied by 1e2. Starts at front left tire and
+   * continues clockwise.*/
+  repeated int32 tire_pressures_e2 = 1;
+}
+
+/**
+ * <p>Vehicles can report accelerometer measurements, including gravity in m/s^2
+ * multiplied by 1e3.
+ */
+message AccelerometerData {
+  /** X-axis runs from left door to right door. */
+  optional int32 acceleration_x_e3 = 1;
+  /** Y-axis runs from vehicle rear to front/nose. */
+  optional int32 acceleration_y_e3 = 2;
+  /** Z-axis runs from vehicle floor to ceiling. */
+  optional int32 acceleration_z_e3 = 3;
+}
+
+/**
+ * <p>Vehicles can report gyroscope measurements in rad/s multiplied by 1e3. If
+ * an axis is pointing towards observer, positive rotation around that axis is
+ * counter-clockwise (standard mathematical definition).
+ */
+message GyroscopeData {
+  /** X-axis runs from left door to right door. */
+  optional int32 rotation_speed_x_e3 = 1;
+  /** Y-axis runs from vehicle rear to front/nose. */
+  optional int32 rotation_speed_y_e3 = 2;
+  /** Z-axis runs from vehicle floor to ceiling. */
+  optional int32 rotation_speed_z_e3 = 3;
+}
+
+/**
+ * <p>Vehicles can report values for GPS satellite parameters.
+ */
+message GpsSatellite {
+  /** PRN id of the satellite */
+  required int32 prn = 1;
+  /** Signal to noise ratio, in dB multiplied by 1e3. */
+  required int32 snr_e3 = 2;
+  /** Indicates whether the satellite is used in GPS fix. */
+  required bool used_in_fix = 3;
+  /** Azimuth of the satellite's relative position, in degrees multiplied by
+   * 1e3. */
+  optional int32 azimuth_e3 = 4;
+  /** Elevation of the satellite's relative position, in degrees multiplied by
+   * 1e3 */
+  optional int32 elevation_e3 = 5;
+}
+
+/**
+ * <p>Vehicles can report values for GPS satellite data.
+ */
+message GpsSatelliteData {
+  /** Number of satellites used in fix. */
+  required int32 number_in_use = 1;
+  /** Number of satellites visible by the GPS receiver. */
+  optional int32 number_in_view = 2;
+  /** Array of satellites in view. */
+  repeated GpsSatellite satellites = 3;
+}
+
+/**
+ * <p>Vehicles can report the presence or absence of an Electronic Toll Card
+ */
+message TollCardData {
+  /** true if the Electronic Toll Card is present and active, false otherwise */
+  required bool is_card_present = 1;
+}
+
+/**
+ * <p>Vehicles can report the presence or absence of a trailer
+ */
+message TrailerData {
+  /** true if trailer is connected, false otherwise */
+  optional bool is_trailer_connected = 1;
+}
+
+/**
+ * @suppress
+ */
+enum SensorMessageId {
+  SENSOR_MESSAGE_REQUEST = 0x8001;
+  SENSOR_MESSAGE_RESPONSE = 0x8002;
+  SENSOR_MESSAGE_BATCH = 0x8003;
+  SENSOR_MESSAGE_ERROR = 0x8004;
+}
+
+/**
+ * @section Media
+ * <p>A media channel streams media data from source to sink. All messages in a
+ * media channel use the following encoding scheme:</p> <p>@startTable Field
+ * |Size    | Description Type   |2 bytes |Numeric identifier that describes the
+ * message type (list of possible values described below).
+ * Payload|variable|Protocol buffer that defines a structured payload if the
+ * most significant bit of type is set. The data from here to the end of the
+ * message should be considered as a single protocol buffer.
+ * @endTable</p>
+ * <h2>Media Source Messages</h2>
+ * <p>A media source can be in one of three states: Init, Idle, or Sending. To
+ * transition states, the media source must send the packets shown below:</p>
+ * <p><img src='./images/media_source.png'/></p>
+ * <p>The diagram below depicts the high level flow between a source and a
+ * sink.</p>
+ * @startSequenceDiagram Basic Source-Sink Flow
+ * identifier A: Source
+ * identifier B: Sink
+ * message A->B: Setup
+ * message B->A: Config, status=READY
+ * message A->B: Start
+ * message A->B: Data
+ * message A->B: Data
+ * message B->A: Ack
+ * message A->B: Stop
+ * @endSequenceDiagram</p>
+ * <p>To request a stop, the sink can send a config message with status WAIT.
+ * The receiving source should try to send a stop as soon as it receives such a
+ * message, while the sink may continue receiving data in the interim.</p>
+ * @startSequenceDiagram Stop By Sink
+ * identifier A: Source
+ * identifier B: Sink
+ * message A->B: Setup
+ * message B->A: Config, status=READY
+ * message A->B: Start
+ * message A->B: Data
+ * message A->B: Data
+ * message B->A: Ack
+ * message B->A: Config, status=WAIT
+ * message A->B: Stop
+ * @endSequenceDiagram
+ */
+
+/**
+ * @type MEDIA_MESSAGE_SETUP
+ * <p>This message is sent by the source to the sink after channel
+ * establishment. Must be sent only once.
+ */
+message Setup {
+  /** The selected media codec. */
+  required MediaCodecType type = 1;
+}
+
+/**
+ * @type MEDIA_MESSAGE_START
+ * <p>The Start message is by the source to the sink before the source can send
+ * media data. The video_configuration_index is selected from the allowed
+ * configurations passed from Config.video_configuration_indices. Index order is
+ * based on vehicle preference (higher resolution configurations first) and the
+ * mobile device selects a configuration from that index. <div
+ * class="note">NOTE: Due to differences in device hardware, not all codec
+ * resolutions may be supported. However, support of at least 800x480 is
+ * mandatory.</div> <p>The requested width/margins for the chosen codec
+ * resolution MUST be respected and the mobile device should not render any UI
+ * in the margin area. For non-zero margin values: <ul> <li>UI MUST be rendered
+ * to center location horizontally and vertically.</li> <li>Margin area should
+ * be filled with the same default color.</li> <li>Vehicle display MUST crop
+ * margin area so it does not display to end user.</li>
+ * </ul>
+ */
+message Start {
+  /** Must start at 0 and increase by 1 on every Start message (for every new
+   * session). */
+  required int32 session_id = 1;
+  /**
+   * Index of selected video configuration, starting from zero. Use index 0 for
+   * the first item from MediaSinkService.video_configs.
+   */
+  required uint32 configuration_index = 2;
+}
+
+/**
+ * @type MEDIA_MESSAGE_STOP
+ * <p>This message is sent by the source to the sink before stopping media data.
+ * The sink can release media resources on receiving this message.
+ */
+message Stop {}
+/**
+ * <h3>Message Type Data </h3>
+ * <p>This message is sent by the source to the sink. The TimeStamp value can be
+ * used synchronize audio/video playback; when the Payload includes multiple
+ * samples (as in audio), the TimeStamp value is for the first sample. A
+ * TimeStamp value of 0 indicates that contents should be played as soon as
+ * possible regardless of audio/video synchronization.</p>
+ * @startTable
+ * Field    |Value
+ * Type     |0x0000
+ * TimeStamp|uint64 value of time in source side since Jan-1 1970 in micro
+ * seconds. Payload  |See Media Type table for details.
+ * @endTable
+ */
+
+/**
+ * @type MEDIA_MESSAGE_CONFIG
+ * <p>This message is sent by the sink in response to a setup message. Used to
+ * inform the source of the sink&apos;s current status and preferred
+ * configurations. The final Config request received by the source supersedes
+ * all previous requests. <ul> <li>WAIT tells the source to transition to STOP.
+ * The source assumes WAIT until receipt of the first config message.</li>
+ *   <li>READY tells the source to transition to SENDING with the contained
+ *       configuration. If the source is already sending, it first transitions
+ * to STOP.</li>
+ * </ul>
+ * <p>An audio endpoint should send Config only once (at the beginning with
+ * STATUS_READY) as audio endpoints do not change configuration dynamically.
+ */
+message Config {
+  /** Status of media setup. */
+  required Status status = 1;
+  /** Maximum number of frames that can be outstanding. */
+  optional uint32 max_unacked = 2;
+  /**
+   * Indices of configurations (as reported during service discovery) in order
+   * of preference. Ignored for audio as all audio configurations declared
+   * during service discovery should be always supported.
+   */
+  repeated uint32 configuration_indices = 3;
+  /** <p>Indicates the current status of sink. */
+  enum Status {
+    /** Not ready to accept data. */
+    STATUS_WAIT = 1;
+    /** Ready to accept data. */
+    STATUS_READY = 2;
+  }
+}
+/**
+ * @type MEDIA_MESSAGE_ACK
+ * <p>This message is sent to acknowledge a message of type MEDIA_MESSAGE_DATA.
+ * It's used to control the flow of media messages. The definition of a media
+ * message depends on the media type. <p>The ack message includes the number of
+ * data messages processed by the sink since the last ACK. The source must track
+ * the number of unACKed data messages, and must not send more than maxUnacked
+ * (from Config message) data messages unless sink fails to send ACK for too
+ * long. Additionally, the source must drop ACK messages for the wrong session.
+ * <div class="note">NOTE: To confirm that it has played all data
+ * sent before releasing audio focus, an Audio sink must send ACK for all data
+ * message received until Stop message. ACK can happen after Stop message. And
+ * ACKed frames must be played by car unless higher-priority sound overrides it.
+ * </div>
+ */
+message Ack {
+  required int32 session_id = 1;
+  optional uint32 ack = 2;
+
+  // Receive time, in nanonseconds.
+  // Head units using protocol 1.6 or later must populate this.
+  repeated uint64 receive_timestamp_ns = 3;
+}
+
+/**
+ * @type MEDIA_MESSAGE_AUDIO_UNDERFLOW_NOTIFICATION
+ * <p>This message is sent by the HU when an audio underflow occurs.
+ * Only one message is expected per underflow, regardless of the length
+ * of the audio underflow. Audio underflows are only valid after the
+ * first audio packet in a session has been received and before the Stop
+ * message is received. If during that time, the HU finds that it has no
+ * audio to play, an audio underflow notification should be sent.
+ * No reply will be sent by the MD.
+ * This message was added in protocol version 1.6 and must not be
+ * sent to MDs that use earlier protocol version.
+ */
+message AudioUnderflowNotification {
+  required int32 session_id = 1;
+}
+
+/**
+ * <h2>Mandatory Audio Configurations</h2>
+ * <p>To guarantee compatibility across different devices, some audio
+ * configurations are mandated. <p>Vehicles must have an audio sink of muxed
+ * stream type that supports one of the following audio configurations (mobile
+ * devices must have an audio source that supports all listed configurations):
+ * <ul>
+ *   <li>AAC-LC, 16 bits stereo, 48000 Hz</li>
+ *   <li>AAC-LC, 16 bits stereo, 44100 Hz</li>
+ * </ul>
+ * <p>Vehicles must also have an audio source for voice audio that support one
+ * of the following configurations (mobile devices must have a corresponding
+ * audio sink that supports all listed configurations): <ul> <li>AAC-LC, 16 bits
+ * mono, 16000 Hz</li> <li>PCM, 16 bits mono, 16000 Hz</li>
+ * </ul>
+ * <h2>Transmission Buffer Size</h2>
+ * <p>Audio sources must send audio frames in multiples of the buffer sizes
+ * defined below:</p>
+ * @startTable
+ * Sampling Rate|Bits|Number of Channels|Buffer Size in Bytes
+ * 16000        | 16 | mono             | 2048 (1024 samples)
+ * 44100        | 16 | stereo           | 8192 (2048 samples)
+ * 48000        | 16 | stereo           | 8192 (2048 samples)
+ * @endTable
+ */
+
+/**
+ * <div class="nobreak"><h2>Video Focus</h2>
+ * <p>@startSequenceDiagram Video Focus - Gain & Loss.
+ * identifier A: Device
+ * identifier B: Vehicle
+ * spacer: ... initial setup ...
+ * message A->B: VideoFocusRequestNotification, projected
+ * message B->A: VideoFocusNotification, projected
+ * message A->B: Start
+ * message A->B: Data
+ * message B->A: Ack
+ * spacer: ... data transfer continues ...
+ * spacer: ... user changes gear to reverse ...
+ * message B->A: VideoFocusNotification, native
+ * message A->B: Stop
+ * spacer: ... user changes gear back to drive ...
+ * message B->A: VideoFocusNotification, projected, unsolicited
+ * message A->B: Start
+ * message A->B: Data
+ * message B->A: Ack
+ * spacer: ... data transfer continues ...
+ * spacer: ... user presses button to exit projected mode ...
+ * message A->B VideFocusRequestNotification, native
+ * message B->A VideoFocusNotification, native
+ * message A->B: Stop
+ * @endSequenceDiagram
+ *</div>
+ */
+
+/**
+ * @type MEDIA_MESSAGE_VIDEO_FOCUS_REQUEST
+ * <p>This message is sent by the mobile device when it want to acquire video
+ * focus. The device should not start sending data until focus has been granted
+ * by the vehicle head unit.
+ */
+message VideoFocusRequestNotification {
+  /** AAPv1.0 supports a single display (the one in the head unit). However,
+   * future versions may support additional displays.
+   * Deprecated: Video Focus Requests are sent over the video endpoint and
+   * do not need any additional IDs to identify what display they belong to.
+   */
+  optional int32 disp_channel_id = 1 [deprecated = true];
+  /** Focus mode wanted by the mobile device. */
+  optional VideoFocusMode mode = 2;
+  /** Reason for the video focus request. */
+  optional VideoFocusReason reason = 3;
+}
+
+/** <p>Defines reasons for focus request. */
+enum VideoFocusReason {
+  /** Reason is unknown or not set. */
+  UNKNOWN = 0;
+  /** Screen on the mobile device is off. Used with VIDEO_FOCUS_NATIVE sent from
+   * device. */
+  PHONE_SCREEN_OFF = 1;
+  /** User has selected to return to native mode. */
+  LAUNCH_NATIVE = 2;
+  
+  /**
+   * Used with a VIDEO_FOCUS_PROJECTED mode in the VideoFocusRequestNotification
+   * to indicate to the HU that this request is made by MD to restore projection
+   * based on the Android Auto usage in the last drive.
+   */
+  VIDEO_FOCUS_REASON_LAST_MODE = 3;
+
+  /**
+   * Used to indicate to the HU that this request is sent due to explicit user
+   * action to transition the specified VideoFocusMode. As an example, MD will
+   * use this reason for VIDEO_FOCUS_PROJECTED mode at start of drive if the
+   * user has explicitly selected to always auto start Android Auto at start of
+   * drive in MD settings.
+   */
+  VIDEO_FOCUS_REASON_USER_SELECTION = 4;
+}
+
+/**
+ * @type MEDIA_MESSAGE_VIDEO_FOCUS_NOTIFICATION
+ * <p>This message is sent by the vehicle to inform the mobile device of the
+ * state of video focus. This can be sent in response to a video focus request
+ * or in an unsolicited manner if the user performs an action which causes them
+ * to switch to native mode.
+ */
+message VideoFocusNotification {
+  /** Current focus mode. */
+  optional VideoFocusMode focus = 1;
+  /** False when responding to a video focus request; true when unsolicited. */
+  optional bool unsolicited = 2;
+}
+
+/** <p>Denotes the side (vehicle or mobile device) allowed to render to the head
+ * unit display. */
+enum VideoFocusMode {
+  /** Mobile device controls the display. */
+  VIDEO_FOCUS_PROJECTED = 1;
+  /** Vehicle controls the display. */
+  VIDEO_FOCUS_NATIVE = 2;
+  /**
+   * The vehicle has transient control of the display. This state indicates that
+   * the vehicle expects to retain focus for only a short time, for example when
+   * showing a side camera due to a turn signal. If new events (such as user
+   * input) cause that assumption to no longer be valid, the vehicle should
+   * notify the phone of the new VideoFocusMode.
+   */
+  VIDEO_FOCUS_NATIVE_TRANSIENT = 3;
+
+  /**
+   * Same as VIDEO_FOCUS_PROJECTED, but also indicates that the input focus in
+   * the native UI is not within the Android Auto at this time.
+   */
+  VIDEO_FOCUS_PROJECTED_NO_INPUT_FOCUS = 4;
+}
+
+/**
+ * @type MEDIA_MESSAGE_UPDATE_UI_CONFIG_REQUEST
+ * <p>This message is sent by the HU to update the drawable region of the video
+ * frame. The MD will reply with a UiConfigUpdateReply, which will be sent after
+ * the last video frame that uses the old UiConfig but before the first video
+ * frame that uses the new UiConfig. Note that this synchronization is best
+ * effort and may or may not affect all drawn elements until a later time.
+ * All fields should be filled out with the current values even if they remain
+ * unchanged. This message may not be used to change the UiTheme.
+ */
+message UpdateUiConfigRequest {
+  optional UiConfig ui_config = 1;
+}
+/**
+ * @type MEDIA_MESSAGE_UPDATE_UI_CONFIG_REPLY
+ * <p>This message is sent by the MD in response to a UpdateUiConfigRequest.
+ * The MD will reply with all UiConfig fields filled out with the current
+ * values.
+ */
+message UpdateUiConfigReply {
+  optional UiConfig ui_config = 1;
+}
+
+/**
+ * @type MEDIA_MESSAGE_ACTION_TAKEN_NOTIFICATION
+ * <p> This message is sent by the MD to notify the HU that the supplied
+ * ActionType has been taken by the user. Possible values are constrained by the
+ * actions specified in the UiConfig. They can be dynamically updated through
+ * UpdateUiConfigRequest.
+ */
+message ActionTakenNotification {
+  optional ActionType action_type = 1;
+}
+
+/**
+ * <h2>Audio Focus</h2>
+ * <p>Audio focus is handled globally for all streams except for the
+ * SYSTEM_AUDIO stream, which does not require focus (the vehicle should mix it
+ * if not playing its own system sound or safety critical warning). <div
+ * class="note">NOTE: Audio focus messages between mobile device and vehicle are
+ * passed only on the media stream; sending focus messages on other stream types
+ * is invalid.</div> <p>A mobile device that wants to stream audio must first
+ * acquire focus for a stream. When focus is lost except
+ * LOSS_TRANSIENT_MAY_DUCK, the mobile device should stop streaming.<p>
+ * @startSequenceDiagram Audio Focus
+ * identifier A: Device
+ * identifier B: Vehicle
+ * spacer: ... initial setup ...
+ * message A->B: AudioFocusRequest, AUDIO_FOCUS_GAIN
+ * message B->A: AudioFocusNotification, AUDIO_FOCUS_STATE_GAIN
+ * message A->B: Start
+ * message A->B: Data
+ * message B->A: Ack
+ * spacer:    ... data transfer continues for media stream ...
+ * message B->A: AudioFocusNotification, AUDIO_FOCUS_STATE_LOSS
+ * message A->B: Stop
+ * @endSequenceDiagram
+ * <p>In the following example, the vehicle plays native radio and mobile device
+ * plays navigation guidance.<p>
+ * @startSequenceDiagram Audio Focus granted for TTS but rejected for media
+ * identifier A: Device
+ * identifier B: Vehicle
+ * spacer: ... user plays radio from vehicle UI. ...
+ * message B->A: AudioFocusNotification, AUDIO_FOCUS_STATE_LOSS
+ * spacer: ... device navigation app tries to play guidance ...
+ * message A->B: AudioFocusRequest, AUDIO_FOCUS_GAIN_TRANSIENT_MAY_DUCK
+ * spacer: ... vehicle ducks its radio ...
+ * message B->A: AudioFocusNotification, TTS, AUDIO_FOCUS_STATE_GAIN_TRANSIENT
+ * spacer: ... device guidance stream started and played ...
+ * message A->B: AudioFocusRequest, AUDIO_FOCUS_RELEASE
+ * message B->A: AudioFocusNotification, AUDIO_FOCUS_STATE_LOSS
+ * @endSequenceDiagram
+ * <h3>Ducking</h3>
+ * <p>Ducking applies only to a media stream played with a non-media stream. For
+ * example, a vehicle may need to play a notification while the mobile device
+ * plays music. If the notification is not safety-critical, vehicle can request
+ * that the mobile device duck. <p>Depending on the media content, the mobile
+ * device may simply stop playing instead of ducking. For example, when playing
+ * an ebook the mobile device may stop or pause rather than duck as ebook
+ * content is not suitable for ducking. For mobile device applications that do
+ * not support ducking, the vehicle should duck the media stream without waiting
+ * for mobile device.</p>
+ * @startSequenceDiagram Device Ducks Music Stream for Notification
+ * identifier A: Device
+ * identifier B: Vehicle
+ * spacer: ... device has focus and is playing music ...
+ * spacer: ... vehicle is about to play notification ...
+ * message B->A: AudioFocusNotification,
+ * AUDIO_FOCUS_STATE_LOSS_TRANSIENT_CAN_DUCK spacer: ... vehicle lowers media
+ * stream volume... spacer: ... device ducks media stream ... spacer: ...
+ * vehicle plays notification ... spacer: ... vehicle restores media stream
+ * volume ... message B->A: AudioFocusNotification, media,
+ * AUDIO_FOCUS_STATE_GAIN spacer: ... device restores media stream volume ...
+ * @endSequenceDiagram
+ * <p>
+ * @startSequenceDiagram Device Pauses Music Stream for Notification
+ * identifier A: Device
+ * identifier B: Vehicle
+ * spacer: ... vehicle has focus for TTS stream, device has focus for media and
+ * playing ... message B->A: AudioFocusNotification, media,
+ * AUDIO_FOCUS_STATE_LOSS_TRANSIENT spacer: ... vehicle lowers media stream
+ * volume ... spacer: ... device pauses media stream ... message A->B: Stop,
+ * media spacer: ... vehicle plays notification ... spacer: ... vehicle restores
+ * media stream volume ... message B->A: AudioFocusNotification, media,
+ * AUDIO_FOCUS_STATE_GAIN spacer: ... device resumes playback ... message A->B:
+ * Start, media
+ * @endSequenceDiagram
+ */
+
+/**
+ * @type MESSAGE_AUDIO_FOCUS_REQUEST
+ * <p>This message is sent by the mobile device to request audio focus. It
+ * should not start transmitting data until it has been granted audio focus.
+ */
+message AudioFocusRequestNotification {
+  /** Type of desired audio focus. */
+  required AudioFocusRequestType request = 1;
+}
+/** <p>Available audio focus types. */
+enum AudioFocusRequestType {
+  /** Full audio focus. */
+  AUDIO_FOCUS_GAIN = 1;
+  /** Full audio focus for a short period. */
+  AUDIO_FOCUS_GAIN_TRANSIENT = 2;
+  /**
+   * Audio focus for a short period where the currently-playing audio may be
+   * ducked to play this audio stream. Mobile devices use this focus for
+   * navigation guidance.
+   */
+  AUDIO_FOCUS_GAIN_TRANSIENT_MAY_DUCK = 3;
+  /** Release audio focus. */
+  AUDIO_FOCUS_RELEASE = 4;
+}
+
+/**
+ * @type MESSAGE_AUDIO_FOCUS_NOTIFICATION
+ * <p>The vehicle sends this message to the mobile device to notify it of the
+ * current state of audio focus. The vehicle may send this message in response
+ * to an audio focus request or unsolicited if the user switches audio sources
+ * out of band.
+ */
+message AudioFocusNotification {
+  /** Current focus state. */
+  required AudioFocusStateType focus_state = 1;
+  /** False when responding to an audio focus request; true when unsolicited. */
+  optional bool unsolicited = 2;
+}
+/** <p>Available audio focus state types. */
+enum AudioFocusStateType {
+  /**
+   * Default state - invalid. This should never be sent over the protocol.
+   */
+  AUDIO_FOCUS_STATE_INVALID = 0;
+
+  /** Mobile device has gained audio focus on this stream. */
+  AUDIO_FOCUS_STATE_GAIN = 1;
+  /**
+   * Mobile device has acquired focus for transient playback and will release
+   * focus soon.
+   */
+  AUDIO_FOCUS_STATE_GAIN_TRANSIENT = 2;
+  /** Mobile device has lost audio focus on this stream. */
+  AUDIO_FOCUS_STATE_LOSS = 3;
+  /**
+   * <p>Mobile device has lost audio focus but can continue playing if volume is
+   * lowered (ducked). When media content is voice or other content not suitable
+   * for ducking (such as an ebook), the device can stop playing instead of
+   * ducking. <p>If device side keeps playing after ducking, it does not need to
+   * send a response. If device stops playing, it should send a Stop message.
+   * <p>After sending a notification with this state, the vehicle should duck
+   * the media volume. After transient playback completes and focus is restored
+   * to the device, the vehicle should restore the media volume.
+   */
+  AUDIO_FOCUS_STATE_LOSS_TRANSIENT_CAN_DUCK = 4;
+  /**
+   * Notify mobile device that it has briefly lost focus.
+   */
+  AUDIO_FOCUS_STATE_LOSS_TRANSIENT = 5;
+  /**
+   * Mobile device has full focus but can stream only on the MEDIA channel. Used
+   * only for vehicles that cannot mix streams.
+   */
+  AUDIO_FOCUS_STATE_GAIN_MEDIA_ONLY = 6;
+  /**
+   * Phone has transient focus except that it can only stream through GUIDANCE
+   * channel. This should be used only only for car without mixing capability.
+   */
+  AUDIO_FOCUS_STATE_GAIN_TRANSIENT_GUIDANCE_ONLY = 7;
+}
+
+/**
+ * <h2>Microphone Control</h2>
+ * <p>These messages are used to control a microphone associated with the
+ * InputSource. Typically, a mobile device uses this message to turn the vehicle
+ * microphone on and off.</p>
+ * @startSequenceDiagram Microphone Control
+ * identifier A: Device
+ * identifier B: Vehicle
+ * message A->B: MicrophoneRequest open=1, max_unacked=n, anc_enabled,
+ * ec_enabled message B->A: MicrophoneResponse STATUS_SUCCESS, session_id
+ * message A->B: Data
+ * message B->A: Ack
+ * message A->B: Data
+ * message B->A: Ack
+ * message A->B: MicrophoneRequest open=0
+ * message B->A: MicrophoneResponse STATUS_SUCCESS
+ * @endSequenceDiagram
+ */
+
+/**
+ * @type MEDIA_MESSAGE_MICROPHONE_REQUEST
+ * <p>This message is sent by the mobile device to open the on-board microphone.
+ */
+message MicrophoneRequest {
+  /** True when requesting open, false when requesting close. */
+  required bool open = 1;
+  /** True when requesting active noise cancellation, false otherwise. */
+  optional bool anc_enabled = 2;
+  /** True when requesting echo cancellation, false otherwise. */
+  optional bool ec_enabled = 3;
+  /** Number of frames that can remain outstanding. */
+  optional int32 max_unacked = 4;
+}
+
+/**
+ * @type MEDIA_MESSAGE_MICROPHONE_RESPONSE
+ * <p>This message is sent by the vehicle to report the status of the microphone
+ * request.
+ */
+message MicrophoneResponse {
+  /** Status of the microphone open request. */
+  required int32 status = 1;
+  /** Current session id. */
+  optional int32 session_id = 2;
+}
+
+/**
+ * @suppress
+ */
+enum MediaMessageId {
+  MEDIA_MESSAGE_DATA = 0x0000;
+  MEDIA_MESSAGE_CODEC_CONFIG = 0x0001;
+  MEDIA_MESSAGE_SETUP = 0x8000;
+  MEDIA_MESSAGE_START = 0x8001;
+  MEDIA_MESSAGE_STOP = 0x8002;
+  MEDIA_MESSAGE_CONFIG = 0x8003;
+  MEDIA_MESSAGE_ACK = 0x8004;
+  MEDIA_MESSAGE_MICROPHONE_REQUEST = 0x8005;
+  MEDIA_MESSAGE_MICROPHONE_RESPONSE = 0x8006;
+  MEDIA_MESSAGE_VIDEO_FOCUS_REQUEST = 0x8007;
+  MEDIA_MESSAGE_VIDEO_FOCUS_NOTIFICATION = 0x8008;
+  MEDIA_MESSAGE_UPDATE_UI_CONFIG_REQUEST = 0x8009;
+  MEDIA_MESSAGE_UPDATE_UI_CONFIG_REPLY = 0x800A;
+  MEDIA_MESSAGE_AUDIO_UNDERFLOW_NOTIFICATION = 0x800B;
+  MEDIA_MESSAGE_ACTION_TAKEN_NOTIFICATION = 0X800C;
+}
+
+/**
+ * @section Input
+ * <p>This section describes how input events on the head unit are redirected to
+ * the mobile device. During service discovery, the vehicle reports its input
+ * devices and associated keycodes, after which the mobile device binds to the
+ * keys it is interested in. The AAP Receiver Library sends input events only
+ * for the keys to which the mobile device is bound.</p>
+ * @startSequenceDiagram Input Events
+ * identifier A: Device
+ * identifier B: Vehicle
+ * message A->B: KeyBindingRequest, keycodes
+ * message B->A: KeyBindingResponse, status
+ * message B->A: InputReport, events
+ * message A->B: InputFeedback, event
+ * @endSequenceDiagram
+ */
+
+/**
+ * @type INPUT_MESSAGE_KEY_BINDING_REQUEST
+ * <p>This message is sent by a mobile device to notify the vehicle head unit of
+ * the keys in which the device is interested. The device may send this message
+ * at any time to refresh and adjust bindings dynamically. The device must
+ * refresh the entire set of key bindings (no delta support).
+ */
+message KeyBindingRequest {
+  /** List of key codes the mobile device wants to handle. */
+  repeated int32 keycodes = 1 [packed = true];
+}
+
+/**
+ * @type INPUT_MESSAGE_KEY_BINDING_RESPONSE
+ * <p>This message is sent by a vehicle to indicate the status of key binding.
+ * If this message succeeds, both sides (vehicle and device) must immediately
+ * respect the new key binding.
+ */
+message KeyBindingResponse {
+  /** Status of the key binding operation. */
+  required int32 status = 1;
+}
+
+/**
+ * @type INPUT_MESSAGE_INPUT_REPORT
+ * <p>This message is sent by a vehicle to report input events to the mobile
+ * device. To reduce input latency, the vehicle typically sends this message as
+ * soon as the event is available (although batching is supported).
+ */
+message InputReport {
+  /** Timestamp of the input event, in nanoseconds. */
+  required uint64 timestamp = 1;
+  /** Channel id of the associated display (ignored in AAPv1.0).
+   * Deprecated: InputReport are sent over the inputs endpoints that are
+   * associated with a display and do not need any additional IDs to identify
+   * what display they belong to.
+   */
+  optional int32 disp_channel_id = 2 [deprecated = true];
+  /** Indicates a touch event on a touchscreen. */
+  optional TouchEvent touch_event = 3;
+  /** Indicates a key press. */
+  optional KeyEvent key_event = 4;
+  /** Indicates use of input devices with absolute values (such as dials and
+   * sliders with specific ranges).
+   */
+  optional AbsoluteEvent absolute_event = 5;
+  /** Indicates use of devices with relative values (such as freely rotating
+   * dials). */
+  optional RelativeEvent relative_event = 6;
+  /** Indicates a touch gesture on a touchpad. */
+  optional TouchEvent touchpad_event = 7;
+}
+/** <p>Used to model key or button presses. */
+message KeyEvent {
+  /** List of key events that occurred. */
+  repeated Key keys = 1;
+  /** <p>Specifies keycode and status.*/
+  message Key {
+    /** See the appendix on key codes. */
+    required uint32 keycode = 1;
+    /** True if pressed, false if released. */
+    required bool down = 2;
+    /** Bitmap of the states of all the meta keys. */
+    required uint32 metastate = 3;
+    /**
+     * Used to signal a long press of a button by simulating a key down,
+     * hold, key up on the phone. Do not report a key up after setting this
+     * flag. This should only be used if the system cannot signal the
+     * initial key down. Contact the GAL team before you decide to set this
+     * flag.
+     */
+    optional bool longpress = 4;
+  }
+}
+/** <p>Used to model events that occur on a touchscreen input device. */
+message TouchEvent {
+  /** Data about all pointers. */
+  repeated Pointer pointer_data = 1;
+  /** Index of the pointer that changed. Index != Id. */
+  optional uint32 action_index = 2;
+  /** Action taken by user. */
+  optional PointerAction action = 3;
+  /** <p>Specifies pointer coordinates and ID.*/
+  message Pointer {
+    /** X coordinate of the pointer, in pixels. */
+    required uint32 x = 1;
+    /** Y coordinate of the pointer, in pixels. */
+    required uint32 y = 2;
+    /** ID of this pointer. */
+    required uint32 pointer_id = 3;
+  }
+}
+/** <p>Used to represent changes in pointer state. */
+enum PointerAction {
+  /** First finger went down. */
+  ACTION_DOWN = 0;
+  /** Last finger went up. */
+  ACTION_UP = 1;
+  /** Finger(s) were moved. */
+  ACTION_MOVED = 2;
+  /** 2nd-nth finger went down. */
+  ACTION_POINTER_DOWN = 5;
+  /** nth-2nd last finger went up. */
+  ACTION_POINTER_UP = 6;
+}
+
+/**
+ * <p>Used to represent devices with absolute values, such as a slider or volume
+ * dial that goes to 11. As these devices may have different properties, the
+ * supplied value must be interpreted using knowledge of the input device
+ * (obtained from the keycode).
+ */
+message AbsoluteEvent {
+  /** List of events. */
+  repeated Abs data = 1;
+  /** <p>Specifies keycode and value for the input device. */
+  message Abs {
+    /**
+     * Unique code for this device. Uses the same address space as other key
+     * codes.*/
+    required uint32 keycode = 1;
+    /**
+     * New value of this device. Use a fixed point value to represent fractional
+     * values.*/
+    required int32 value = 2;
+  }
+}
+/**
+ * <p>Used to represent devices such as a freely rotating dials that operate on
+ * deltas in a direction (and which do not have specific values). As these
+ * devices may have different properties, the supplied value must be interpreted
+ * using knowledge of the input device (obtained from the keycode).
+ */
+message RelativeEvent {
+  /** The list of events. */
+  repeated Rel data = 1;
+  /** <p>Specifies keycode and value for the input device. */
+  message Rel {
+    /**
+     * Unique code for this device. Uses the same address space as other key
+     * codes.*/
+    required uint32 keycode = 1;
+    /**
+     * Delta (amount of change in device value). Use a fixed point value to
+     * represent fractional values.
+     */
+    required int32 delta = 2;
+  }
+}
+/**
+ * <p>Types of feedback events that the MD can send to the HU.
+ */
+enum FeedbackEvent {
+  /** Sent by the MD when a select action has occured. */
+  FEEDBACK_SELECT = 1;
+  /** Sent by the MD when focus changes due to a touchpad input. */
+  FEEDBACK_FOCUS_CHANGE = 2;
+  /** Sent by the MD when a drag event triggers a select action. */
+  FEEDBACK_DRAG_SELECT = 3;
+  /** Sent by the MD when a continuous drag event starts. */
+  FEEDBACK_DRAG_START = 4;
+  /** Sent by the MD when a continuous drag event ends. */
+  FEEDBACK_DRAG_END = 5;
+}
+/**
+ * @type INPUT_MESSAGE_INPUT_FEEDBACK
+ *
+ * <p>Used by the MD to send input feedback events to the HU. Feedback events
+ * can be used to trigger haptic or audio feedback.
+ */
+message InputFeedback {
+  optional FeedbackEvent event = 1;
+}
+/**
+ * @suppress
+ */
+enum InputMessageId {
+  INPUT_MESSAGE_INPUT_REPORT = 0x8001;
+  INPUT_MESSAGE_KEY_BINDING_REQUEST = 0x8002;
+  INPUT_MESSAGE_KEY_BINDING_RESPONSE = 0x8003;
+  INPUT_MESSAGE_INPUT_FEEDBACK = 0x8004;
+}
+
+/**
+ * @section Automatic Bluetooth Pairing
+ * <p>The Bluetooth service is used to negotiate the connection over Bluetooth.
+ * In AAPv1.0, all in-call audio is transmitted via Bluetooth, so the primary
+ * use case of this service is to negotiate a Bluetooth connection for the
+ * purpose of transmitting in-call audio. During service discovery, the vehicle
+ * lists supported pairing methods and the mobile device selects one of the
+ * available methods.<p>
+ * @startSequenceDiagram Bluetooth Pairing (Not Paired)
+ * identifier A: Device
+ * identifier B: Vehicle
+ * message A->B: BluetoothPairingRequest
+ * spacer: ... vehicle ready to pair in one second ...
+ * spacer: ... vehicle does not have pairing information for the device ...
+ * message B->A: BluetoothPairingResponse, status=STATUS_SUCCESS,
+ * already_paired=false spacer: ... device initiates pairing. ... message B->A:
+ * BluetoothAuthenticationData spacer: ... device checks credentials and
+ * completes pairing. ... message A->B: BluetoothAuthenticationResult,
+ * status=STATUS_SUCCESS spacer: ... vehicle completes pairing. spacer: ...
+ * device connects with the vehicle using HFP (Hands-Free Profile) ...
+ * @endSequenceDiagram
+ * <p>
+ * @startSequenceDiagram Delayed Bluetooth Pairing
+ * identifier A: Device
+ * identifier B: Vehicle
+ * message A->B: BluetoothPairingRequest
+ * spacer: ... vehicle not ready to pair in one second ...
+ * message B->A: BluetoothPairingResponse,
+ * status=STATUS_BLUETOOTH_PAIRING_DELAYED spacer: ... vehicle is now ready to
+ * be paired  ... spacer: ... vehicle does not have pairing information for the
+ * device ... message B->A: BluetoothPairingResponse, status=STATUS_SUCCESS,
+ * already_paired=false spacer: ... device initiates pairing ... message B->A:
+ * BluetoothAuthenticationData spacer: ... device checks credentials and
+ * completes pairing. ... message A->B: BluetoothAuthenticationResult,
+ * status=STATUS_SUCCESS spacer: ... vehicle completes pairing. spacer: ...
+ * device connects with the vehicle using HFP (Hands-Free Profile) ...
+ * @endSequenceDiagram
+ * <p>
+ * @startSequenceDiagram Bluetooth Pairing (Already Paired)
+ * identifier A: Device
+ * identifier B: Vehicle
+ * message A->B: BluetoothPairingRequest
+ * spacer: ... vehicle ready to pair in one second ...
+ * spacer: ... vehicle has pairing information for the device ...
+ * message B->A: BluetoothPairingResponse, status=STATUS_SUCCESS,
+ * already_paired=true spacer: ... device has pairing information for the
+ * vehicle ... spacer: ... no need to pair ... spacer: ... device connects with
+ * the vehicle using HFP (Hands-Free Profile) ...
+ * @endSequenceDiagram
+ * <p>
+ * @startSequenceDiagram Bluetooth Pairing (Device Lost Pairing Info)
+ * identifier A: Device
+ * identifier B: Vehicle
+ * message A->B: BluetoothPairingRequest
+ * spacer: ... vehicle ready to pair in one second ...
+ * spacer: ... vehicle has pairing information for the device ...
+ * message B->A: BluetoothPairingResponse, status=STATUS_SUCCESS,
+ * already_paired=true spacer: ... device does not have pairing information for
+ * the vehicle ... spacer: ... device initiates pairing ... message B->A:
+ * BluetoothAuthenticationData spacer: ... device checks credentials and
+ * completes pairing. ... message A->B: BluetoothAuthenticationResult,
+ * status=STATUS_SUCCESS spacer: ... vehicle completes pairing. spacer: ...
+ * device connects with the vehicle using HFP (Hands-Free Profile) ...
+ * @endSequenceDiagram
+ * <p>
+ * @startSequenceDiagram Bluetooth Pairing (Paring Info Corrupt)
+ * identifier A: Device
+ * identifier B: Vehicle
+ * message A->B: BluetoothPairingRequest
+ * spacer: ... vehicle ready to pair in one second ...
+ * spacer: ... vehicle has pairing information for the device ...
+ * message B->A: BluetoothPairingResponse, status=STATUS_SUCCESS,
+ * already_paired=true spacer: ... device has pairing information for the
+ * vehicle ... spacer: ... no need to pair. ... spacer: ... device fails to
+ * connect with the vehicle using HFP (Hands-Free Profile) ... spacer: ...
+ * device unpairs and attempts to pair again ... message A->B:
+ * BluetoothPairingRequest message B->A: BluetoothPairingResponse,
+ * status=STATUS_SUCCESS, already_paired=true spacer: ... device does not have
+ * pairing information for the vehicle ... spacer: ... device initiates pairing
+ * ... message B->A: BluetoothAuthenticationData spacer: ... device checks
+ * credentials and completes pairing. ... message A->B:
+ * BluetoothAuthenticationResult, status=STATUS_SUCCESS spacer: ... vehicle
+ * completes pairing. spacer: ... device connects with the vehicle using HFP
+ * (Hands-Free Profile) ...
+ * @endSequenceDiagram
+ */
+
+/**
+ * @type BLUETOOTH_MESSAGE_PAIRING_REQUEST
+ * <p>This message is sent by a mobile device to request exchange of Bluetooth
+ * pairing information as necessary to complete Bluetooth pairing. Receiving
+ * vehicles must send a BluetoothPairingResponse within 1 second. This message
+ * may also be resent by a mobile device attempting to fix a corrupted state.
+ * <p>The message must include the device Bluetooth address and selected pairing
+ * method. Android 4.4 devices support two pairing methods:
+ * BLUETOOTH_PAIRING_NUMERIC_COMPARISON and BLUETOOTH_PAIRING_PIN. If the mobile
+ * device does not support any of the pairing methods listed service discovery
+ * message (BluetoothService) from the vehicle, the mobile device will not issue
+ * a BluetoothPairingRequest message.</p> */
+message BluetoothPairingRequest {
+  /** Bluetooth address of the mobile device, i.e. 00:11:22:AA:BB:CC. */
+  required string phone_address = 1;
+  /** Bluetooth pairing method to use. */
+  required BluetoothPairingMethod pairing_method = 2;
+}
+/**
+ * <div class="note">NOTE: All fields are little-endian following the Bluetooth
+ * convention for out-of-band (OOB) data.</div>
+ */
+/**
+ * @type BLUETOOTH_MESSAGE_PAIRING_RESPONSE
+ * <p>This message is sent by a vehicle in response to BluetoothPairingRequest.
+ * Because requests may be resent by a mobile device attempting to fix a
+ * corrupted state, vehicles must be able to handle multiple
+ * BluetoothPairingRequest messages in the same AAP connection. In addition, a
+ * vehicle must send a response within 1 second of receiving the
+ * BluetoothPairingRequest. <p>If the vehicle <b>can</b> be ready to pair within
+ * 1 second of receiving the BluetoothPairingRequest, it must do so using the
+ * pairing method specified in the request before sending a
+ * BluetoothPairingResponse with STATUS_SUCCESS as the status code. <ul>
+ * <li><em>Readiness</em>. To be ready, the vehicle must disconnect all other
+ * HFP (Hands-Free Profile) connections, set the AAP device priority as the
+ * highest, and make the vehicle Bluetooth module discoverable by the mobile
+ * device. <li><em>Previously Paired</em>. The vehicle must send a
+ * BluetoothPairingResponse even when already paired with the mobile device.
+ * (Necessary for cases where the mobile device loses pairing information and
+ * must re-initiate pairing.) <li><em>Success</em>. When the vehicle sends a
+ * BluetoothPairingResponse with STATUS_SUCCESS as the status code, the vehicle
+ * must include already_paired field in the message. This field value must be
+ * true when the vehicle already has a link key (pairing information) for the
+ * AAP device phone (the vehicle believes it is already paired with the mobile
+ * device). <li><em>Pairing</em>. After receiving a BluetoothPairingResponse
+ * with STATUS_SUCCESS as the status code, the device initiates the
+ * pairing-and-connection process with the vehicle. If each side has the link
+ * key (pairing information) for the other side, the pairing step is skipped and
+ * the mobile device initiates the HFP connection only.
+ * </ul>
+ * <p>If the vehicle <b>cannot</b> be ready to pair within 1 second of receiving
+ * a BluetoothPairingRequest, the vehicle should send a BluetoothPairingResponse
+ * with STATUS_BLUETOOTH_PAIRING_DELAYED as the status code. When the mobile
+ * device receives this message, it ignores the already_paired field and assumes
+ * the vehicle will eventually send another BluetoothPairingResponse with
+ * STATUS_SUCCESS as the status code.
+ */
+message BluetoothPairingResponse {
+  /** Result of the Bluetooth pairing request. */
+  required MessageStatus status = 1;
+  /** Indicates if the vehicle already has a link key (pairing info) for the
+   * mobile device */
+  required bool already_paired = 2;
+}
+
+/**
+ * @type BLUETOOTH_MESSAGE_AUTHENTICATION_DATA
+ * <p>This message is sent by a vehicle to provide authentication data for
+ * Bluetooth pairing. The device uses authentication data to complete pairing
+ * with the vehicle through Bluetooth. If authentication data is valid, the
+ * mobile device and vehicle pair and connect to HFP. <p>The mobile device will
+ * respond with a BluetoothAuthenticationResult indicating whether pairing was
+ * successful. The head unit must not allow a pairing to complete until a
+ * successful BluetoothAuthenticationResult is received from the mobile device.
+ * If the BluetoothAuthenticationResult indicates that pairing was not
+ * successful, the head unit must show a message to the user, as though a
+ * user-initiated pairing had failed.
+ */
+message BluetoothAuthenticationData {
+  /** Bluetooth pairing authentication data (for example, a passkey or PIN). */
+  required string auth_data = 1;
+  /** The Bluetooth pairing method for which the authentication data is being
+   * sent. */
+  optional BluetoothPairingMethod pairing_method = 2;
+}
+
+/**
+ * @type BLUETOOTH_MESSAGE_AUTHENTICATION_RESULT
+ * <p>This message is sent by a mobile device in response to
+ * BluetoothAuthenticationData. It indicates whether the mobile device was able
+ * to authenticate with the provided authentication data in the
+ * BluetoothAuthenticationData message. <p>Note: A successful
+ * BluetoothAuthenticationResult does *not* indicate that overall pairing was
+ * successful. It only indicates that the authentication data provided in the
+ * BluetoothAuthenticationData message matches what was expected by the mobile
+ * device.
+ */
+message BluetoothAuthenticationResult {
+  /** The result of the Bluetooth authentication. */
+  required MessageStatus status = 1;
+}
+
+/**
+ * @suppress
+ */
+enum BluetoothMessageId {
+  BLUETOOTH_MESSAGE_PAIRING_REQUEST = 0x8001;
+  BLUETOOTH_MESSAGE_PAIRING_RESPONSE = 0x8002;
+  BLUETOOTH_MESSAGE_AUTHENTICATION_DATA = 0x8003;
+  BLUETOOTH_MESSAGE_AUTHENTICATION_RESULT = 0x8004;
+}
+
+/**
+ * The WifiProjectionService enables a mobile device to request wifi projection
+ * details of vehicle.
+ */
+message WifiProjectionService {
+  /** The BSSID of the Wi-Fi network. Must be in Ethernet MAC address format,
+   * e.g., XX:XX:XX:XX:XX:XX where each X is a hex digit */
+  optional string car_wifi_bssid = 1;
+}
+
+/**
+ * @type WIFI_MESSAGE_CREDENTIALS_REQUEST
+ * This message is sent by a mobile device to request wifi credentials of the
+ * vehicle.
+ */
+message WifiCredentialsRequest {}
+
+/**
+ * @type WIFI_MESSAGE_CREDENTIALS_RESPONSE
+ * This message is sent by a vehicle to provide wifi credentials for wifi
+ * connecting. The mobile device will save the credentials for use in future AA
+ * wireless projection sessions.
+ */
+message WifiCredentialsResponse {
+  /** The password of the Wi-Fi network in UTF-8. */
+  optional string car_wifi_password = 1;
+  /** The encryption type of the Wi-Fi network.
+   *  Only WPA_PERSONAL and WPA2_PERSONAL are supported. */
+  optional WifiSecurityMode car_wifi_security_mode = 2;
+  /** The SSID of the Wi-Fi network. Enclosing quotes are not required. */
+  optional string car_wifi_ssid = 3;
+  /** Supported Wi-Fi channel frequencies by the HU access point */
+  repeated int32 supported_wifi_channels = 4;
+  /** Whether a new SSID/BSSID is generated on each projected session. */
+  optional AccessPointType access_point_type = 5;
+}
+
+enum WifiSecurityMode {
+  UNKNOWN_SECURITY_MODE = 0;
+  OPEN = 1;     // No security, open network
+  WEP_64 = 2;   // 64-bit (40 user bits) WEP key, Open System authentication
+  WEP_128 = 3;  // 128-bit (104 user bits) WEP key, Open System authentication
+  WPA_PERSONAL = 4;         // WPA-PSK (IEEE 802.11i/D3.0), TKIP
+  WPA2_PERSONAL = 5;        // WPA2-PSK (IEEE 802.11i/RSN), CCMP
+  WPA_WPA2_PERSONAL = 6;    // Both WPA & WPA2, TKIP/CCMP
+  WPA_ENTERPRISE = 7;       // WPA (IEEE 802.11i/D3.0), TKIP
+  WPA2_ENTERPRISE = 8;      // WPA2 (IEEE 802.11i/RSN), CCMP
+  WPA_WPA2_ENTERPRISE = 9;  // Both WPA & WPA2, TKIP/CCMP
+  WPA3_PERSONAL = 10;       // WPA3-SAE
+  WPA2_WPA3_PERSONAL = 11;  // WPA3-SAE Transition Mode (WPA2 + WPA3)
+}
+
+/*
+ * The type of access point (static or dynamically generated SSID/BSSID).
+ */
+enum AccessPointType {
+  /** The SSID/BSSID stays stable between projected sessions. This is
+   * recommended. */
+  STATIC = 0;
+
+  /**
+   * A new SSID/BSSID is generated for each projected session. This implies
+   * that the SSID/BSSID should not be cached as it could be unique for every
+   * WifiInfoResponse.
+   */
+  DYNAMIC = 1;
+}
+
+enum WifiProjectionMessageId {
+  WIFI_MESSAGE_CREDENTIALS_REQUEST = 0X8001;
+  WIFI_MESSAGE_CREDENTIALS_RESPONSE = 0X8002;
+}
+
+/**
+ * @section FM/AM Radio Control
+ * <p>AAP enables the mobile device to tune the on-board FM or AM radio. In the
+ * following example, a user tunes to a 96.5 FM.  Assume the following radio
+ * properties: RadioProperties = [ (radio_id=1, type=FM_RADIO, ...),
+ * (radio_id=2, type=AM_RADIO, ...) ]
+ * </p>
+ * @startSequenceDiagram Station Scanning and Tuning
+ * identifier A: Device
+ * identifier B: Vehicle
+ * message A->B: TuneToStationRequest [ 1, 96500000, 0 ]
+ * message B->A: TuneToStationResponse [ STATUS_SUCCESS, 1 ]
+ * message B->A: RadioStationInfoNotification [ 1, FM_RADIO, 96500000, 0, (meta
+ * data...) ]
+ * @endSequenceDiagram
+ */
+
+/**
+ * @suppress
+ */
+enum RadioMessageId {
+  RADIO_MESSAGE_ACTIVE_RADIO_NOTIFICATION = 0x8001;
+  RADIO_MESSAGE_SELECT_ACTIVE_RADIO_REQUEST = 0x8002;
+  RADIO_MESSAGE_STEP_CHANNEL_REQUEST = 0x8003;
+  RADIO_MESSAGE_STEP_CHANNEL_RESPONSE = 0x8004;
+  RADIO_MESSAGE_SEEK_STATION_REQUEST = 0x8005;
+  RADIO_MESSAGE_SEEK_STATION_RESPONSE = 0x8006;
+  RADIO_MESSAGE_SCAN_STATIONS_REQUEST = 0x8007;
+  RADIO_MESSAGE_SCAN_STATIONS_RESPONSE = 0x8008;
+  RADIO_MESSAGE_TUNE_TO_STATION_REQUEST = 0x8009;
+  RADIO_MESSAGE_TUNE_TO_STATION_RESPONSE = 0x800A;
+  RADIO_MESSAGE_GET_PROGRAM_LIST_REQUEST = 0x800B;
+  RADIO_MESSAGE_GET_PROGRAM_LIST_RESPONSE = 0x800C;
+  RADIO_MESSAGE_STATION_PRESETS_NOTIFICATION = 0x800D;
+  RADIO_MESSAGE_CANCEL_OPERATIONS_REQUEST = 0x800E;
+  RADIO_MESSAGE_CANCEL_OPERATIONS_RESPONSE = 0x800F;
+  RADIO_MESSAGE_CONFIGURE_CHANNEL_SPACING_REQUEST = 0x8010;
+  RADIO_MESSAGE_CONFIGURE_CHANNEL_SPACING_RESPONSE = 0x8011;
+  RADIO_MESSAGE_RADIO_STATION_INFO_NOTIFICATION = 0x8012;
+  RADIO_MESSAGE_MUTE_RADIO_REQUEST = 0x8013;
+  RADIO_MESSAGE_MUTE_RADIO_RESPONSE = 0x8014;
+  RADIO_MESSAGE_GET_TRAFFIC_UPDATE_REQUEST = 0x8015;
+  RADIO_MESSAGE_GET_TRAFFIC_UPDATE_RESPONSE = 0x8016;
+  RADIO_MESSAGE_RADIO_SOURCE_REQUEST = 0x8017;
+  RADIO_MESSAGE_RADIO_SOURCE_RESPONSE = 0x8018;
+  RADIO_MESSAGE_STATE_NOTIFICATION = 0x8019;
+}
+
+/**
+ * @type RADIO_MESSAGE_STATE_NOTIFICATION
+ * <p>This is sent on channel open.
+ */
+message RadioStateNotification {
+  /** Indicates whether radio is the selected source or not. */
+  required bool radio_source_enabled = 1;
+  /**
+   * N/A if mute_capability == false, indicates if radio is
+   * currently muted.
+   */
+  optional bool radio_muted = 2;
+  /** ID of active radio. */
+  required int32 active_radio_id = 3;
+  /** Current station info of active radio. */
+  required RadioStationInfo station_info = 4;
+  /** List of available programs the HU has discovered. */
+  repeated RadioStationInfo program_list = 5;
+  repeated StationPresetList station_preset_lists = 6;
+}
+
+/**
+ * @type RADIO_MESSAGE_RADIO_SOURCE_REQUEST
+ * <p>This message is sent by the MD to select radio as source.
+ */
+message RadioSourceRequest {}
+
+/**
+ * @type RADIO_MESSAGE_RADIO_SOURCE_RESPONSE
+ * <p>This message is sent by the HU when the radio source has changed.
+ */
+message RadioSourceResponse {
+  /** omitted if unsolicited */
+  optional MessageStatus status = 1;
+  required bool radio_source_enabled = 2;
+}
+
+/**
+ * @type RADIO_MESSAGE_SELECT_ACTIVE_RADIO_REQUEST
+ * <p>This message is sent by the MD to change radio (i.e. change
+ * from AM to FM radio).
+ */
+message SelectActiveRadioRequest {
+  /** the radio to activate */
+  required int32 radio_id = 1;
+}
+
+/**
+ * @type RADIO_MESSAGE_ACTIVE_RADIO_NOTIFICATION
+ * <p>This message is sent by the car when a new radio has been activated.
+ * This may be sent in response to SelectActiveRadioRequest or unsolicited
+ * if the user changed bands in native mode (or via h/w button).
+ */
+message ActiveRadioNotification {
+  /** omitted if unsolicited */
+  optional MessageStatus status = 1;
+  /** id of the active radio */
+  required int32 radio_id = 2;
+  /** station being played by the new active radio */
+  optional RadioStationInfo station_info = 3;
+}
+
+/**
+ * @type RADIO_MESSAGE_STEP_CHANNEL_REQUEST
+ */
+message StepChannelRequest {
+  required int32 radio_id = 1;
+  required bool up = 2;
+  /**
+   * This is for HD radio, if skip_sub_channel is not set, the HU must
+   * step through sub channels (i.e. if current station is 95.7 HD1 then the
+   * HU must tune to 95.7 HD2 if that station if available).
+   */
+  required bool skip_sub_channel = 3;
+}
+
+/**
+ * @type RADIO_MESSAGE_STEP_CHANNEL_RESPONSE
+ * <p>This message is sent by the car when the radio is stepping to the next
+ * channel. The step request can be initiated either by the MD (via
+ * StepChannelRequest) or by the user in native mode.  The tuning portion is
+ * done asynchronously, when the HU completes tuning to the channel, it sends a
+ * separate RadioStationInfoNotification to the MD.
+ */
+message StepChannelResponse {
+  /** omitted if this was unsolicited */
+  optional MessageStatus status = 1;
+  required int32 radio_id = 2;
+}
+
+/**
+ * @type RADIO_MESSAGE_SEEK_STATION_REQUEST
+ */
+message SeekStationRequest {
+  required int32 radio_id = 1;
+  required bool up = 2;
+  required bool skip_sub_channel = 3;
+}
+
+/**
+ * @type RADIO_MESSAGE_SEEK_STATION_RESPONSE
+ * <p>This message is sent by the car when the radio started or completed
+ * seeking the next station. The seek request can be initiated either by the MD
+ * (via SeekStationRequest) or by the user in native mode.  The seek is done
+ * asynchronously, when the HU discovers the next available station, it sends a
+ * separate RadioStationInfoNotification to the MD.
+ */
+message SeekStationResponse {
+  /** omitted if this was unsolicited */
+  optional MessageStatus status = 1;
+  required int32 radio_id = 2;
+}
+
+/**
+ * @type RADIO_MESSAGE_SCAN_STATIONS_REQUEST
+ */
+message ScanStationsRequest {
+  required int32 radio_id = 1;
+  required bool start = 2;
+  required bool up = 3;
+  required bool skip_sub_channel = 4;
+}
+
+/**
+ * @type RADIO_MESSAGE_SCAN_STATIONS_RESPONSE
+ * <p>This message is sent by the car when the radio started or stopped scanning
+ * through radio stations.
+ * The scan request can be initiated either by the MD (via ScanStationsRequest)
+ * or by the user in native mode. Each station the HU scans through results in
+ * the HU sending a RadioStationInfoNotification to the MD.
+ */
+message ScanStationsResponse {
+  /** omitted if this was unsolicited */
+  optional MessageStatus status = 1;
+  required int32 radio_id = 2;
+  /** true if scan started, false if scan stopped */
+  optional bool started = 3;
+}
+
+/**
+ * @type RADIO_MESSAGE_TUNE_TO_STATION_REQUEST
+ */
+message TuneToStationRequest {
+  required int32 radio_id = 1;
+  /** In AM/FM radio: this would be frequency in hz */
+  required int32 channel = 2;
+  /** For HD radio: 1 - 8 */
+  optional int32 sub_channel = 3;
+}
+
+/**
+ * @type RADIO_MESSAGE_TUNE_TO_STATION_RESPONSE
+ * <p>This message is sent by the car in response to a TuneToStationRequest.
+ * The tuning portion is done asynchronously and when the car completes
+ * tuning to the new channel, it sends a RadioStationInfoNotification to the MD.
+ */
+message TuneToStationResponse {
+  required MessageStatus status = 1;
+  required int32 radio_id = 2;
+}
+
+/**
+ * @type RADIO_MESSAGE_RADIO_STATION_INFO_NOTIFICATION
+ */
+message RadioStationInfoNotification {
+  required int32 radio_id = 1;
+  required RadioStationInfo station_info = 2;
+}
+
+message RadioStationInfo {
+  required RadioType type = 1;
+  /** For AM/FM: this is frequency in hz */
+  required int32 channel = 2;
+  /** 1 to 8 for HD radio */
+  optional int32 sub_channel = 3;
+  optional RadioStationMetaData meta_data = 4;
+}
+
+message RadioStationMetaData {
+  /** 0 = unknown, 1 = mono, 2 = stereo */
+  optional int32 audio_channels = 1;
+  /** 0 (no signal) to 100 */
+  optional int32 signal_quality = 2;
+  optional RdsData rds = 3;
+  optional HdRadioStationInfo hd_station_info = 4;
+}
+
+message RdsData {
+  repeated int32 alternative_frequencies = 1;
+  optional int32 program_id = 2;
+  /** 0 = speech, 1 = music */
+  optional int32 music_speech_switch = 3;
+  optional string program_service_name = 4;
+  optional int32 program_type = 5;
+  optional string program_type_name = 6;
+  optional string radio_text = 7;
+  optional bool traffic_program_flag = 8;
+  optional bool traffic_announcement_flag = 9;
+}
+
+message HdRadioStationInfo {
+  optional HdAcquisionState acquisition_state = 1;
+  optional int32 digital_signal_strength = 2;
+  optional HdRadioPsdData psd = 3;
+  optional HdRadioSisData sis = 4;
+}
+
+enum HdAcquisionState {
+  ANALOG = 0;
+  ACQUIRING_HD = 1;
+  ACQUIRED_HD = 2;
+}
+
+message HdRadioPsdData {
+  optional string title = 1;
+  optional string artist = 2;
+  optional string album = 3;
+  optional string genre = 4;
+  optional HdRadioComment comment = 5;
+  optional HdRadioCommercial commercial = 6;
+  optional HdRadioArtistExperience artist_experience = 7;
+}
+
+message HdRadioComment {
+  optional string description = 1;
+  optional string text = 2;
+}
+
+message HdRadioCommercial {
+  optional int32 encoding = 1;
+  optional string price = 2;
+  optional string valid = 3;
+  optional string url = 4;
+  optional int32 received = 5;
+  optional string seller = 6;
+  optional string description = 7;
+}
+
+message HdRadioArtistExperience {
+  optional bytes image = 1;
+}
+
+message HdRadioSisData {
+  optional int32 station_id = 1;
+  optional string station_name_short = 2;
+  optional string station_name_long = 3;
+  optional Location station_location = 4;
+  optional string station_message = 5;
+  optional string service_info_message = 6;
+  optional string universal_short_station_name_slogan = 7;
+}
+
+message Location {
+  required double longitude = 1;
+  required double latitude = 2;
+}
+
+/**
+ * @type RADIO_MESSAGE_GET_PROGRAM_LIST_REQUEST
+ */
+message GetProgramListRequest {
+  required int32 radio_id = 1;
+}
+
+/**
+ * @type RADIO_MESSAGE_GET_PROGRAM_LIST_RESPONSE
+ */
+message GetProgramListResponse {
+  required MessageStatus status = 1;
+  required int32 radio_id = 2;
+  required bool completed = 3;
+  repeated RadioStationInfo program_list = 4;
+}
+
+/**
+ * @type RADIO_MESSAGE_CANCEL_OPERATIONS_REQUEST
+ */
+message CancelRadioOperationsRequest {
+  required int32 radio_id = 1;
+}
+
+/**
+ * @type RADIO_MESSAGE_CANCEL_OPERATIONS_RESPONSE
+ */
+message CancelRadioOperationsResponse {
+  required MessageStatus status = 1;
+  required int32 radio_id = 2;
+}
+
+/**
+ * @type RADIO_MESSAGE_CONFIGURE_CHANNEL_SPACING_REQUEST
+ */
+message ConfigureChannelSpacingRequest {
+  required int32 radio_id = 1;
+  required int32 channel_spacing = 2;
+}
+
+/**
+ * @type RADIO_MESSAGE_CONFIGURE_CHANNEL_SPACING_RESPONSE
+ */
+message ConfigureChannelSpacingResponse {
+  required MessageStatus status = 1;
+  required int32 radio_id = 2;
+  required int32 channel_spacing = 3;
+}
+
+/**
+ * @type RADIO_MESSAGE_STATION_PRESETS_NOTIFICATION
+ */
+message StationPresetsNotification {
+  repeated StationPresetList preset_lists = 2;
+}
+
+message StationPresetList {
+  /**
+   * Name of the list that should be displayed to the user "i.e. FM1".
+   * The name must be unique.
+   */
+  optional string name = 1;
+  /**
+   * If the list only contains certain stations (i.e. FM only), the restriction
+   * should be defined here.  See RadioType for the available station type
+   * values.
+   */
+  repeated int32 restricted_station_types = 2;
+  repeated StationPreset presets = 3;
+}
+
+message StationPreset {
+  required RadioType type = 1;
+  required int32 channel = 2;
+  optional int32 sub_channel = 3;
+}
+
+/**
+ * @type RADIO_MESSAGE_GET_TRAFFIC_UPDATE_REQUEST
+ */
+message GetTrafficUpdateRequest {
+  required int32 radio_id = 1;
+}
+
+/**
+ * @type RADIO_MESSAGE_GET_TRAFFIC_UPDATE_RESPONSE
+ */
+message GetTrafficUpdateResponse {
+  required MessageStatus status = 1;
+  required int32 radio_id = 2;
+  repeated TrafficIncident incidents = 3;
+}
+
+message TrafficIncident {
+  required int32 event_code = 1;
+  required Location location = 2;
+  required int32 expected_incident_duration = 3;
+}
+
+/**
+ * @type RADIO_MESSAGE_MUTE_RADIO_REQUEST
+ */
+message MuteRadioRequest {
+  optional int32 radio_id = 1;
+  required bool mute = 2;
+}
+
+/**
+ * @type RADIO_MESSAGE_MUTE_RADIO_RESPONSE
+ */
+message MuteRadioResponse {
+  optional MessageStatus status = 1;
+  optional int32 radio_id = 2;
+  optional bool muted = 3;
+}
+
+/**
+ * @section Navigation Status Messages
+ * <p>Navigation status messages contain information about navigation-related
+ * status and events. The following diagram provides an example of starting
+ * navigation, receiving updates, and stopping navigation.
+ * @startSequenceDiagram Starting & Receiving Navigation Messages
+ * identifier A: Device
+ * identifier B: Vehicle
+ * message B->A: NavigationStatusStart
+ * message A->B: NavigationStatus [ ACTIVE ]
+ * message A->B: NavigationState [ steps, destinations ]
+ * message A->B: NavigationCurrentPosition [ distance/time to steps,
+ * distance/time to destinations, current road ]
+ * message B->A: NavigationStatusStop
+ * @endSequenceDiagram
+ */
+
+/**
+ * @suppress
+ */
+enum NavigationStatusMessageId {
+  INSTRUMENT_CLUSTER_START = 0x8001;
+  INSTRUMENT_CLUSTER_STOP = 0x8002;
+  INSTRUMENT_CLUSTER_NAVIGATION_STATUS = 0x8003;
+  INSTRUMENT_CLUSTER_NAVIGATION_TURN_EVENT = 0x8004 [deprecated = true];
+  INSTRUMENT_CLUSTER_NAVIGATION_DISTANCE_EVENT = 0x8005 [deprecated = true];
+  INSTRUMENT_CLUSTER_NAVIGATION_STATE = 0x8006;
+  INSTRUMENT_CLUSTER_NAVIGATION_CURRENT_POSITION = 0x8007;
+}
+
+/**
+ * @type INSTRUMENT_CLUSTER_START
+ * <p>This message is sent from the sink to the source when the sink wants to
+ * receive navigation status messages.
+ */
+message NavigationStatusStart {}
+
+/**
+ * @type INSTRUMENT_CLUSTER_STOP
+ * <p>This message is sent from the sink to the source when the sink wants to
+ * stop receiving navigation status messages.
+ */
+message NavigationStatusStop {}
+
+/**
+ * @type INSTRUMENT_CLUSTER_NAVIGATION_STATUS
+ * <p>This message is sent from the source to the sink to indicate navigation
+ * status.
+ */
+message NavigationStatus {
+  /** Current status of navigation. */
+  required NavigationStatusEnum status = 1;
+  /** <p>Available navigation statuses. */
+  enum NavigationStatusEnum {
+    /** No navigation status available. */
+    UNAVAILABLE = 0;
+    /** Navigation is currently active. */
+    ACTIVE = 1;
+    /** Navigation is available, but currently inactive. */
+    INACTIVE = 2;
+    /** Navigation is calculating a new route for an active session. */
+    REROUTING = 3;
+  }
+}
+/**
+ * @type INSTRUMENT_CLUSTER_NAVIGATION_TURN_EVENT
+ * <p>Used to indicate a next turn event.
+ */
+message NavigationNextTurnEvent {
+  /**
+   * This message is not used on protocol 1.6 and above.
+   * Use NavigationState message instead.
+   */
+  option deprecated = true;
+
+  /** Name of next road (UTF-8). */
+  required string road = 1;
+  /** Direction of turn. */
+  optional TurnSide turn_side = 2;
+  /** Event type. */
+  optional NextTurnEnum event = 3;
+  /** PNG formatted turn image. */
+  optional bytes image = 4;
+  /** Turn number, used for ROUNDABOUT_ENTER_AND_EXIT. */
+  optional int32 turn_number = 5;
+  /** Turn angle, used for ROUNDABOUT_ENTER_AND_EXIT. */
+  optional int32 turn_angle = 6;
+  /** <p>Indicates the turn direction. */
+  enum TurnSide {
+    /** Left turn. */
+    LEFT = 1;
+    /** Right turn. */
+    RIGHT = 2;
+    /** Unspecified turn (straight ahead, road name change, unknown, etc). */
+    UNSPECIFIED = 3;
+  }
+  /** <p>Indicates the turn type. */
+  enum NextTurnEnum {
+    UNKNOWN = 0;
+    /** Depart from starting point. */
+    DEPART = 1;
+    /** Street name change without turn. */
+    NAME_CHANGE = 2;
+    /** Slight turn. */
+    SLIGHT_TURN = 3;
+    /** Turn. */
+    TURN = 4;
+    /** Sharp turn. */
+    SHARP_TURN = 5;
+    /** U-turn. */
+    U_TURN = 6;
+    /** On ramp. */
+    ON_RAMP = 7;
+    /** Off ramp. */
+    OFF_RAMP = 8;
+    /** Forks in the ramp. */
+    FORK = 9;
+    /** Road merges. */
+    MERGE = 10;
+    /**
+     * Roundabout entrance on which the route ends. Instruction says "Enter
+     * roundabout".
+     */
+    ROUNDABOUT_ENTER = 11;
+    /** Roundabout exit. */
+    ROUNDABOUT_EXIT = 12;
+    /**
+     * Roundabout entrance and exit. E.g. "At the roundabout, take Nth exit."
+     */
+    ROUNDABOUT_ENTER_AND_EXIT = 13;
+    /**
+     * Potentially confusing intersection where the user should steer
+     * straight.
+     */
+    STRAIGHT = 14;
+    /** Boat ferries. */
+    FERRY_BOAT = 16;
+    /** Train ferries for vehicles. */
+    FERRY_TRAIN = 17;
+    /** Destination. */
+    DESTINATION = 19;
+  }
+}
+
+/**
+ * @type INSTRUMENT_CLUSTER_NAVIGATION_DISTANCE_EVENT
+ * <p>This message specifies the next turn distance in space and time.
+ */
+message NavigationNextTurnDistanceEvent {
+  /**
+   * This message is not used on protocol 1.6 and above.
+   * Use NavigationCurrentPosition message instead.
+   */
+  option deprecated = true;
+
+  /** Distance to next turn event, in meters. */
+  required int32 distance_meters = 1;
+  /** Time to next turn event, in seconds. */
+  required int32 time_to_turn_seconds = 2;
+  /**
+   * Distance to the next turn, rounded and converted to the units used when
+   * this distance is displayed by the MD's navigation UI. This value is then
+   * scaled by 1e3. After correcting for the scaling factor, the HU should use
+   * this value as is (e.g. no further rounding/padding, no reinterpreting
+   * units).
+   */
+  optional int32 display_distance_e3 = 3;
+  /** The units of (display_distance_e3 * 1e-3). */
+  optional DistanceUnits display_distance_unit = 4;
+
+  /** <p>Units for distances:</p> */
+  enum DistanceUnits {
+    UNKNOWN_DISTANCE_UNIT = 0;
+    /** Meter unit */
+    METERS = 1;
+    /** Kilometer unit */
+    KILOMETERS = 2;
+    /**
+     * Kilometer unit with the additional requirement that distances of this
+     * type be displayed with at least 1 digit of precision after the decimal
+     * point (e.g. 2.0).
+     */
+    KILOMETERS_P1 = 3;
+    /** Miles unit */
+    MILES = 4;
+    /**
+     * Miles unit with the additional requirement that distances of this type be
+     * displayed with at least 1 digit of precision after the decimal point
+     * (e.g. 2.0).
+     */
+    MILES_P1 = 5;
+    /** Feet unit */
+    FEET = 6;
+    /** Yards unit */
+    YARDS = 7;
+  }
+}
+
+/**
+ * Navigation state data to be displayed on the instrument cluster of a car.
+ * This is composed of:
+ *   - a list of destinations
+ *   - the immediate step or steps in order to drive towards those destinations
+ *   - navigation status
+ */
+message NavigationState {
+  /**
+   * The navigation steps, in order of execution.
+   * It is up to the third-party navigation app to decide how many steps in
+   * advance will be provided (and need not be truncated by an upcoming
+   * destination).
+   */
+  repeated NavigationStep steps = 1;
+  /**
+   * The destinations and intermediate stops in the navigation,
+   * sorted in the order in which the driver will arrive at them.
+   */
+  repeated NavigationDestination destinations = 2;
+}
+
+/**
+ * An action that the driver should take in order to remain on the current
+ * navigation route.
+ *
+ * For example: turning onto a street, taking a highway exit and merging onto
+ * a different highway, continuing straight through a roundabout, etc.
+ */
+message NavigationStep {
+  /**
+   * The maneuver to be performed on this step,
+   * or not present if this step doesn't involve a maneuver.
+   */
+  optional NavigationManeuver maneuver = 1;
+
+  /** The road name of the next turn. */
+  optional NavigationRoad road = 2;
+
+  /**
+   * The configuration of road lanes at the point where the driver should
+   * execute this step, or an empty list if lane configuration metadata
+   * is not available. Lane configurations are listed from left to right.
+   */
+  repeated NavigationLane lanes = 3;
+
+  /**
+   * Auxiliary instructions on how to complete this navigation step,
+   * described as a Cue object containing a plain text.
+   * If space is not enough to display the complete content of this Cue
+   * instance, the beginning of these instructions must be displayed,
+   * cutting as much from the end as needed to fit.
+   */
+  optional NavigationCue cue = 4;
+}
+
+/** Information about a maneuver that the driver will be required to perform. */
+message NavigationManeuver {
+  /** Next ID: 57 */
+  enum NavigationType {
+    /** Maneuver type is unknown, no maneuver information should be displayed.*/
+    UNKNOWN = 0;
+
+    /** Starting point of the navigation (e.g. "Start driving on Main St.") */
+    DEPART = 1;
+
+    /** No turn, but the street name changes (e.g. "Continue on Main St.") */
+    NAME_CHANGE = 2;
+
+    /**
+     * No turn, from 0 (included) to 10 (excluded) degrees. Used when we just
+     * wish to say "Keep left". Note that this is used in contrast to STRAIGHT
+     * for disambiguating cases where there is more than one option to go into
+     * the same general direction.
+     */
+    KEEP_LEFT = 3;
+    /**
+     * No turn, from 0 (included) to 10 (excluded) degrees. Used when we just
+     * wish to say "Keep right". Note that this is used in contrast to STRAIGHT
+     * for disambiguating cases where there is more than one option to go into
+     * the same general direction.
+     */
+    KEEP_RIGHT = 4;
+
+    /**
+     * Slight left turn at an intersection, from 10 (included) to 45 (excluded)
+     * degrees.
+     */
+    TURN_SLIGHT_LEFT = 5;
+    /**
+     * Slight right turn at an intersection, from 10 (included) to 45 (excluded)
+     * degrees.
+     */
+    TURN_SLIGHT_RIGHT = 6;
+
+    /**
+     * Regular left turn at an intersection, from 45 (included) to 135
+     * (excluded) degrees.
+     */
+    TURN_NORMAL_LEFT = 7;
+    /**
+     * Regular right turn at an intersection, from 45 (included) to 135
+     * (excluded) degrees.
+     */
+    TURN_NORMAL_RIGHT = 8;
+
+    /**
+     * Sharp left turn at an intersection, from 135 (included) to 175 (excluded)
+     * degrees.
+     */
+    TURN_SHARP_LEFT = 9;
+    /**
+     * Sharp right turn at an intersection, from 135 (included) to 175
+     * (excluded) degrees.
+     */
+    TURN_SHARP_RIGHT = 10;
+
+    /**
+     * A left turn onto the opposite side of the same street, from 175
+     * (included) to 180 (included) degrees.
+     */
+    U_TURN_LEFT = 11;
+    /**
+     * A right turn onto the opposite side of the same street, from 175
+     * (included) to 180 (included) degrees.
+     */
+    U_TURN_RIGHT = 12;
+
+    /**
+     * A slight left turn to enter a turnpike or freeway. See TURN_SLIGHT_LEFT
+     * for the definition of slight.
+     */
+    ON_RAMP_SLIGHT_LEFT = 13;
+    /**
+     * A slight right turn to enter a turnpike or freeway. See TURN_SLIGHT_RIGHT
+     * for the definition of slight.
+     */
+    ON_RAMP_SLIGHT_RIGHT = 14;
+    /**
+     * A normal left turn to enter a turnpike or freeway. See TURN_NORMAL_LEFT
+     * for the definition of normal.
+     */
+    ON_RAMP_NORMAL_LEFT = 15;
+    /**
+     * A normal right turn to enter a turnpike or freeway. See TURN_NORMAL_RIGHT
+     * for the definition of normal.
+     */
+    ON_RAMP_NORMAL_RIGHT = 16;
+    /**
+     * A sharp left turn to enter a turnpike or freeway. See TURN_SHARP_LEFT
+     * for the definition of sharp.
+     */
+    ON_RAMP_SHARP_LEFT = 17;
+    /**
+     * A sharp right turn to enter a turnpike or freeway. See TURN_SHARP_RIGHT
+     * for the definition of sharp.
+     */
+    ON_RAMP_SHARP_RIGHT = 18;
+    /**
+     * A left u-turn to enter a turnpike or freeway. See U_TURN_LEFT for the
+     * definition of u-turn.
+     */
+    ON_RAMP_U_TURN_LEFT = 19;
+    /**
+     * A right u-turn to enter a turnpike or freeway. See U_TURN_RIGHT for the
+     * definition of u-turn.
+     */
+    ON_RAMP_U_TURN_RIGHT = 20;
+
+    /**
+     * A slight left turn to exit a turnpike or freeway. See TURN_SLIGHT_LEFT
+     * for the definition of slight.
+     */
+    OFF_RAMP_SLIGHT_LEFT = 21;
+    /**
+     * A slight right turn to exit a turnpike or freeway. See TURN_SLIGHT_RIGHT
+     * for the definition of slight.
+     */
+    OFF_RAMP_SLIGHT_RIGHT = 22;
+    /**
+     * A left turn to exit a turnpike or freeway. See TURN_NORMAL_LEFT
+     * for the definition of normal.
+     */
+    OFF_RAMP_NORMAL_LEFT = 23;
+    /**
+     * A right turn to exit a turnpike or freeway. See TURN_NORMAL_RIGHT
+     * for the definition of normal.
+     */
+    OFF_RAMP_NORMAL_RIGHT = 24;
+
+    /** Road diverges (e.g. "Keep left at the fork"). */
+    FORK_LEFT = 25;
+    /** Road diverges (e.g. "Keep right at the fork"). */
+    FORK_RIGHT = 26;
+
+    /** Current road joins another (e.g. "Merge right onto Main St."). */
+    MERGE_LEFT = 27;
+    /** Current road joins another (e.g. "Merge left onto Main St."). */
+    MERGE_RIGHT = 28;
+    /** Current road joins another (e.g. "Merge onto Main St."). */
+    MERGE_SIDE_UNSPECIFIED = 29;
+
+    /**
+     * Early versions of this protocol had ROUNDABOUT_ENTER and ROUNDABOUT_EXIT
+     * maneuvers that did not indicate a turn direction. These maneuvers have
+     * been replaced by the *_CW and *_CCW variants below (43-46).
+     */
+    reserved 30, 31;
+    reserved "ROUNDABOUT_ENTER", "ROUNDABOUT_EXIT";
+
+    /**
+     * Entrance and exit (e.g. "At the roundabout, take Nth exit") on a
+     * clockwise roundabout (as seen from above, typical for left-hand drive
+     * countries).
+     */
+    ROUNDABOUT_ENTER_AND_EXIT_CW = 32;
+    /**
+     * Entrance and exit (e.g. "At the roundabout, take Nth exit") on a
+     * clockwise roundabout (as seen from above, typical for left-hand drive
+     * countries).
+     */
+    ROUNDABOUT_ENTER_AND_EXIT_CW_WITH_ANGLE = 33;
+
+    /**
+     * Entrance and exit (e.g. "At the roundabout, take Nth exit") on a
+     * counter-clockwise roundabout (as seen from above, typical for right-hand
+     * drive countries).
+     */
+    ROUNDABOUT_ENTER_AND_EXIT_CCW = 34;
+    /**
+     * Entrance and exit (e.g. "At the roundabout, take Nth exit") on a
+     * counter-clockwise roundabout (as seen from above, typical for right-hand
+     * drive countries).
+     */
+    ROUNDABOUT_ENTER_AND_EXIT_CCW_WITH_ANGLE = 35;
+
+    /** Driver should steer straight. */
+    STRAIGHT = 36;
+
+    /**
+     * Drive towards a boat ferry for vehicles (e.g. "Take the ferry").
+     * Used when the ferry entrance is straight ahead, or in an unknown
+     * direction.
+     */
+    FERRY_BOAT = 37;
+
+    /**
+     * Drive towards a train ferry for vehicles (e.g. "Take the train").
+     * Used when the ferry entrance is straight ahead, or in an unknown
+     * direction.
+     */
+    FERRY_TRAIN = 38;
+
+    /** Arrival to a destination where the direction is unknown. */
+    DESTINATION = 39;
+
+    /**
+     * Arrival to a destination located straight ahead.
+     */
+    DESTINATION_STRAIGHT = 40;
+    /**
+     * Arrival to a destination located on the left side of the road.
+     */
+    DESTINATION_LEFT = 41;
+    /**
+     * Arrival to a destination located on the right side of the road.
+     */
+    DESTINATION_RIGHT = 42;
+
+    /**
+     * Roundabout entrance on which the current road ends (e.g. "Enter the
+     * roundabout") for a clockwise roundabout (as seen from above, typical for
+     * left-hand drive countries).
+     */
+    ROUNDABOUT_ENTER_CW = 43;
+
+    /**
+     * Used when leaving a roundabout when the step starts in it (e.g. "Exit
+     * the roundabout") for a clockwise roundabout (as seen from above, typical
+     * for left-hand drive countries).
+     */
+    ROUNDABOUT_EXIT_CW = 44;
+
+    /**
+     * Roundabout entrance on which the current road ends (e.g. "Enter the
+     * roundabout") for a counter-clockwise roundabout (as seen from above,
+     * typical for right-hand drive countries).
+     */
+    ROUNDABOUT_ENTER_CCW = 45;
+
+    /**
+     * Used when leaving a roundabout when the step starts in it (e.g. "Exit
+     * the roundabout") for a counter-clockwise roundabout (as seen from above,
+     * typical for right-hand drive countries).
+     */
+    ROUNDABOUT_EXIT_CCW = 46;
+
+    /**
+     * Drive towards a boat ferry for vehicles (e.g. "Take the ferry").
+     * Used when the ferry entrance is to the left.
+     */
+    FERRY_BOAT_LEFT = 47;
+
+    /**
+     * Drive towards a boat ferry for vehicles (e.g. "Take the ferry").
+     * Used when the ferry entrance is to the right.
+     */
+    FERRY_BOAT_RIGHT = 48;
+
+    /**
+     * Drive towards a train ferry for vehicles (e.g. "Take the train").
+     * Used when the ferry entrance is to the left.
+     */
+    FERRY_TRAIN_LEFT = 49;
+
+    /**
+     * Drive towards a train ferry for vehicles (e.g. "Take the train").
+     * Used when the ferry entrance is to the right.
+     */
+    FERRY_TRAIN_RIGHT = 50;
+  }
+
+  /** The type of the maneuver. */
+  optional NavigationType type = 1;
+
+  /**
+   * The roundabout exit number, starting from 1 to designate the first exit
+   * after joining the roundabout, and increasing in circulation order.
+   * Only relevant if type is ROUNDABOUT_EXIT or any variation of
+   * ROUNDABOUT_ENTER_AND_EXIT.
+   *
+   * For example, if the driver is joining a counter-clockwise roundabout
+   * with 4 exits, then the exit to the right would be exit #1, the one
+   * straight ahead would be exit #2, the one to the left would be exit #3
+   * and the one used by the driver to join the roundabout would be exit #4.
+   */
+  optional int32 roundabout_exit_number = 2;
+
+  /** Exit turn angle, used for ROUNDABOUT_ENTER_AND_EXIT maneuver type. */
+  optional int32 roundabout_exit_angle = 3;
+}
+
+/**
+ * An instruction to a user to perform an action during their drive composed of
+ * a plain text. For example, “Take 221 exit at HWY 5”.
+ */
+message NavigationCue {
+  /**
+   * The list of plain-text string representing the content of this Cue, ordered
+   * by descending order of string length.
+   */
+  repeated string alternate_text = 1;
+}
+
+/**
+ * Configuration of a single lane of a road at a particular point in the
+ * navigation. It describes all possible directions the driver could go
+ * from this lane, and indicates which directions the driver could take
+ * to stay on the navigation route.
+ */
+message NavigationLane {
+  /**
+   * One of the possible directions a driver can go when using a particular
+   * lane at a particular step in the navigation. This defines the icon(s)
+   * that must be combined to display a lane configuration to the user.
+   */
+  message LaneDirection {
+    enum Shape {
+      UNKNOWN = 0;
+      STRAIGHT = 1;
+      SLIGHT_LEFT = 2;
+      SLIGHT_RIGHT = 3;
+      NORMAL_LEFT = 4;
+      NORMAL_RIGHT = 5;
+      SHARP_LEFT = 6;
+      SHARP_RIGHT = 7;
+      U_TURN_LEFT = 8;
+      U_TURN_RIGHT = 9;
+    }
+    /** The shape of this lane direction. */
+    optional Shape shape = 1;
+    /**
+     * True if this is a valid direction the driver can take in order to stay
+     * in the navigation route, or false if it will take the drive off the
+     * navigation route.
+     */
+    optional bool is_highlighted = 2;
+  }
+
+  /** The possible directions a driver can take from this lane. */
+  repeated LaneDirection lane_directions = 1;
+}
+
+/** Final or intermediate stop in a navigation route. */
+message NavigationDestination {
+  /**
+   * The address of the destination (formatted for the current user's locale),
+   * or empty if there is no address associated with this destination.
+   */
+  optional string address = 1;
+
+  /**
+   * The EV charging station details of this destination, or empty if not a
+   * charging station
+   */
+  optional ChargingStationDetails charging_station_details = 2;
+}
+
+message ChargingStationDetails {
+  // Minimum available battery energy level (in watt-hours) upon departure of
+  // this station in order to complete the trip.
+  optional int32 minimum_departure_energy_wh = 1;
+
+  // Maximum rated power output (in watts) at this station. Non-zero iff the
+  // user is expected to charge at this stop.
+  optional int32 maximum_rated_power_watts = 2;
+
+  // Estimated charging time to reach the minimum departure level. Non-zero iff
+  // the user is expected to charge at this stop.
+  optional int32 estimated_charging_time_seconds = 3;
+}
+
+/**
+ * The distance and estimated time of arrival info for next steps and
+ * destinations, and current road information to describe the current position
+ * of navigation.
+ */
+message NavigationCurrentPosition {
+  /** The distance in space and time, from current position to the next turn. */
+  optional NavigationStepDistance step_distance = 1;
+  /**
+   * The distance in space and time, from the current position to each
+   * destination and intermediate stop in the navigation, sorted in the order
+   * in which the driver will arrive at them.
+   */
+  repeated NavigationDestinationDistance destination_distances = 2;
+  /**
+   * The current road being driven, may not be set if the road
+   * being driven is unknown. This indicates where the driver is at the moment.
+   */
+  optional NavigationRoad current_road = 3;
+}
+
+/**
+ * Distance, in space and time, along the planned route between the current
+ * position and a navigation step
+ */
+message NavigationStepDistance {
+  /**
+   * The distance from the current position to the point where
+   * this navigation step should be executed.
+   */
+  optional NavigationDistance distance = 1;
+  /** The remaining time to the next turn in seconds. */
+  optional int64 time_to_step_seconds = 2;
+}
+
+/**
+ * Distance, in space and time, along the planned route between the current
+ * position and a destination or intermediate stop.
+ */
+message NavigationDestinationDistance {
+  /**
+   * The travel distance along the route from the current position to this
+   * destination, or not set if distance was not provided or is unknown.
+   */
+  optional NavigationDistance distance = 1;
+  /**
+   * The estimated time at arrival at this destination, value is localized e.g,
+   * “3:45 pm PST”. or not set if it was not provided or is unknown.
+   */
+  optional string estimated_time_at_arrival = 2;
+  /** The remaining time to the destination in seconds. */
+  optional int64 time_to_arrival_seconds = 3;
+}
+
+/** The description for a road. */
+message NavigationRoad {
+  /** Name of the road, for example "Main St" or "101-S". */
+  optional string name = 1;
+}
+
+/**
+ * Distance along the planned route between relevant points in the navigation.
+ */
+message NavigationDistance {
+  /** The distance in meters. */
+  optional int32 meters = 1;
+  /**
+   * The distance measured in the unit indicated at `display_units`, already
+   * internationalized and ready for display, or empty if no distance value was
+   * provided. If empty, the distance shouldn’t be displayed to the driver.
+   */
+  optional string display_value = 2;
+  /**
+   * The distance unit that should be used to display the distance value
+   * (adjusted to the current user's locale and/or location). This matches the
+   * unit used in `display_value`.
+   */
+  optional DistanceUnits display_units = 3;
+  /** Units for distances */
+  enum DistanceUnits {
+    UNKNOWN_DISTANCE_UNIT = 0;
+    /** Meter unit */
+    METERS = 1;
+    /** Kilometer unit */
+    KILOMETERS = 2;
+    /**
+     * Kilometer unit with the additional requirement that distances of this
+     * type be displayed with at least 1 digit of precision after the decimal
+     * point (e.g. 2.0).
+     */
+    KILOMETERS_P1 = 3;
+    /** Miles unit */
+    MILES = 4;
+    /**
+     * Miles unit with the additional requirement that distances of this type be
+     * displayed with at least 1 digit of precision after the decimal point
+     * (e.g. 2.0).
+     */
+    MILES_P1 = 5;
+    /** Feet unit */
+    FEET = 6;
+    /** Yards unit */
+    YARDS = 7;
+  }
+}
+
+/**
+ * @type MEDIA_PLAYBACK_INPUT
+ * <p>This message indicates the vehicle instrument cluster control (which
+ * button was pressed). Can be sent alone on the appropriate application status
+ * channel or included with other required information.
+ */
+message InstrumentClusterInput {
+  /** Button that was pressed. */
+  required InstrumentClusterAction action = 1;
+  /** <p>Indicates the button pressed in the instruction cluster. */
+  enum InstrumentClusterAction {
+    /** Shouldn't be used in production, probably indicates an error */
+    UNKNOWN = 0;
+    /** Up was pressed. */
+    UP = 1;
+    /** Down was pressed. */
+    DOWN = 2;
+    /** Left was pressed. */
+    LEFT = 3;
+    /** Right was pressed. */
+    RIGHT = 4;
+    /** Enter was pressed. */
+    ENTER = 5;
+    /** Back was pressed. */
+    BACK = 6;
+    /** Call was pressed. */
+    CALL = 7;
+  }
+}
+/**
+ * @section Media Playback Metadata Service
+ * <p>The media playback metadata service enables the sink to receive
+ * information on current media playback state. MediaPlaybackStatus is sent from
+ * the source to the sink when media playback state changes.
+ */
+
+/**
+ * @suppress
+ */
+enum MediaPlaybackStatusMessageId {
+  MEDIA_PLAYBACK_STATUS = 0x8001;
+  // Input is just InstrumentClusterInput.
+  MEDIA_PLAYBACK_INPUT = 0x8002;
+  MEDIA_PLAYBACK_METADATA = 0x8003;
+}
+
+/**
+ * @type MEDIA_PLAYBACK_STATUS
+ * <p> This message provide information about media playback such as current
+ * media status, media source, shuffle enabled, etc.
+ */
+message MediaPlaybackStatus {
+  /** Current media state. */
+  optional State state = 1;
+  /** Current media source (Pandora, rdio, google music, etc.). */
+  optional string media_source = 2;
+  /** Number of seconds the current song that has been played. */
+  optional uint32 playback_seconds = 3;
+  /** True when shuffle is enabled. */
+  optional bool shuffle = 4;
+  /** True when repeat is on. */
+  optional bool repeat = 5;
+  /** True when repeat one song is on (ignore if repeat is false). */
+  optional bool repeat_one = 6;
+  /** <p>Specifies the current media state. */
+  enum State {
+    /** No media is currently being played. */
+    STOPPED = 1;
+    /** Media is currently playing. */
+    PLAYING = 2;
+    /** Media is paused. */
+    PAUSED = 3;
+  }
+}
+/**
+ * @type MEDIA_PLAYBACK_METADATA
+ * <p>This message provides metadata information about the currently playing
+ * media.
+ */
+message MediaPlaybackMetadata {
+  /** Name of song. */
+  optional string song = 1;
+  /** Name of artist. */
+  optional string artist = 2;
+  /** Name of album. */
+  optional string album = 3;
+  /** Album art as a PNG. Image resolution can be up to 256x256. */
+  optional bytes album_art = 4;
+  /** Name of the current playlist (if there is one). */
+  optional string playlist = 5;
+  /** Duration of this song. */
+  optional uint32 duration_seconds = 6;
+  /** Rating on a scale of 0 to 5. */
+  optional int32 rating = 7;
+}
+/**
+ * @section Phone Status Metadata
+ * <p>The phone status metadata service enables the sink to receive current
+ * phone call status from the source.
+ */
+/**
+ * @suppress
+ */
+enum PhoneStatusMessageId {
+  PHONE_STATUS = 0x8001;
+  PHONE_STATUS_INPUT = 0x8002;
+}
+/**
+ * @type PHONE_STATUS
+ * <p>This message is sent from the source to the sink when the state changes.
+ */
+message PhoneStatus {
+  /** Repeated for multiple calls. */
+  repeated Call calls = 1;
+  /** Signal strength, on a scale from 0 to 5. */
+  optional uint32 signal_strength = 2;
+  /** <p>Specifies call data. */
+  message Call {
+    /** State of this call. */
+    required State phone_state = 1;
+    /** Current call duration in seconds. */
+    required uint32 call_duration_seconds = 2;
+    /** Number of the call. */
+    optional string caller_number = 3;
+    /** Caller id of the call. */
+    optional string caller_id = 4;
+    /**
+     * For known numbers, specifies the classification (work, mobile, home
+     * ,etc.) of the number in Contacts.
+     */
+    optional string caller_number_type = 5;
+    /** PNG image of the caller (if available). Image resolution can be up to
+     * 256x256. */
+    optional bytes caller_thumbnail = 6;
+  }
+  /** <p>Specifies the call status. */
+  enum State {
+    /** Unknown state.  This used in highly unlikely scenario when unable to
+     *  determine the state of the phone call on the MD side. */
+    UNKNOWN = 0;
+    /** Currently in a call. */
+    IN_CALL = 1;
+    /** Call is on hold. */
+    ON_HOLD = 2;
+    /** No on going calls. */
+    INACTIVE = 3;
+    /** Call is incoming. */
+    INCOMING = 4;
+    /** Call is conferenced */
+    CONFERENCED = 5;
+    /** Call is muted. */
+    MUTED = 6;
+  }
+}
+/**
+ * @type PHONE_STATUS_INPUT
+ * <p>This message is sent from the sink to the source upon user input.
+ */
+message PhoneStatusInput {
+  /** Button pressed by the user. */
+  required InstrumentClusterInput input = 1;
+  /** If set, action should be performed on this caller. */
+  optional string caller_number = 2;
+  /** If set, action should be performed on this caller id. */
+  optional string caller_id = 3;
+}
+/**
+ * @section Media Metadata Browsing Service
+ * <p>The media metadata browsing service enables the sink to browse available
+ * media sources.
+ * @startSequenceDiagram Media Metadata Browse
+ * identifier A: Device
+ * identifier B: Vehicle
+ * message B->A: MediaGetNode [ node = / ]
+ * message A->B: MediaRootNode [ list of MediaSources ]
+ * message B->A: MediaGetNode [ node = /a_media_source ]
+ * message A->B: MediaSourceNode [ list of MediaLists ]
+ * message B->A: MediaGetNode [ node = /a_media_source/a_playlist ]
+ * message A->B: MediaListNode [ list of MediaSongs ]
+ * message B->A: MediaGetNode [ node = /a_media_source/a_playlist/a_song ]
+ * message A->B: MediaSongNode [ a MediaSong, album art, duration ]
+ * @endSequenceDiagram
+ */
+/**
+ * @suppress
+ */
+enum MediaBrowserMessageId {
+  MEDIA_ROOT_NODE = 0x8001;
+  MEDIA_SOURCE_NODE = 0x8002;
+  MEDIA_LIST_NODE = 0x8003;
+  MEDIA_SONG_NODE = 0x8004;
+  MEDIA_GET_NODE = 0x8005;
+  MEDIA_BROWSE_INPUT = 0x8006;
+}
+/**
+ * @type MEDIA_ROOT_NODE
+ * <p>This message provides a list of media sources.
+ */
+message MediaRootNode {
+  /** Root node, set to / . */
+  required string path = 1;
+  /** List of media sources. */
+  repeated MediaSource media_sources = 2;
+}
+/** <p>Specifies media source details such as path and name. */
+message MediaSource {
+  /** Full path of the source (e.g. /google_music). */
+  required string path = 1;
+  /** Display friendly name. */
+  required string name = 2;
+  /** PNG of art for media source (if requested). Image resolution can be up to
+   * 256x256. */
+  optional bytes album_art = 3;
+}
+/**
+ * @type MEDIA_SOURCE_NODE
+ * <p>This message delineates all media lists within a source.
+ */
+message MediaSourceNode {
+  /** Name of source. */
+  required MediaSource source = 1;
+  /** Used to paginate lists within each source. */
+  optional int32 start = 2;
+  /** Total number of lists within the source. */
+  optional int32 total = 3;
+  /** List of lists within the source, such as playlists, albums, artists,
+   * stations, etc. */
+  repeated MediaList lists = 4;
+}
+/** <p>Specifies media list details such as path, type, and name. */
+message MediaList {
+  /** Full path of the media list (e.g. /google_music/rock). */
+  required string path = 1;
+  /** Type of media list. */
+  required Type type = 2;
+  /** Name of media list. */
+  optional string name = 3;
+  /** PNG of art for media list if requested. Image resolution can be up to
+   * 256x256. */
+  optional bytes album_art = 4;
+  /** <p>Specifies media list type. */
+  enum Type {
+    /** Shouldn't be used in production, probably indicates an error */
+    UNKNOWN = 0;
+    /** The list is a playlist. */
+    PLAYLIST = 1;
+    /** The list is an album. */
+    ALBUM = 2;
+    /** Songs from a particular artist. */
+    ARTIST = 3;
+    /** Radio station from streaming service. */
+    STATION = 4;
+    /** Songs from a particular genre. */
+    GENRE = 5;
+  }
+}
+/**
+ * @type MEDIA_LIST_NODE
+ * <p>This message contains a list of songs within the media playlist.
+ */
+message MediaListNode {
+  /** Information about this list. */
+  required MediaList list = 1;
+  /** Start position of returned songs. */
+  optional int32 start = 2;
+  /** Total number of songs within this list. */
+  optional int32 total = 3;
+  /** Max of 10 songs per page will be returned. */
+  repeated MediaSong songs = 4;
+}
+/** <p>Specifies media song details such as path, name, artist, etc. */
+message MediaSong {
+  /** Full path of the song (e.g /google_music/rock/songname). */
+  required string path = 1;
+  /** Name of the song. */
+  required string name = 2;
+  /** Name of the artist of this song. */
+  optional string artist = 3;
+  /** Name of the album. */
+  optional string album = 4;
+}
+/**
+ * @type MEDIA_SONG_NODE
+ * <p>This message contains detailed information about a song.
+ */
+message MediaSongNode {
+  /** Information about the song. */
+  required MediaSong song = 1;
+  /** PNG of art for this song (if requested). Image resolution can be up to
+   * 256x256. */
+  optional bytes album_art = 2;
+  /** Duration of the song, in seconds. */
+  optional uint32 duration_seconds = 3;
+}
+
+/**
+ * @type MEDIA_GET_NODE
+ * <p>This message is sent from the sink to the source to navigate the available
+ * media.
+ */
+message MediaGetNode {
+  /** Path to get. */
+  required string path = 1;
+  /** Starting item when attempting to get a MediaSourceNode/MediaListNode. */
+  optional int32 start = 2;
+  /** When false, album_art fields will not be populated. */
+  optional bool get_album_art = 3 [default = true];
+}
+
+/**
+ * @type MEDIA_BROWSE_INPUT
+ * <p>This message is sent from the sink to the source upon user input.
+ */
+message MediaBrowserInput {
+  /** Button pressed. */
+  required InstrumentClusterInput input = 1;
+  /** Active path to which this input action applies. */
+  required string path = 2;
+}
+
+/**
+ * @section AAP Verification Vendor Extension
+ * <p>The AAP Verification vendor extension enables the source to trigger events
+ * in the sink for testing purposes.
+ */
+
+/**
+ * @suppress
+ */
+enum GalVerificationVendorExtensionMessageId {
+  GAL_VERIFICATION_SET_SENSOR = 0x8001;
+  GAL_VERIFICATION_MEDIA_SINK_STATUS = 0x8002;
+  GAL_VERIFICATION_VIDEO_FOCUS = 0x8003;
+  GAL_VERIFICATION_AUDIO_FOCUS = 0x8004;
+  GAL_VERIFICATION_INJECT_INPUT = 0x8005;
+  GAL_VERIFICATION_BUG_REPORT_REQUEST = 0x8006;
+  GAL_VERIFICATION_BUG_REPORT_RESPONSE = 0x8007;
+  GAL_VERIFICATION_SCREEN_CAPTURE_REQUEST = 0x8008;
+  GAL_VERIFICATION_SCREEN_CAPTURE_RESPONSE = 0x8009;
+  GAL_VERIFICATION_DISPLAY_INFORMATION_REQUEST = 0x800A;
+  GAL_VERIFICATION_DISPLAY_INFORMATION_RESPONSE = 0x800B;
+}
+
+/**
+ * @type GAL_VERIFICATION_SET_SENSOR
+ * <p>This message is used to force sensor data in the vehicle.
+ */
+message GalVerificationSetSensor {
+  /** New sensor information to return. If unset, use real sensors. */
+  optional SensorBatch sensors = 1;
+}
+
+/**
+ * @type GAL_VERIFICATION_MEDIA_SINK_STATUS
+ * <p>This message is used to override media sink status.
+ */
+message GalVerificationMediaSinkStatus {
+  /** ID of the media channel to act upon. */
+  required int32 channel = 1;
+  /** New status of given media channel (video channel only).*/
+  required Config.Status status = 2;
+}
+
+/**
+ * @type GAL_VERIFICATION_VIDEO_FOCUS
+ * <p>This message sent from source to sink to generate a
+ * VideoFocusNotification.
+ */
+message GalVerificationVideoFocus {
+  /** New video focus mode. */
+  required VideoFocusMode video_focus_mode = 1;
+  /** When true, deny video focus when requested. */
+  optional bool deny = 2;
+  /** When true, generated VideoFocusNotification should be marked as
+   * unsolicited. */
+  optional bool unsolicited = 3;
+}
+
+/**
+ * @type GAL_VERIFICATION_AUDIO_FOCUS
+ * <p>Message sent from source to sink to generate an AudioFocusNotification.
+ */
+message GalVerificationAudioFocus {
+  /** New audio focus state. */
+  required AudioFocusStateType audio_focus_state = 1;
+  /** ID of the audio channel to act upon. */
+  required int32 channel = 2;
+  /** When true, generated AudioFocusNotification should be marked as
+   * unsolicited. */
+  optional bool unsolicited = 3;
+}
+
+/**
+ * @type GAL_VERIFICATION_INJECT_INPUT
+ * <p>Message sent from the source to the sink to generate an InputReport.
+ */
+message GalVerificationInjectInput {
+  /** Input to inject. */
+  required InputReport input = 1;
+}
+
+/**
+ * @type GAL_VERIFICATION_BUG_REPORT_REQUEST
+ * <p>This message is used to get a bug report from the sink.
+ */
+message GalVerificationBugReportRequest {}
+
+/**
+ * @type GAL_VERIFICATION_BUG_REPORT_RESPONSE
+ * <p>This message is sent from the sink to the source after requesting a bug
+ * report.
+ */
+message GalVerificationBugReportResponse {
+  /** Bug report string. bug_report is restricted to 1024KB. */
+  required string bug_report = 1;
+}
+
+/**
+ * @type GAL_VERIFICATION_SCREEN_CAPTURE_REQUEST
+ * <p>This message is sent from the source to the sink to request a screen
+ * capture.
+ */
+message GalVerificationScreenCaptureRequest {}
+
+/**
+ * @type GAL_VERIFICATION_SCREEN_CAPTURE_RESPONSE
+ * <p>This message is a response containing a screen capture.
+ */
+message GalVerificationScreenCaptureResponse {
+  /**
+   * Screen capture as a PNG. Image resolution will be the same as the screen
+   * resolution and can exceed 512KB.
+   */
+  required bytes screen_capture = 1;
+}
+
+/**
+ * @type GAL_VERIFICATION_DISPLAY_INFORMATION_REQUEST
+ * <p>This message is sent from the source to the sink to request information
+ * about the projected display.
+ */
+message GalVerificationDisplayInformationRequest {}
+
+/**
+ * @type GAL_VERIFICATION_DISPLAY_INFORMATION_RESPONSE
+ * <p>This message is a response containing display information.
+ */
+message GalVerificationDisplayInformationResponse {
+  /** Native width of the head unit display. */
+  required int32 native_width = 1;
+  /** Native height of the head unit display. */
+  required int32 native_height = 2;
+}
+
+/**
+ * @section Generic Notification Service
+ * <p>The generic notification system enables the establishment of a
+ * bi-directional notification system. Notifications can be used for different
+ * purposes, such as replacing onscreen diagnostics (OSD) typically displayed by
+ * the head unit.
+ * @startSequenceDiagram Generic Notification System
+ * identifier A: Device
+ * identifier B: Vehicle
+ * message A->B: Subscribe
+ * spacer: ... unacknowledged format ...
+ * message B->A: Notification Message [icon, text]
+ * spacer: .... acknowledged format ...
+ * message B->A: Notification Message [id, icon, text]
+ * message A->B: Notification Ack [id, handled]
+ * spacer: ... teardown ...
+ * message B->A: Unsubscribe
+ * @endSequenceDiagram
+ */
+
+/**
+ * @suppress
+ */
+enum GenericNotificationMessageId {
+  GENERIC_NOTIFICATION_SUBSCRIBE = 0x8001;
+  GENERIC_NOTIFICATION_UNSUBSCRIBE = 0x8002;
+  GENERIC_NOTIFICATION_MESSAGE = 0x8003;
+  GENERIC_NOTIFICATION_ACK = 0x8004;
+}
+
+/**
+ * @type GENERIC_NOTIFICATION_SUBSCRIBE
+ * <p>This message is sent by the mobile device to the vehicle to indicate that
+ * the device is ready to send and receive notifications.
+ */
+message GenericNotificationSubscribe {}
+
+/**
+ * @type GENERIC_NOTIFICATION_UNSUBSCRIBE
+ * <p>This message is sent by the mobile device to the vehicle to indicate that
+ * the device no longer wants to send or receive notifications.
+ */
+message GenericNotificationUnsubscribe {}
+
+/**
+ * @type GENERIC_NOTIFICATION_MESSAGE
+ * <p>This message is sent when a side (mobile device or vehicle) wants to send
+ * a notification to the other side. Because notifications are bi-directional,
+ * either side may send this message.
+ */
+message GenericNotificationMessage {
+  /** Unique identifier for this notification. When this field is omitted, no
+   * ack is sent. */
+  optional string id = 1;
+  /** Text of this notification. Marked optional for future expansion. */
+  optional string text = 2;
+  /** Icon (.png) for this notification. Image resolution can be up to 256x256.
+   */
+  optional bytes icon = 3;
+}
+
+/**
+ * @type GENERIC_NOTIFICATION_ACK
+ * <p>This message is sent by the recipient of a notification to indicate that
+ * it has handled the notification. This response can be ignored in most cases
+ * <em>except safety critical</em> cases, where the vehicle must take action if
+ * the notification is not acknowledged within a reasonable amount of time.
+ */
+message GenericNotificationAck {
+  /** Identifier of the notification being handled. */
+  optional string id = 1;
+  /**
+   * True when the notification has been handled, false otherwise. For
+   * safety-critical notifications, the absence of an ACK within a timeout (for
+   * a notification that had an ID) should be treated the same as a NACK.
+   */
+  optional bool handled = 2;
+}
+
+/**
+ * @section Google Diagnostics Vendor Extension
+ * <p> The Google Diagnostics Vendor Extension enables service health monitoring
+ * components to request diagnostics from the head unit. Service name is
+ * com.google.android.projection.protocol.GoogleDiagnosticsVendorExtension.
+ */
+
+/**
+ * @suppress
+ */
+enum GoogleDiagnosticsVendorExtensionMessageId {
+  DIAGNOSTICS_BUG_REPORT_REQUEST = 0x0001;
+  DIAGNOSTICS_BUG_REPORT_RESPONSE = 0x0002;
+}
+
+/**
+ * @type DIAGNOSTICS_BUG_REPORT_REQUEST
+ * <p>This message is sent from the source to the sink to request a bug report.
+ */
+message GoogleDiagnosticsBugReportRequest {
+  /** Token to pass back in the bug report response. */
+  required int32 token = 1;
+}
+
+/**
+ * @type DIAGNOSTICS_BUG_REPORT_RESPONSE
+ * <p>This message is sent from the sink to the source to provide bug report
+ * data.
+ */
+message GoogleDiagnosticsBugReportResponse {
+  /** Bug report text. bug_report is restricted to 1024KB. */
+  optional string bug_report = 1;
+  /** List of tokens for which this bug report is a response.*/
+  repeated int32 tokens = 2;
+}
+/**
+ * @section Appendix I: Status Codes
+ * <p>This appendix lists supported status codes.
+ */
+/**<p>A message can return the status of an operation as one of the following
+ * status codes: <div class="note">NOTE: The Android cpp compiler supports
+ * signed enums; when using a different compiler that does not support signed
+ * enums, you must redefine these values in your code.</div>
+ */
+enum MessageStatus {
+  STATUS_UNSOLICITED_MESSAGE = 1;
+  /** Previous message handled successfully. */
+  STATUS_SUCCESS = 0;
+  /** Sender and receiver cannot agree on a single version, communication cannot
+   * continue. */
+  STATUS_NO_COMPATIBLE_VERSION = -1;
+  /** Certificate presented was invalid. */
+  STATUS_CERTIFICATE_ERROR = -2;
+  /**
+   * Remote end could not be authenticated for some unknown reason not covered
+   * by other STATUS_AUTHENTICATION_FAILURE_* error codes.
+   */
+  STATUS_AUTHENTICATION_FAILURE = -3;
+  /** Service ID specified is not one of the services advertised during service
+   * discovery. */
+  STATUS_INVALID_SERVICE = -4;
+  /** Channel ID specified was invalid. */
+  STATUS_INVALID_CHANNEL = -5;
+  /** Priority specified was invalid. */
+  STATUS_INVALID_PRIORITY = -6;
+  /** Internal error, recommend to tear down connection to avoid state
+   * inconsistency. */
+  STATUS_INTERNAL_ERROR = -7;
+  /** Media configuration requested is not supported. */
+  STATUS_MEDIA_CONFIG_MISMATCH = -8;
+  /** Sensor ID specified is not requested. */
+  STATUS_INVALID_SENSOR = -9;
+  /** Cannot pair Bluetooth now (another device might be connected with an
+   * active call). */
+  STATUS_BLUETOOTH_PAIRING_DELAYED = -10;
+  /** Bluetooth is not available. */
+  STATUS_BLUETOOTH_UNAVAILABLE = -11;
+  /** Bluetooth MAC address specified is invalid. */
+  STATUS_BLUETOOTH_INVALID_ADDRESS = -12;
+  /** Bluetooth pairing method specified is invalid. */
+  STATUS_BLUETOOTH_INVALID_PAIRING_METHOD = -13;
+  STATUS_BLUETOOTH_INVALID_AUTH_DATA = -14;
+  STATUS_BLUETOOTH_AUTH_DATA_MISMATCH = -15;
+  STATUS_BLUETOOTH_HFP_ANOTHER_CONNECTION = -16;
+  STATUS_BLUETOOTH_HFP_CONNECTION_FAILURE = -17;
+  /** Keycode reported is not handled by the mobile device. */
+  STATUS_KEYCODE_NOT_BOUND = -18;
+  /** Can't tune to station b/c it's invalid. */
+  STATUS_RADIO_INVALID_STATION = -19;
+  STATUS_INVALID_INPUT = -20;
+  /** Error occurred retrieving presets. */
+  STATUS_RADIO_STATION_PRESETS_NOT_SUPPORTED = -21;
+  /** Radio communication error occurred. */
+  STATUS_RADIO_COMM_ERROR = -22;
+  /**
+   * Authentication failed because the cert is not yet valid as per the HU's
+   * time. This means that the HU's clock is not properly set.
+   */
+  STATUS_AUTHENTICATION_FAILURE_CERT_NOT_YET_VALID = -23;
+  /**
+   * Authentication failed because the cert is expired as per the HU's time.
+   * It is likely that the HU's clock is not properly set, although it is also
+   * possible that the MD needs to update Google Play Services.
+   */
+  STATUS_AUTHENTICATION_FAILURE_CERT_EXPIRED = -24;
+  /** Ping timeout occurred. Connection should be torn down. */
+  STATUS_PING_TIMEOUT = -25;
+  /** Command not supported. */
+  STATUS_COMMAND_NOT_SUPPORTED = -250;
+  /** Internal error code, not sent over the protocol. */
+  STATUS_FRAMING_ERROR = -251;
+  /** Internal error code, not sent over the protocol. */
+  STATUS_UNEXPECTED_MESSAGE = -253;
+  /** Internal error code, not sent over the protocol. */
+  STATUS_BUSY = -254;
+  /** Internal error code, not sent over the protocol. */
+  STATUS_OUT_OF_MEMORY = -255;
+}
+
+/**
+ * @section Appendix II: Key Codes
+ * <p>This section lists keycodes accepted by the mobile device. Whenever
+ * possible, each keycode has the same numeric value as the corresponding
+ * Android keycode.
+ */
+/**<p>Vehicles can send the following keycodes to a mobile device:
+ */
+enum KeyCode {
+  /** Copied from Android. */
+  KEYCODE_UNKNOWN = 0;
+  /** Copied from Android. */
+  KEYCODE_SOFT_LEFT = 1;
+  /** Copied from Android. */
+  KEYCODE_SOFT_RIGHT = 2;
+  /** Copied from Android. */
+  KEYCODE_HOME = 3;
+  /** Copied from Android. */
+  KEYCODE_BACK = 4;
+  /** Copied from Android. */
+  KEYCODE_CALL = 5;
+  /** Copied from Android. */
+  KEYCODE_ENDCALL = 6;
+  /** Copied from Android. */
+  KEYCODE_0 = 7;
+  /** Copied from Android. */
+  KEYCODE_1 = 8;
+  /** Copied from Android. */
+  KEYCODE_2 = 9;
+  /** Copied from Android. */
+  KEYCODE_3 = 10;
+  /** Copied from Android. */
+  KEYCODE_4 = 11;
+  /** Copied from Android. */
+  KEYCODE_5 = 12;
+  /** Copied from Android. */
+  KEYCODE_6 = 13;
+  /** Copied from Android. */
+  KEYCODE_7 = 14;
+  /** Copied from Android. */
+  KEYCODE_8 = 15;
+  /** Copied from Android. */
+  KEYCODE_9 = 16;
+  /** Copied from Android. */
+  KEYCODE_STAR = 17;
+  /** Copied from Android. */
+  KEYCODE_POUND = 18;
+  /** Copied from Android. */
+  KEYCODE_DPAD_UP = 19;
+  /** Copied from Android. */
+  KEYCODE_DPAD_DOWN = 20;
+  /** Copied from Android. */
+  KEYCODE_DPAD_LEFT = 21;
+  /** Copied from Android. */
+  KEYCODE_DPAD_RIGHT = 22;
+  /** Copied from Android. */
+  KEYCODE_DPAD_CENTER = 23;
+  /** Copied from Android. */
+  KEYCODE_VOLUME_UP = 24;
+  /** Copied from Android. */
+  KEYCODE_VOLUME_DOWN = 25;
+  /** Copied from Android. */
+  KEYCODE_POWER = 26;
+  /** Copied from Android. */
+  KEYCODE_CAMERA = 27;
+  /** Copied from Android. */
+  KEYCODE_CLEAR = 28;
+  /** Copied from Android. */
+  KEYCODE_A = 29;
+  /** Copied from Android. */
+  KEYCODE_B = 30;
+  /** Copied from Android. */
+  KEYCODE_C = 31;
+  /** Copied from Android. */
+  KEYCODE_D = 32;
+  /** Copied from Android. */
+  KEYCODE_E = 33;
+  /** Copied from Android. */
+  KEYCODE_F = 34;
+  /** Copied from Android. */
+  KEYCODE_G = 35;
+  /** Copied from Android. */
+  KEYCODE_H = 36;
+  /** Copied from Android. */
+  KEYCODE_I = 37;
+  /** Copied from Android. */
+  KEYCODE_J = 38;
+  /** Copied from Android. */
+  KEYCODE_K = 39;
+  /** Copied from Android. */
+  KEYCODE_L = 40;
+  /** Copied from Android. */
+  KEYCODE_M = 41;
+  /** Copied from Android. */
+  KEYCODE_N = 42;
+  /** Copied from Android. */
+  KEYCODE_O = 43;
+  /** Copied from Android. */
+  KEYCODE_P = 44;
+  /** Copied from Android. */
+  KEYCODE_Q = 45;
+  /** Copied from Android. */
+  KEYCODE_R = 46;
+  /** Copied from Android. */
+  KEYCODE_S = 47;
+  /** Copied from Android. */
+  KEYCODE_T = 48;
+  /** Copied from Android. */
+  KEYCODE_U = 49;
+  /** Copied from Android. */
+  KEYCODE_V = 50;
+  /** Copied from Android. */
+  KEYCODE_W = 51;
+  /** Copied from Android. */
+  KEYCODE_X = 52;
+  /** Copied from Android. */
+  KEYCODE_Y = 53;
+  /** Copied from Android. */
+  KEYCODE_Z = 54;
+  /** Copied from Android. */
+  KEYCODE_COMMA = 55;
+  /** Copied from Android. */
+  KEYCODE_PERIOD = 56;
+  /** Copied from Android. */
+  KEYCODE_ALT_LEFT = 57;
+  /** Copied from Android. */
+  KEYCODE_ALT_RIGHT = 58;
+  /** Copied from Android. */
+  KEYCODE_SHIFT_LEFT = 59;
+  /** Copied from Android. */
+  KEYCODE_SHIFT_RIGHT = 60;
+  /** Copied from Android. */
+  KEYCODE_TAB = 61;
+  /** Copied from Android. */
+  KEYCODE_SPACE = 62;
+  /** Copied from Android. */
+  KEYCODE_SYM = 63;
+  /** Copied from Android. */
+  KEYCODE_EXPLORER = 64;
+  /** Copied from Android. */
+  KEYCODE_ENVELOPE = 65;
+  /** Copied from Android. */
+  KEYCODE_ENTER = 66;
+  /** Backspace. See also KEYCODE_FORWARD_DEL. */
+  KEYCODE_DEL = 67;
+  /** Backtick. */
+  KEYCODE_GRAVE = 68;
+  /** Copied from Android. */
+  KEYCODE_MINUS = 69;
+  /** Copied from Android. */
+  KEYCODE_EQUALS = 70;
+  /** Copied from Android. */
+  KEYCODE_LEFT_BRACKET = 71;
+  /** Copied from Android. */
+  KEYCODE_RIGHT_BRACKET = 72;
+  /** Copied from Android. */
+  KEYCODE_BACKSLASH = 73;
+  /** Copied from Android. */
+  KEYCODE_SEMICOLON = 74;
+  /** Copied from Android. */
+  KEYCODE_APOSTROPHE = 75;
+  /** Copied from Android. */
+  KEYCODE_SLASH = 76;
+  /** Copied from Android. */
+  KEYCODE_AT = 77;
+  /** Copied from Android. */
+  KEYCODE_NUM = 78;
+  /** Copied from Android. */
+  KEYCODE_HEADSETHOOK = 79;
+  /** Camera Focus. */
+  KEYCODE_FOCUS = 80;
+  /** Copied from Android. */
+  KEYCODE_PLUS = 81;
+  /** Copied from Android. */
+  KEYCODE_MENU = 82;
+  /** Copied from Android. */
+  KEYCODE_NOTIFICATION = 83;
+  /** Copied from Android. */
+  KEYCODE_SEARCH = 84;
+  /** Copied from Android. */
+  KEYCODE_MEDIA_PLAY_PAUSE = 85;
+  /** Copied from Android. */
+  KEYCODE_MEDIA_STOP = 86;
+  /** Copied from Android. */
+  KEYCODE_MEDIA_NEXT = 87;
+  /** Copied from Android. */
+  KEYCODE_MEDIA_PREVIOUS = 88;
+  /** Copied from Android. */
+  KEYCODE_MEDIA_REWIND = 89;
+  /** Copied from Android. */
+  KEYCODE_MEDIA_FAST_FORWARD = 90;
+  /** Copied from Android. */
+  KEYCODE_MUTE = 91;
+  /** Copied from Android. */
+  KEYCODE_PAGE_UP = 92;
+  /** Copied from Android. */
+  KEYCODE_PAGE_DOWN = 93;
+  /** Copied from Android. */
+  KEYCODE_PICTSYMBOLS = 94;
+  /** Copied from Android. */
+  KEYCODE_SWITCH_CHARSET = 95;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_A = 96;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_B = 97;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_C = 98;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_X = 99;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_Y = 100;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_Z = 101;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_L1 = 102;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_R1 = 103;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_L2 = 104;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_R2 = 105;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_THUMBL = 106;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_THUMBR = 107;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_START = 108;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_SELECT = 109;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_MODE = 110;
+  /** Copied from Android. */
+  KEYCODE_ESCAPE = 111;
+  /** Copied from Android. */
+  KEYCODE_FORWARD_DEL = 112;
+  /** Copied from Android. */
+  KEYCODE_CTRL_LEFT = 113;
+  /** Copied from Android. */
+  KEYCODE_CTRL_RIGHT = 114;
+  /** Copied from Android. */
+  KEYCODE_CAPS_LOCK = 115;
+  /** Copied from Android. */
+  KEYCODE_SCROLL_LOCK = 116;
+  /** Copied from Android. */
+  KEYCODE_META_LEFT = 117;
+  /** Copied from Android. */
+  KEYCODE_META_RIGHT = 118;
+  /** Copied from Android. */
+  KEYCODE_FUNCTION = 119;
+  /** Copied from Android. */
+  KEYCODE_SYSRQ = 120;
+  /** Copied from Android. */
+  KEYCODE_BREAK = 121;
+  /** Copied from Android. */
+  KEYCODE_MOVE_HOME = 122;
+  /** Copied from Android. */
+  KEYCODE_MOVE_END = 123;
+  /** Copied from Android. */
+  KEYCODE_INSERT = 124;
+  /** Copied from Android. */
+  KEYCODE_FORWARD = 125;
+  /** Copied from Android. */
+  KEYCODE_MEDIA_PLAY = 126;
+  /** Copied from Android. */
+  KEYCODE_MEDIA_PAUSE = 127;
+  /** Copied from Android. */
+  KEYCODE_MEDIA_CLOSE = 128;
+  /** Copied from Android. */
+  KEYCODE_MEDIA_EJECT = 129;
+  /** Copied from Android. */
+  KEYCODE_MEDIA_RECORD = 130;
+  /** Copied from Android. */
+  KEYCODE_F1 = 131;
+  /** Copied from Android. */
+  KEYCODE_F2 = 132;
+  /** Copied from Android. */
+  KEYCODE_F3 = 133;
+  /** Copied from Android. */
+  KEYCODE_F4 = 134;
+  /** Copied from Android. */
+  KEYCODE_F5 = 135;
+  /** Copied from Android. */
+  KEYCODE_F6 = 136;
+  /** Copied from Android. */
+  KEYCODE_F7 = 137;
+  /** Copied from Android. */
+  KEYCODE_F8 = 138;
+  /** Copied from Android. */
+  KEYCODE_F9 = 139;
+  /** Copied from Android. */
+  KEYCODE_F10 = 140;
+  /** Copied from Android. */
+  KEYCODE_F11 = 141;
+  /** Copied from Android. */
+  KEYCODE_F12 = 142;
+  /** Copied from Android. */
+  KEYCODE_NUM_LOCK = 143;
+  /** Copied from Android. */
+  KEYCODE_NUMPAD_0 = 144;
+  /** Copied from Android. */
+  KEYCODE_NUMPAD_1 = 145;
+  /** Copied from Android. */
+  KEYCODE_NUMPAD_2 = 146;
+  /** Copied from Android. */
+  KEYCODE_NUMPAD_3 = 147;
+  /** Copied from Android. */
+  KEYCODE_NUMPAD_4 = 148;
+  /** Copied from Android. */
+  KEYCODE_NUMPAD_5 = 149;
+  /** Copied from Android. */
+  KEYCODE_NUMPAD_6 = 150;
+  /** Copied from Android. */
+  KEYCODE_NUMPAD_7 = 151;
+  /** Copied from Android. */
+  KEYCODE_NUMPAD_8 = 152;
+  /** Copied from Android. */
+  KEYCODE_NUMPAD_9 = 153;
+  /** Copied from Android. */
+  KEYCODE_NUMPAD_DIVIDE = 154;
+  /** Copied from Android. */
+  KEYCODE_NUMPAD_MULTIPLY = 155;
+  /** Copied from Android. */
+  KEYCODE_NUMPAD_SUBTRACT = 156;
+  /** Copied from Android. */
+  KEYCODE_NUMPAD_ADD = 157;
+  /** Copied from Android. */
+  KEYCODE_NUMPAD_DOT = 158;
+  /** Copied from Android. */
+  KEYCODE_NUMPAD_COMMA = 159;
+  /** Copied from Android. */
+  KEYCODE_NUMPAD_ENTER = 160;
+  /** Copied from Android. */
+  KEYCODE_NUMPAD_EQUALS = 161;
+  /** Copied from Android. */
+  KEYCODE_NUMPAD_LEFT_PAREN = 162;
+  /** Copied from Android. */
+  KEYCODE_NUMPAD_RIGHT_PAREN = 163;
+  /** Copied from Android. */
+  KEYCODE_VOLUME_MUTE = 164;
+  /** Copied from Android. */
+  KEYCODE_INFO = 165;
+  /** Copied from Android. */
+  KEYCODE_CHANNEL_UP = 166;
+  /** Copied from Android. */
+  KEYCODE_CHANNEL_DOWN = 167;
+  /** Copied from Android. */
+  KEYCODE_ZOOM_IN = 168;
+  /** Copied from Android. */
+  KEYCODE_ZOOM_OUT = 169;
+  /** Copied from Android. */
+  KEYCODE_TV = 170;
+  /** Copied from Android. */
+  KEYCODE_WINDOW = 171;
+  /** Copied from Android. */
+  KEYCODE_GUIDE = 172;
+  /** Copied from Android. */
+  KEYCODE_DVR = 173;
+  /** Copied from Android. */
+  KEYCODE_BOOKMARK = 174;
+  /** Copied from Android. */
+  KEYCODE_CAPTIONS = 175;
+  /** Copied from Android. */
+  KEYCODE_SETTINGS = 176;
+  /** Copied from Android. */
+  KEYCODE_TV_POWER = 177;
+  /** Copied from Android. */
+  KEYCODE_TV_INPUT = 178;
+  /** Copied from Android. */
+  KEYCODE_STB_POWER = 179;
+  /** Copied from Android. */
+  KEYCODE_STB_INPUT = 180;
+  /** Copied from Android. */
+  KEYCODE_AVR_POWER = 181;
+  /** Copied from Android. */
+  KEYCODE_AVR_INPUT = 182;
+  /** Copied from Android. */
+  KEYCODE_PROG_RED = 183;
+  /** Copied from Android. */
+  KEYCODE_PROG_GREEN = 184;
+  /** Copied from Android. */
+  KEYCODE_PROG_YELLOW = 185;
+  /** Copied from Android. */
+  KEYCODE_PROG_BLUE = 186;
+  /** Copied from Android. */
+  KEYCODE_APP_SWITCH = 187;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_1 = 188;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_2 = 189;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_3 = 190;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_4 = 191;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_5 = 192;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_6 = 193;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_7 = 194;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_8 = 195;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_9 = 196;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_10 = 197;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_11 = 198;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_12 = 199;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_13 = 200;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_14 = 201;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_15 = 202;
+  /** Copied from Android. */
+  KEYCODE_BUTTON_16 = 203;
+  /** Copied from Android. */
+  KEYCODE_LANGUAGE_SWITCH = 204;
+  /** Copied from Android. */
+  KEYCODE_MANNER_MODE = 205;
+  /** Copied from Android. */
+  KEYCODE_3D_MODE = 206;
+  /** Copied from Android. */
+  KEYCODE_CONTACTS = 207;
+  /** Copied from Android. */
+  KEYCODE_CALENDAR = 208;
+  /** Copied from Android. */
+  KEYCODE_MUSIC = 209;
+  /** Copied from Android. */
+  KEYCODE_CALCULATOR = 210;
+  /** Copied from Android. */
+  KEYCODE_ZENKAKU_HANKAKU = 211;
+  /** Copied from Android. */
+  KEYCODE_EISU = 212;
+  /** Copied from Android. */
+  KEYCODE_MUHENKAN = 213;
+  /** Copied from Android. */
+  KEYCODE_HENKAN = 214;
+  /** Copied from Android. */
+  KEYCODE_KATAKANA_HIRAGANA = 215;
+  /** Copied from Android. */
+  KEYCODE_YEN = 216;
+  /** Copied from Android. */
+  KEYCODE_RO = 217;
+  /** Copied from Android. */
+  KEYCODE_KANA = 218;
+  /** Copied from Android. */
+  KEYCODE_ASSIST = 219;
+  /** Copied from Android. */
+  KEYCODE_BRIGHTNESS_DOWN = 220;
+  /** Copied from Android. */
+  KEYCODE_BRIGHTNESS_UP = 221;
+  /** Copied from Android. */
+  KEYCODE_MEDIA_AUDIO_TRACK = 222;
+  /** Copied from Android. */
+  KEYCODE_SLEEP = 223;
+  /** Copied from Android. */
+  KEYCODE_WAKEUP = 224;
+  /** Copied from Android. */
+  KEYCODE_PAIRING = 225;
+  /** Copied from Android. */
+  KEYCODE_MEDIA_TOP_MENU = 226;
+  /** Copied from Android. */
+  KEYCODE_11 = 227;
+  /** Copied from Android. */
+  KEYCODE_12 = 228;
+  /** Copied from Android. */
+  KEYCODE_LAST_CHANNEL = 229;
+  /** Copied from Android. */
+  KEYCODE_TV_DATA_SERVICE = 230;
+  /** Copied from Android. */
+  KEYCODE_VOICE_ASSIST = 231;
+  /** Copied from Android. */
+  KEYCODE_TV_RADIO_SERVICE = 232;
+  /** Copied from Android. */
+  KEYCODE_TV_TELETEXT = 233;
+  /** Copied from Android. */
+  KEYCODE_TV_NUMBER_ENTRY = 234;
+  /** Copied from Android. */
+  KEYCODE_TV_TERRESTRIAL_ANALOG = 235;
+  /** Copied from Android. */
+  KEYCODE_TV_TERRESTRIAL_DIGITAL = 236;
+  /** Copied from Android. */
+  KEYCODE_TV_SATELLITE = 237;
+  /** Copied from Android. */
+  KEYCODE_TV_SATELLITE_BS = 238;
+  /** Copied from Android. */
+  KEYCODE_TV_SATELLITE_CS = 239;
+  /** Copied from Android. */
+  KEYCODE_TV_SATELLITE_SERVICE = 240;
+  /** Copied from Android. */
+  KEYCODE_TV_NETWORK = 241;
+  /** Copied from Android. */
+  KEYCODE_TV_ANTENNA_CABLE = 242;
+  /** Copied from Android. */
+  KEYCODE_TV_INPUT_HDMI_1 = 243;
+  /** Copied from Android. */
+  KEYCODE_TV_INPUT_HDMI_2 = 244;
+  /** Copied from Android. */
+  KEYCODE_TV_INPUT_HDMI_3 = 245;
+  /** Copied from Android. */
+  KEYCODE_TV_INPUT_HDMI_4 = 246;
+  /** Copied from Android. */
+  KEYCODE_TV_INPUT_COMPOSITE_1 = 247;
+  /** Copied from Android. */
+  KEYCODE_TV_INPUT_COMPOSITE_2 = 248;
+  /** Copied from Android. */
+  KEYCODE_TV_INPUT_COMPONENT_1 = 249;
+  /** Copied from Android. */
+  KEYCODE_TV_INPUT_COMPONENT_2 = 250;
+  /** Copied from Android. */
+  KEYCODE_TV_INPUT_VGA_1 = 251;
+  /** Copied from Android. */
+  KEYCODE_TV_AUDIO_DESCRIPTION = 252;
+  /** Copied from Android. */
+  KEYCODE_TV_AUDIO_DESCRIPTION_MIX_UP = 253;
+  /** Copied from Android. */
+  KEYCODE_TV_AUDIO_DESCRIPTION_MIX_DOWN = 254;
+  /** Copied from Android. */
+  KEYCODE_TV_ZOOM_MODE = 255;
+  /** Copied from Android. */
+  KEYCODE_TV_CONTENTS_MENU = 256;
+  /** Copied from Android. */
+  KEYCODE_TV_MEDIA_CONTEXT_MENU = 257;
+  /** Copied from Android. */
+  KEYCODE_TV_TIMER_PROGRAMMING = 258;
+  /** Copied from Android. */
+  KEYCODE_HELP = 259;
+  /** Copied from Android. */
+  KEYCODE_NAVIGATE_PREVIOUS = 260;
+  /** Copied from Android. */
+  KEYCODE_NAVIGATE_NEXT = 261;
+  /** Copied from Android. */
+  KEYCODE_NAVIGATE_IN = 262;
+  /** Copied from Android. */
+  KEYCODE_NAVIGATE_OUT = 263;
+  /** Copied from Android. */
+  KEYCODE_DPAD_UP_LEFT = 268;
+  /** Copied from Android. */
+  KEYCODE_DPAD_DOWN_LEFT = 269;
+  /** Copied from Android. */
+  KEYCODE_DPAD_UP_RIGHT = 270;
+  /** Copied from Android. */
+  KEYCODE_DPAD_DOWN_RIGHT = 271;
+  /** Do not use. */
+  KEYCODE_SENTINEL = 65535;
+  /** Device ID for the rotary controller. */
+  KEYCODE_ROTARY_CONTROLLER = 65536;
+  /** Media hard key on the head unit. */
+  KEYCODE_MEDIA = 65537;
+  /**
+  * Navigation hard key on the head unit.
+  *
+  * Also used to show maps UI on auxiliary displays.
+  */
+  KEYCODE_NAVIGATION = 65538;
+  /** Radio hard key on the head unit. */
+  KEYCODE_RADIO = 65539;
+  /** Telephone hard button on the head unit. */
+  KEYCODE_TEL = 65540;
+  /** Device ID for the primary button (left trackpad button). */
+  KEYCODE_PRIMARY_BUTTON = 65541;
+  /** Device ID for the secondary button. */
+  KEYCODE_SECONDARY_BUTTON = 65542;
+  /** Device ID for the tertiary button. */
+  KEYCODE_TERTIARY_BUTTON = 65543;
+  /**
+   * Keycode to show turn-card UI on auxiliary displays.
+   *
+   * Only valid on auxiliary displays. MUST NOT be declared or sent for other
+   * types of display.
+   */
+  KEYCODE_TURN_CARD = 65544;
+}
+
+/**
+ * @section Appendix III: Global Constants
+ * <p>This section lists constants for the AAP protocol.
+ */
+/** <p>The AAP protocol uses the following constants: */
+enum GalConstants {
+  /** Well-known port used for Wifi connections. */
+  WIFI_PORT = 30515;
+  /** AAP major version. */
+  PROTOCOL_MAJOR_VERSION = 4;
+  /** AAP minor version. */
+  PROTOCOL_MINOR_VERSION = 3;
+}

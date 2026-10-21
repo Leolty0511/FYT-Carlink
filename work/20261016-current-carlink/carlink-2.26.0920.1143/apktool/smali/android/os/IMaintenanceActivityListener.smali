@@ -1,0 +1,19 @@
+.class public interface abstract Landroid/os/IMaintenanceActivityListener;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Landroid/os/IInterface;
+
+
+# annotations
+.annotation system Ldalvik/annotation/MemberClasses;
+    value = {
+        Landroid/os/IMaintenanceActivityListener$Stub;
+    }
+.end annotation
+
+
+# virtual methods
+.method public abstract onMaintenanceActivityChanged(Z)V
+.end method

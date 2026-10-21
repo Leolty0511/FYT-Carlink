@@ -1,0 +1,35 @@
+#和当前播放器互斥的应用,注意,失去焦点不播放的应用,不视为互斥应用
+com.kugou.playerHD
+com.kugou.android
+cn.kuwo.kwmusichd
+com.sds.android.ttpod
+cn.kuwo.kwmusiccar
+com.kuwo.kwmusiccar
+cn.kuwo.player
+com.incarmedia
+com.edog.car
+com.txznet.music
+com.elinkway.tvlive2
+com.didi365.miudrive.navi
+com.hongfans.rearview   #车悦宝
+com.mediacast.co.il.radioin2 #智航第三方应用
+com.cyberserve.android.reco99fm
+com.tencent.qqmusiccar
+com.incarmedia
+com.netease.cloudmusic
+#com.ecar.assistantnew
+com.kico.video
+com.ximalaya.ting.android.dingwei
+com.tencent.wecarflow
+com.xjcheng.simlosslessplay
+com.hiby.music
+com.syu.onlineradio
+com.djbox.product
+com.xingle
+com.thunder.carplay
+com.kugou.android.tv
+com.kugou.android.auto
+com.ex.dabplayer.pad
+com.zoulou.dab
+com.ex.yhxdabw8.pad
+com.ex.dabplayer

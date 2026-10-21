@@ -1,0 +1,482 @@
+.class Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;
+.super Landroid/speech/tts/TextToSpeechService$UtteranceSpeechItem;
+.source "SourceFile"
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Landroid/speech/tts/TextToSpeechService;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x1
+    name = "SynthesisSpeechItem"
+.end annotation
+
+
+# instance fields
+.field private final mCallerUid:I
+
+.field private final mDefaultLocale:[Ljava/lang/String;
+
+.field private final mEventLogger:Landroid/speech/tts/EventLogger;
+
+.field private mSynthesisCallback:Landroid/speech/tts/AbstractSynthesisCallback;
+
+.field private final mSynthesisRequest:Landroid/speech/tts/SynthesisRequest;
+
+.field private final mText:Ljava/lang/String;
+
+.field public final synthetic this$0:Landroid/speech/tts/TextToSpeechService;
+
+
+# direct methods
+.method public constructor <init>(Landroid/speech/tts/TextToSpeechService;Ljava/lang/Object;IILandroid/os/Bundle;Ljava/lang/String;)V
+    .locals 0
+
+    .line 1
+    iput-object p1, p0, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->this$0:Landroid/speech/tts/TextToSpeechService;
+
+    .line 2
+    invoke-direct/range {p0 .. p5}, Landroid/speech/tts/TextToSpeechService$UtteranceSpeechItem;-><init>(Landroid/speech/tts/TextToSpeechService;Ljava/lang/Object;IILandroid/os/Bundle;)V
+
+    .line 3
+    iput-object p6, p0, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->mText:Ljava/lang/String;
+
+    .line 4
+    iput p3, p0, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->mCallerUid:I
+
+    .line 5
+    new-instance p2, Landroid/speech/tts/SynthesisRequest;
+
+    iget-object p5, p0, Landroid/speech/tts/TextToSpeechService$SpeechItem;->mParams:Landroid/os/Bundle;
+
+    invoke-direct {p2, p6, p5}, Landroid/speech/tts/SynthesisRequest;-><init>(Ljava/lang/String;Landroid/os/Bundle;)V
+
+    iput-object p2, p0, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->mSynthesisRequest:Landroid/speech/tts/SynthesisRequest;
+
+    .line 6
+    invoke-static {p1}, Landroid/speech/tts/TextToSpeechService;->access$400(Landroid/speech/tts/TextToSpeechService;)[Ljava/lang/String;
+
+    move-result-object p5
+
+    iput-object p5, p0, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->mDefaultLocale:[Ljava/lang/String;
+
+    .line 7
+    invoke-direct {p0, p2}, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->setRequestParams(Landroid/speech/tts/SynthesisRequest;)V
+
+    .line 8
+    new-instance p5, Landroid/speech/tts/EventLogger;
+
+    invoke-static {p1}, Landroid/speech/tts/TextToSpeechService;->access$500(Landroid/speech/tts/TextToSpeechService;)Ljava/lang/String;
+
+    move-result-object p1
+
+    invoke-direct {p5, p2, p3, p4, p1}, Landroid/speech/tts/EventLogger;-><init>(Landroid/speech/tts/SynthesisRequest;IILjava/lang/String;)V
+
+    iput-object p5, p0, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->mEventLogger:Landroid/speech/tts/EventLogger;
+
+    return-void
+.end method
+
+.method private getCountry()Ljava/lang/String;
+    .locals 2
+
+    .line 1
+    invoke-direct {p0}, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->hasLanguage()Z
+
+    move-result v0
+
+    if-nez v0, :cond_0
+
+    iget-object v0, p0, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->mDefaultLocale:[Ljava/lang/String;
+
+    const/4 v1, 0x1
+
+    aget-object v0, v0, v1
+
+    return-object v0
+
+    :cond_0
+    const-string v0, "country"
+
+    const-string v1, ""
+
+    .line 2
+    invoke-virtual {p0, v0, v1}, Landroid/speech/tts/TextToSpeechService$UtteranceSpeechItem;->getStringParam(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v0
+
+    return-object v0
+.end method
+
+.method private getPitch()I
+    .locals 2
+
+    const-string v0, "pitch"
+
+    const/16 v1, 0x64
+
+    .line 1
+    invoke-virtual {p0, v0, v1}, Landroid/speech/tts/TextToSpeechService$UtteranceSpeechItem;->getIntParam(Ljava/lang/String;I)I
+
+    move-result v0
+
+    return v0
+.end method
+
+.method private getSpeechRate()I
+    .locals 2
+
+    .line 1
+    iget-object v0, p0, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->this$0:Landroid/speech/tts/TextToSpeechService;
+
+    invoke-static {v0}, Landroid/speech/tts/TextToSpeechService;->access$600(Landroid/speech/tts/TextToSpeechService;)I
+
+    move-result v0
+
+    const-string v1, "rate"
+
+    invoke-virtual {p0, v1, v0}, Landroid/speech/tts/TextToSpeechService$UtteranceSpeechItem;->getIntParam(Ljava/lang/String;I)I
+
+    move-result v0
+
+    return v0
+.end method
+
+.method private getVariant()Ljava/lang/String;
+    .locals 2
+
+    .line 1
+    invoke-direct {p0}, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->hasLanguage()Z
+
+    move-result v0
+
+    if-nez v0, :cond_0
+
+    iget-object v0, p0, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->mDefaultLocale:[Ljava/lang/String;
+
+    const/4 v1, 0x2
+
+    aget-object v0, v0, v1
+
+    return-object v0
+
+    :cond_0
+    const-string/jumbo v0, "variant"
+
+    const-string v1, ""
+
+    .line 2
+    invoke-virtual {p0, v0, v1}, Landroid/speech/tts/TextToSpeechService$UtteranceSpeechItem;->getStringParam(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v0
+
+    return-object v0
+.end method
+
+.method private hasLanguage()Z
+    .locals 2
+
+    const-string v0, "language"
+
+    const/4 v1, 0x0
+
+    .line 1
+    invoke-virtual {p0, v0, v1}, Landroid/speech/tts/TextToSpeechService$UtteranceSpeechItem;->getStringParam(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v0
+
+    invoke-static {v0}, Landroid/text/TextUtils;->isEmpty(Ljava/lang/CharSequence;)Z
+
+    move-result v0
+
+    xor-int/lit8 v0, v0, 0x1
+
+    return v0
+.end method
+
+.method private setRequestParams(Landroid/speech/tts/SynthesisRequest;)V
+    .locals 3
+
+    .line 1
+    invoke-virtual {p0}, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->getLanguage()Ljava/lang/String;
+
+    move-result-object v0
+
+    invoke-direct {p0}, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->getCountry()Ljava/lang/String;
+
+    move-result-object v1
+
+    invoke-direct {p0}, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->getVariant()Ljava/lang/String;
+
+    move-result-object v2
+
+    invoke-virtual {p1, v0, v1, v2}, Landroid/speech/tts/SynthesisRequest;->setLanguage(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+
+    .line 2
+    invoke-direct {p0}, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->getSpeechRate()I
+
+    move-result v0
+
+    invoke-virtual {p1, v0}, Landroid/speech/tts/SynthesisRequest;->setSpeechRate(I)V
+
+    .line 3
+    iget v0, p0, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->mCallerUid:I
+
+    invoke-virtual {p1, v0}, Landroid/speech/tts/SynthesisRequest;->setCallerUid(I)V
+
+    .line 4
+    invoke-direct {p0}, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->getPitch()I
+
+    move-result v0
+
+    invoke-virtual {p1, v0}, Landroid/speech/tts/SynthesisRequest;->setPitch(I)V
+
+    return-void
+.end method
+
+
+# virtual methods
+.method public createSynthesisCallback()Landroid/speech/tts/AbstractSynthesisCallback;
+    .locals 9
+
+    .line 1
+    new-instance v8, Landroid/speech/tts/PlaybackSynthesisCallback;
+
+    invoke-virtual {p0}, Landroid/speech/tts/TextToSpeechService$UtteranceSpeechItem;->getStreamType()I
+
+    move-result v1
+
+    invoke-virtual {p0}, Landroid/speech/tts/TextToSpeechService$UtteranceSpeechItem;->getVolume()F
+
+    move-result v2
+
+    invoke-virtual {p0}, Landroid/speech/tts/TextToSpeechService$UtteranceSpeechItem;->getPan()F
+
+    move-result v3
+
+    iget-object v0, p0, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->this$0:Landroid/speech/tts/TextToSpeechService;
+
+    invoke-static {v0}, Landroid/speech/tts/TextToSpeechService;->access$200(Landroid/speech/tts/TextToSpeechService;)Landroid/speech/tts/AudioPlaybackHandler;
+
+    move-result-object v4
+
+    invoke-virtual {p0}, Landroid/speech/tts/TextToSpeechService$SpeechItem;->getCallerIdentity()Ljava/lang/Object;
+
+    move-result-object v6
+
+    iget-object v7, p0, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->mEventLogger:Landroid/speech/tts/EventLogger;
+
+    move-object v0, v8
+
+    move-object v5, p0
+
+    invoke-direct/range {v0 .. v7}, Landroid/speech/tts/PlaybackSynthesisCallback;-><init>(IFFLandroid/speech/tts/AudioPlaybackHandler;Landroid/speech/tts/TextToSpeechService$UtteranceProgressDispatcher;Ljava/lang/Object;Landroid/speech/tts/EventLogger;)V
+
+    return-object v8
+.end method
+
+.method public getLanguage()Ljava/lang/String;
+    .locals 2
+
+    .line 1
+    iget-object v0, p0, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->mDefaultLocale:[Ljava/lang/String;
+
+    const/4 v1, 0x0
+
+    aget-object v0, v0, v1
+
+    const-string v1, "language"
+
+    invoke-virtual {p0, v1, v0}, Landroid/speech/tts/TextToSpeechService$UtteranceSpeechItem;->getStringParam(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v0
+
+    return-object v0
+.end method
+
+.method public getText()Ljava/lang/String;
+    .locals 1
+
+    .line 1
+    iget-object v0, p0, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->mText:Ljava/lang/String;
+
+    return-object v0
+.end method
+
+.method public isValid()Z
+    .locals 4
+
+    .line 1
+    iget-object v0, p0, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->mText:Ljava/lang/String;
+
+    const/4 v1, 0x0
+
+    const-string v2, "TextToSpeechService"
+
+    if-nez v0, :cond_0
+
+    const-string v0, "null synthesis text"
+
+    .line 2
+    invoke-static {v2, v0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
+
+    return v1
+
+    .line 3
+    :cond_0
+    invoke-virtual {v0}, Ljava/lang/String;->length()I
+
+    move-result v0
+
+    invoke-static {}, Landroid/speech/tts/TextToSpeech;->getMaxSpeechInputLength()I
+
+    move-result v3
+
+    if-lt v0, v3, :cond_1
+
+    .line 4
+    new-instance v0, Ljava/lang/StringBuilder;
+
+    invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v3, "Text too long: "
+
+    invoke-virtual {v0, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    iget-object v3, p0, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->mText:Ljava/lang/String;
+
+    invoke-virtual {v3}, Ljava/lang/String;->length()I
+
+    move-result v3
+
+    invoke-virtual {v0, v3}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+
+    const-string v3, " chars"
+
+    invoke-virtual {v0, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v0
+
+    invoke-static {v2, v0}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;)I
+
+    return v1
+
+    :cond_1
+    const/4 v0, 0x1
+
+    return v0
+.end method
+
+.method public playImpl()I
+    .locals 4
+
+    .line 1
+    iget-object v0, p0, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->mEventLogger:Landroid/speech/tts/EventLogger;
+
+    invoke-virtual {v0}, Landroid/speech/tts/EventLogger;->onRequestProcessingStart()V
+
+    .line 2
+    monitor-enter p0
+
+    .line 3
+    :try_start_0
+    invoke-virtual {p0}, Landroid/speech/tts/TextToSpeechService$SpeechItem;->isStopped()Z
+
+    move-result v0
+
+    const/4 v1, -0x1
+
+    if-eqz v0, :cond_0
+
+    .line 4
+    monitor-exit p0
+
+    return v1
+
+    .line 5
+    :cond_0
+    invoke-virtual {p0}, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->createSynthesisCallback()Landroid/speech/tts/AbstractSynthesisCallback;
+
+    move-result-object v0
+
+    iput-object v0, p0, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->mSynthesisCallback:Landroid/speech/tts/AbstractSynthesisCallback;
+
+    .line 6
+    monitor-exit p0
+    :try_end_0
+    .catchall {:try_start_0 .. :try_end_0} :catchall_0
+
+    .line 7
+    iget-object v2, p0, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->this$0:Landroid/speech/tts/TextToSpeechService;
+
+    iget-object v3, p0, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->mSynthesisRequest:Landroid/speech/tts/SynthesisRequest;
+
+    invoke-virtual {v2, v3, v0}, Landroid/speech/tts/TextToSpeechService;->onSynthesizeText(Landroid/speech/tts/SynthesisRequest;Landroid/speech/tts/SynthesisCallback;)V
+
+    .line 8
+    invoke-virtual {v0}, Landroid/speech/tts/AbstractSynthesisCallback;->isDone()Z
+
+    move-result v0
+
+    if-eqz v0, :cond_1
+
+    const/4 v1, 0x0
+
+    :cond_1
+    return v1
+
+    :catchall_0
+    move-exception v0
+
+    .line 9
+    :try_start_1
+    monitor-exit p0
+    :try_end_1
+    .catchall {:try_start_1 .. :try_end_1} :catchall_0
+
+    throw v0
+.end method
+
+.method public stopImpl()V
+    .locals 1
+
+    .line 1
+    monitor-enter p0
+
+    .line 2
+    :try_start_0
+    iget-object v0, p0, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->mSynthesisCallback:Landroid/speech/tts/AbstractSynthesisCallback;
+
+    .line 3
+    monitor-exit p0
+    :try_end_0
+    .catchall {:try_start_0 .. :try_end_0} :catchall_0
+
+    if-eqz v0, :cond_0
+
+    .line 4
+    invoke-virtual {v0}, Landroid/speech/tts/AbstractSynthesisCallback;->stop()V
+
+    .line 5
+    iget-object v0, p0, Landroid/speech/tts/TextToSpeechService$SynthesisSpeechItem;->this$0:Landroid/speech/tts/TextToSpeechService;
+
+    invoke-virtual {v0}, Landroid/speech/tts/TextToSpeechService;->onStop()V
+
+    :cond_0
+    return-void
+
+    :catchall_0
+    move-exception v0
+
+    .line 6
+    :try_start_1
+    monitor-exit p0
+    :try_end_1
+    .catchall {:try_start_1 .. :try_end_1} :catchall_0
+
+    throw v0
+.end method

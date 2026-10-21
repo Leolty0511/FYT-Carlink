@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MainServer</string>
+    <string name="delay_power_off">The machine will shut down after 20 seconds.</string>
+    <string name="flash_test_open">Factory Setting-Flash read and write test open</string>
+    <string name="ic_error">Encryption IC authentication failure CODE :</string>
+    <string name="image_conve_error">Video conversion module verification failed!!</string>
+    <string name="loud_off">LOUD OFF</string>
+    <string name="loud_on">LOUD ON</string>
+    <string name="mcu_match_old">MCU VERSION OLD</string>
+    <string name="mcu_need_update">MCU needs to be upgraded!</string>
+    <string name="non_vertocal_screen">Non-vertical screen platform</string>
+    <string name="platform_and_mcu_match_error">Platform and MCU not match!</string>
+    <string name="please_reboot">Please Reboot System!</string>
+    <string name="ui_and_mcu_match_error">UI and MCU does not match!</string>
+    <string name="ui_and_mcu_match_error_360">360 Platform; UI and MCU does not match!</string>
+    <string name="upgrade_mcu">Please upgrade the software for MCU!</string>
+</resources>

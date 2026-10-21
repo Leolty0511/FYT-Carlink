@@ -1,0 +1,109 @@
+package android.filterfw.core;
+
+import android.util.Log;
+
+/* JADX INFO: loaded from: classes.dex */
+public abstract class FilterPort {
+    private static final String TAG = "FilterPort";
+    public Filter mFilter;
+    public String mName;
+    public FrameFormat mPortFormat;
+    public boolean mIsBlocking = true;
+    public boolean mIsOpen = false;
+    public boolean mChecksType = false;
+    private boolean mLogVerbose = Log.isLoggable(TAG, 2);
+
+    public FilterPort(Filter filter, String str) {
+        this.mName = str;
+        this.mFilter = filter;
+    }
+
+    public void assertPortIsOpen() {
+        if (isOpen()) {
+            return;
+        }
+        throw new RuntimeException("Illegal operation on closed " + this + "!");
+    }
+
+    public void checkFrameManager(Frame frame, FilterContext filterContext) {
+        if (frame.getFrameManager() == null || frame.getFrameManager() == filterContext.getFrameManager()) {
+            return;
+        }
+        throw new RuntimeException("Frame " + frame + " is managed by foreign FrameManager! ");
+    }
+
+    public void checkFrameType(Frame frame, boolean z2) {
+        if ((!this.mChecksType && !z2) || this.mPortFormat == null || frame.getFormat().isCompatibleWith(this.mPortFormat)) {
+            return;
+        }
+        throw new RuntimeException("Frame passed to " + this + " is of incorrect type! Expected " + this.mPortFormat + " but got " + frame.getFormat());
+    }
+
+    public abstract void clear();
+
+    public void close() {
+        if (this.mIsOpen && this.mLogVerbose) {
+            Log.v(TAG, "Closing " + this);
+        }
+        this.mIsOpen = false;
+    }
+
+    public abstract boolean filterMustClose();
+
+    public Filter getFilter() {
+        return this.mFilter;
+    }
+
+    public String getName() {
+        return this.mName;
+    }
+
+    public FrameFormat getPortFormat() {
+        return this.mPortFormat;
+    }
+
+    public abstract boolean hasFrame();
+
+    public boolean isAttached() {
+        return this.mFilter != null;
+    }
+
+    public boolean isBlocking() {
+        return this.mIsBlocking;
+    }
+
+    public boolean isOpen() {
+        return this.mIsOpen;
+    }
+
+    public abstract boolean isReady();
+
+    public void open() {
+        if (!this.mIsOpen && this.mLogVerbose) {
+            Log.v(TAG, "Opening " + this);
+        }
+        this.mIsOpen = true;
+    }
+
+    public abstract Frame pullFrame();
+
+    public abstract void pushFrame(Frame frame);
+
+    public void setBlocking(boolean z2) {
+        this.mIsBlocking = z2;
+    }
+
+    public void setChecksType(boolean z2) {
+        this.mChecksType = z2;
+    }
+
+    public abstract void setFrame(Frame frame);
+
+    public void setPortFormat(FrameFormat frameFormat) {
+        this.mPortFormat = frameFormat;
+    }
+
+    public String toString() {
+        return "port '" + this.mName + "' of " + this.mFilter;
+    }
+}

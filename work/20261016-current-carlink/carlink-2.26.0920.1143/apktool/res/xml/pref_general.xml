@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference android:entries="@array/pref_preset_list_titles" android:title="@string/pref_title_preset_screens" android:key="preset_list" android:defaultValue="5" android:positiveButtonText="@null" android:negativeButtonText="@null" android:entryValues="@array/pref_preset_list_values" />
+    <CheckBoxPreference android:title="@string/pref_title_scale_screen" android:key="scale_checkbox" android:summary="@string/pref_scale_screen" android:defaultValue="true" />
+    <CheckBoxPreference android:title="@string/pref_title_debug_mode" android:key="debug_mode" android:summary="@string/pref_debug_mode" android:defaultValue="false" />
+    <EditTextPreference android:enabled="false" android:maxLines="1" android:singleLine="true" android:selectAllOnFocus="true" android:title="@string/pref_screen_width" android:key="screen_width" android:inputType="number" />
+    <EditTextPreference android:enabled="false" android:maxLines="1" android:singleLine="true" android:selectAllOnFocus="true" android:title="@string/pref_screen_height" android:key="screen_height" android:inputType="number" />
+    <EditTextPreference android:enabled="false" android:maxLines="1" android:singleLine="true" android:selectAllOnFocus="true" android:title="@string/pref_screen_dpi" android:key="screen_dpi" android:inputType="number" />
+    <ListPreference android:entries="@array/pref_location_source_list_titles" android:title="@string/pref_title_location_source" android:key="location_source_list" android:defaultValue="@string/pref_location_source_gps" android:positiveButtonText="@null" android:negativeButtonText="@null" android:entryValues="@array/pref_location_source_list_values" />
+    <CheckBoxPreference android:title="@string/pref_title_framerate_restrict" android:key="framerate_restrict_to_30" android:summary="@string/pref_framerate_restrict" android:defaultValue="false" />
+    <EditTextPreference android:maxLines="1" android:singleLine="true" android:selectAllOnFocus="true" android:title="@string/pref_listen_tcp_port" android:key="listen_tcp_port" android:defaultValue="0" android:inputType="number" />
+    <EditTextPreference android:maxLines="1" android:singleLine="true" android:selectAllOnFocus="true" android:title="@string/pref_car_wifi_ssid" android:key="car_wifi_ssid" android:defaultValue="aawp" android:inputType="textNoSuggestions" />
+    <EditTextPreference android:maxLines="1" android:singleLine="true" android:selectAllOnFocus="true" android:title="@string/pref_car_wifi_password" android:key="car_wifi_password" android:defaultValue="wifipassword" android:inputType="textNoSuggestions" />
+    <ListPreference android:entries="@array/pref_wifi_security_list_titles" android:title="@string/pref_title_wifi_security" android:key="wifi_security_list" android:defaultValue="4" android:positiveButtonText="@null" android:negativeButtonText="@null" android:entryValues="@array/pref_wifi_security_list_values" />
+    <CheckBoxPreference android:title="@string/pref_wifi_auto_start" android:key="wifi_auto_start" android:defaultValue="true" />
+    <EditTextPreference android:maxLines="1" android:singleLine="true" android:selectAllOnFocus="true" android:title="@string/pref_car_bluetooth_address" android:key="car_bluetooth_address" android:defaultValue="SKIP_THIS_BLUETOOTH" android:inputType="textCapCharacters|textNoSuggestions" />
+    <CheckBoxPreference android:title="@string/pref_car_supports_bluetooth_numeric_comparison" android:key="car_supports_bluetooth_numeric_comparison" android:defaultValue="true" />
+    <CheckBoxPreference android:title="@string/pref_car_supports_bluetooth_pin" android:key="car_supports_bluetooth_pin" android:defaultValue="true" />
+    <CheckBoxPreference android:title="@string/pref_audio_focus_use_restricted_mode" android:key="audio_focus_use_restricted_mode" android:defaultValue="false" />
+    <CheckBoxPreference android:title="@string/pref_rotary_controller_enabled" android:key="rotary_controller_enabled" android:defaultValue="false" />
+    <CheckBoxPreference android:title="@string/pref_touch_screen_enabled" android:key="touch_screen_enabled" android:defaultValue="true" />
+    <CheckBoxPreference android:title="@string/pref_touchpad_navigation_enabled" android:key="touchpad_navigation_enabled" android:defaultValue="true" />
+    <CheckBoxPreference android:title="@string/pref_generate_missing_sensors" android:key="generate_missing_sensors" android:defaultValue="false" />
+    <CheckBoxPreference android:title="@string/pref_use_tablet_compass_enabled" android:key="use_tablet_compass_enabled" android:defaultValue="false" />
+    <CheckBoxPreference android:title="@string/pref_use_obd2_enabled" android:key="use_obd2_enabled" android:defaultValue="false" />
+    <ListPreference android:title="@string/pref_obd2_device" android:key="obd2_device" android:dependency="use_obd2_enabled" android:defaultValue="" />
+    <CheckBoxPreference android:title="@string/auto_start_local_mode" android:key="auto_start_local_mode" android:defaultValue="" />
+    <CheckBoxPreference android:title="@string/pref_use_sun_calculator" android:key="use_sun_calculator" android:defaultValue="false" />
+    <CheckBoxPreference android:title="@string/pref_use_aac_for_media_stream_enabled" android:key="use_aac_for_media_stream" android:defaultValue="true" />
+    <CheckBoxPreference android:title="@string/pref_use_aac_for_tts_stream_enabled" android:key="use_aac_for_tts_stream" android:defaultValue="false" />
+    <CheckBoxPreference android:title="@string/pref_auto_start_projection" android:key="auto_start_projection" android:defaultValue="true" />
+    <CheckBoxPreference android:title="@string/pref_volume_toggle_debug" android:key="volume_toggle_debug" android:defaultValue="false" />
+    <CheckBoxPreference android:title="@string/pref_show_vf_dialog" android:key="show_vf_dialog" android:defaultValue="false" />
+</PreferenceScreen>

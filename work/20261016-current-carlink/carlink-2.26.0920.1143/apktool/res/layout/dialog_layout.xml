@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:orientation="vertical" android:background="@drawable/dialog_bg" android:layout_width="250.0dip" android:layout_height="140.0dip">
+        <TextView android:textSize="16.0dip" android:textColor="@color/colorPrimary" android:gravity="center" android:id="@id/dialog_title" android:layout_width="fill_parent" android:layout_height="50.0dip" android:text="@string/dialog_title" />
+        <TextView android:textSize="15.0sp" android:textColor="#ff777777" android:gravity="center_horizontal" android:id="@id/dialog_content" android:layout_width="fill_parent" android:layout_height="50.0dip" android:text="@string/dialog_msg" />
+        <View android:background="#ffc0c0c0" android:layout_width="fill_parent" android:layout_height="1.0dip" />
+        <LinearLayout android:gravity="center" android:orientation="horizontal" android:id="@id/ll_btn" android:layout_width="fill_parent" android:layout_height="40.0dip">
+            <TextView android:textSize="15.0dip" android:textColor="#ff888888" android:gravity="center" android:id="@id/dialog_cancel" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/dialog_cancel" android:layout_weight="1.0" />
+            <View android:background="#ffc0c0c0" android:layout_width="1.0dip" android:layout_height="fill_parent" />
+            <TextView android:textSize="15.0dip" android:textColor="@color/colorPrimary" android:gravity="center" android:id="@id/dialog_sure" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/dialog_ok" android:layout_weight="1.0" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

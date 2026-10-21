@@ -1,0 +1,7 @@
+#通过声音焦点处理声音的应用
+com.baidu.carlifevehicle		  #百度CarLife
+com.android.browser
+#jp.co.datawest.android.navi	  #小日本的垃圾地图
+com.didi365.miudrive.navi		  #喵驾
+com.android.chrome
+com.txznet.browser

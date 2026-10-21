@@ -1,0 +1,382 @@
+// exclude-from-protodb: This comment excludes this file from being indexed
+// in the global protodb to avoid conflicts with the generated public version.
+
+syntax = "proto2";
+
+package wifi_discovery;
+
+import "common.proto";
+
+option java_outer_classname = "WifiDiscoveryProtos";
+option java_package = "com.google.android.projection.proto";
+option optimize_for = LITE_RUNTIME;
+
+// TODO: Add `// required` comments to required fields.
+
+/**
+ * @section Wi-Fi Projection Protocol
+ #ifndef WPP_WIFI_SETUP_INFO
+ * <p>This protocol is used to send messages over a Bluetooth RFCOMM connection,
+ * for the purposes of launching wireless projection.
+ *
+ * <p>All messages sent over Bluetooth RFCOMM
+ * must follow the below encoding scheme:</p>
+ #endif
+ #ifdef WPP_WIFI_SETUP_INFO
+ * <p>This protocol is used to send messages over a Bluetooth RFCOMM and WiFi
+ * connection, for the purposes of launching wireless projection.
+ *
+ * <p>All messages sent over Bluetooth RFCOMM and WiFi
+ * must follow the below encoding scheme:</p>
+ #endif
+ * @startTable
+ * Field  |Size     |Description
+ * Size   |2 bytes  |Size (in bytes) of data
+ * Type   |2 bytes  |Numeric identifier that describes the message type.
+ * Data   |variable |Type-specific data (all messages should use a protocol
+ * buffer).
+ * @endTable
+ */
+
+/**
+ * <p>@startSequenceDiagram Basic successful RFCOMM communication
+ * identifier A: Device
+ * identifier B: Vehicle
+ * message B->A: WifiVersionRequest
+ * message A->B: WifiVersionResponse
+ * message B->A: WifiStartRequest, ip_address, port
+ * message A->B: WifiStartResponse
+ * spacer: ... if new vehicle or unknown/updated Wi-Fi info ...
+ * message A->B: WifiInfoRequest
+ * message B->A: WifiInfoResponse, SSID, password, security_mode
+ * spacer: ... after Wi-Fi connection ...
+ * message A->B: WifiConnectStatus, status
+ * @endSequenceDiagram</p>
+ */
+
+
+enum WifiMessageType {
+  MESSAGE_WIFI_REQUEST_START_BT = 1;
+  MESSAGE_WIFI_REQUEST_INFO_BT = 2;
+  MESSAGE_WIFI_RESPONSE_INFO_BT = 3;
+  MESSAGE_WIFI_VERSION_REQUEST_BT = 4;
+  MESSAGE_WIFI_VERSION_RESPONSE_BT = 5;
+  MESSAGE_WIFI_CONNECT_STATUS_BT = 6;
+  MESSAGE_WIFI_RESPONSE_START_BT = 7;
+  MESSAGE_WIFI_PING_REQUEST_BT = 8;
+  MESSAGE_WIFI_PING_RESPONSE_BT = 9;
+  MESSAGE_WIFI_CONNECTION_REJECTION_BT = 10;
+}
+
+/**
+ * <p>5 bit identifier for security type (ABCDE)</p>
+ * <ul>
+ * <li>A - Personal (PSK) or Enterprise (EAP): use PSK if 0, use EAP if 1</li>
+ * <li>B - Supports CCMP if set</li>
+ * <li>C - Supports TKIP if set</li>
+ * <li>D/E - Identifies non-WPA based authentication</li>
+ * </ul>
+ */
+enum WifiSecurityMode {
+  UNKNOWN_SECURITY_MODE = 0;
+  /** Deprecated */
+  OPEN = 0x01;
+  /** Deprecated */
+  WEP_64 = 0x02;
+  /** Deprecated */
+  WEP_128 = 0x03;
+  /** 000100: WPA-PSK (IEEE 802.11i/D3.0), TKIP */
+  WPA_PERSONAL = 0x04;
+  /** 001000: WPA2-PSK (IEEE 802.11i/RSN), CCMP */
+  WPA2_PERSONAL = 0x08;
+  /** 001100: Both WPA & WPA2, TKIP/CCMP */
+  WPA_WPA2_PERSONAL = 0x0C;
+  /** 010100: WPA (IEEE 802.11i/D3.0), TKIP */
+  WPA_ENTERPRISE = 0x14;
+  /** 011000: WPA2 (IEEE 802.11i/RSN), CCMP */
+  WPA2_ENTERPRISE = 0x18;
+  /** 011100: Both WPA & WPA2, TKIP/CCMP */
+  WPA_WPA2_ENTERPRISE = 0x1C;
+  /** 100000: WPA3-SAE Personal */
+  WPA3_PERSONAL = 0x20;
+  /** 101000: WPA3-SAE Personal Transition Mode */
+  WPA2_WPA3_PERSONAL = 0x28;
+}
+
+/*
+ * The channel modes supported by the head unit (HU) and Mobile device (MD).
+ */
+enum WifiChannelType {
+  /** Only 5 GHz supported */
+  CHANNELS_5GHZ_ONLY = 0;
+  /** Only 2.4 GHz supported */
+  CHANNELS_24GHZ_ONLY = 1;
+  /** Both 2.4 and 5 GHz supported at the same time */
+  CHANNELS_DUAL_BAND = 2;
+  /** No channels supported */
+  NO_CHANNELS_SUPPORTED = 3;
+}
+
+/*
+ * The type of access point (static or dynamically generated SSID/BSSID).
+ */
+enum AccessPointType {
+  /** The SSID/BSSID stays stable between projected sessions. This is
+   * recommended. */
+  STATIC = 0;
+  /**
+   * HUs should not use this value for its AccessPointType. It is now required
+   * that all HUs have static access point credentials.
+   */
+  DYNAMIC = 1 [deprecated = true];
+}
+
+/*
+ * The explicit reasons for WifiStartRequests/
+ */
+enum StartRequestReason {
+  /** The user explicitly selected Android Auto **/
+  USER_REQUEST = 0;
+  /** The HU/MD was powered on and Android Auto was automatically started **/
+  AUTO_LAUNCH = 1;
+  /**
+   * The connection was lost and the HU to automatically restart projection.
+   * The auto restart could come from any direction. */
+  AUTOMATIC_RESTART = 2;
+}
+
+/*
+ * A HU rejects connection requests from MDs for these reasons.
+ */
+enum ConnectionRejectionReason {
+  /** Unknown rejection reason. */
+  CONNECTION_REJECTION_REASON_UNKNOWN = 0;
+  /**
+   * Use this over non-RFCOMM connections only. The HU uses this value to
+   * indicate to the MD that the `instance_id` in the
+   * `WifiVersionResponse.PhoneInfo` is no longer available on the
+   * HU. This generally applies to cases such as preventing Wi-Fi discovery over
+   * TCP if the user has unpaired Bluetooth or removed the MD from the native
+   * connectivity manager on the HU.
+   */
+  CONNECTION_REJECTION_REASON_MOBILE_DEVICE_ID_NOT_FOUND = 1;
+}
+
+/*
+ * If wifi discovery is occurring over RFCOMM, the HU sends the
+ * WifiProjectionProtocolInfo message in the WifiVersionRequest such that the MD
+ * can use Wi-Fi for Wi-Fi discovery on subsequent connections.
+ */
+message WifiProjectionProtocolInfo {
+  /**
+   * The ip address of the HU's Wi-Fi projection protocol service. If the IP
+   * address is dependent on the AP's IP address, this should be set to the
+   * wildcard (0.0.0.0) IP address.
+   */
+  optional string ip_address = 1 ;
+  /** The port number of the HU's Wi-Fi projection protocol service. **/
+  optional int32 port = 2;
+}
+
+
+/**
+ * @type MESSAGE_WIFI_VERSION_REQUEST_BT
+#ifdef WPP_WIFI_SETUP_INFO
+ * <p>The HU sends this message immediately upon Wi-Fi projection protocol
+ * connection.</p>
+#endif
+#ifndef WPP_WIFI_SETUP_INFO
+ * <p>The HU sends this message immediately upon RFCOMM connection.
+#endif
+ */
+message WifiVersionRequest {
+  /** Version number for Wi-Fi projection RFCOMM channel protocol **/
+  optional int32 major_version = 1 ;
+  optional int32 minor_version = 2 ;
+  /** WifiChannelType supported by head unit */
+  optional WifiChannelType supported_wifi_channel_type = 3;
+  /** Supported Wi-Fi channel frequencies by the HU access point */
+  repeated int32 supported_wifi_channels = 4;
+  /** HeadUnit info (such as model, vehicle_id). */
+  optional common.HeadUnitInfo headunit_info = 5;
+  /** Info about the HU's Wi-Fi projection protocol address. */
+  optional WifiProjectionProtocolInfo wifi_projection_protocol_info = 6;
+}
+
+/**
+ * @type MESSAGE_WIFI_VERSION_RESPONSE_BT
+ * <p>The MD sends this message in response to
+ * MESSAGE_WIFI_VERSION_REQUEST_BT from the HU</p>
+ */
+message WifiVersionResponse {
+  /** Version number for Wi-Fi projection RFCOMM channel protocol **/
+  optional int32 major_version = 1 ;
+  optional int32 minor_version = 2 ;
+
+  /**
+   * Android serial number, to detect if the same device connected over
+   * bluetooth is enumerating over USB. This serial number should used only when
+   * connected to rfcomm and not persisted in the head unit. For all mapping
+   * purposes, phone_info.device_id should be used instead.
+   **/
+  optional string device_serial = 3 ;
+
+  // STATUS_NO_COMPATIBLE_VERSION if versions are incompatible.
+  // STATUS_NO_SUPPORTED_WIFI_CHANNELS if no compatible wifi channels are found.
+  // STATUS_SUCCESS otherwise.
+  optional MessageStatus version_status = 4;
+
+  /** The WifiChannelType the mobile device has selected to use */
+  optional WifiChannelType selected_wifi_channel_type = 5;
+
+  /** Phone info (such as instance id). */
+  optional common.PhoneInfo phone_info = 6;
+
+}
+
+/**
+ * @type MESSAGE_WIFI_REJECT_CONNECTION_BT
+ * <p>The HU sends this message to the MD over the TCP WPP manager if the
+ * connection was rejected for the given reason in rejection_reason.
+ */
+message WifiConnectionRejection {
+  /** The reason this connection is being rejected. */
+  optional ConnectionRejectionReason rejection_reason = 1;
+}
+
+/**
+ * @type MESSAGE_WIFI_REQUEST_START_BT
+ * <p>The HU sends this message to the MD over Bluetooth to start wireless
+ * projection.</p> <p>Can also be sent from MD to HU to start projection. Will
+ * not set ip/port in this case.</p>
+ */
+message WifiStartRequest {
+  /** The ip address of the HU's Android Auto service **/
+  optional string ip_address = 1 ;
+  /** The port number of the HU's Android Auto service **/
+  optional int32 port = 2;
+  /** The reason for starting the Wifi **/
+  optional StartRequestReason start_request_reason = 3;
+}
+
+/**
+ * @type MESSAGE_WIFI_RESPONSE_START_BT
+ * <p> MD or HU will send this in response to WifiStartRequest.</p>
+ */
+message WifiStartResponse {
+  /** The ip address of the HU's Android Auto service **/
+  optional string ip_address = 1 ;
+  /** The port number of the HU's Android Auto service **/
+  optional int32 port = 2;
+  /** Status of pending start request **/
+  optional MessageStatus status = 3;
+}
+
+/**
+ * @type MESSAGE_WIFI_REQUEST_INFO_BT
+ * <p>The MD sends this message to an HU with an unknown Wi-Fi hotspot
+ * to get the SSID and password of the Wi-Fi network</p>
+ */
+message WifiInfoRequest {}
+
+/**
+ * @type MESSAGE_WIFI_RESPONSE_INFO_BT
+ * <p>During wireless projection discovery, the HU sends this message in
+ * response to requests for the credentials of the HU's Wi-Fi hotspot.</p>
+ * <p>Message includes whether Wi-Fi is supported, and the HU's wifi hotspot
+ * ssid/password.</p>
+ */
+message WifiInfoResponse {
+  /** The SSID of the Wi-Fi network in ASCII.
+   *  Need not be enclosed in quotes */
+  optional string wifi_ssid = 1;
+  /** The password of the Wi-Fi network in UTF-8. */
+  optional string wifi_password = 2;
+  /** The BSSID of the Wi-Fi network. Must be in Ethernet MAC address format,
+   * e.g., XX:XX:XX:XX:XX:XX where each X is a hex digit */
+  optional string wifi_bssid = 3;
+  /** The encryption type of the Wi-Fi network.
+   *  Only WPA_PERSONAL and WPA2_PERSONAL are supported. */
+  optional WifiSecurityMode wifi_security_mode = 4;
+  /** Whether a new SSID/BSSID is generated on each projected session. */
+  optional AccessPointType access_point_type = 5;
+}
+
+/**
+ * @type MESSAGE_WIFI_CONNECT_STATUS_BT
+ * <p>The MD sends this message to HU to notify the wifi connect status.</p>
+ */
+message WifiConnectStatus {
+  /** The status of connecting to HU's AP. **/
+  optional MessageStatus connect_status = 1;
+  /** Recommended string to display on the head unit if an unknown MessageStatus
+   is sent. Null/empty indicates no messages should be displayed. */
+  optional string error_message_hint = 2;
+}
+
+enum MessageStatus {
+  STATUS_UNSOLICITED_MESSAGE = 1;
+  /** message handled successfully. */
+  STATUS_SUCCESS = 0;
+  /** Sender and receiver cannot agree on a single version, communication cannot
+   * continue. */
+  STATUS_NO_COMPATIBLE_VERSION = -1;
+  /** The given Wi-Fi channel is inaccessible. **/
+  STATUS_WIFI_INACCESSIBLE_CHANNEL = -2;
+  /** The Wi-Fi credentials are incorrect. **/
+  STATUS_WIFI_INCORRECT_CREDENTIALS = -3;
+  /** Projection is already started **/
+  STATUS_PROJECTION_ALREADY_STARTED = -4;
+  /** Wi-Fi not enabled **/
+  STATUS_WIFI_DISABLED = -5;
+  /** Wi-Fi not started yet, possibly in the process of starting **/
+  STATUS_WIFI_NOT_YET_STARTED = -6;
+  /** IP address sent in start message is invalid **/
+  STATUS_INVALID_HOST = -7;
+  /** No compatible Wi-Fi mode found. */
+  STATUS_NO_SUPPORTED_WIFI_CHANNELS = -8;
+  /** An error for which we do not have an error code yet has occurred. The user
+   should be instructed to look at their phone for instructions on what to do
+   in order to resolve the issue. */
+  STATUS_INSTRUCT_USER_TO_CHECK_THE_PHONE = -9;
+  /** An error for wifi disabled on user's wifi for Android Auto wireless
+   projection. The user should be notified to enable wifi on the phone and
+   start wireless projection again. */
+  STATUS_PHONE_WIFI_DISABLED = -10;
+  /** The Wi-Fi network is unavailable. It could be that ssid, bssid or password
+   is invalid, user declines connecting the network, or that the mobile device
+   was unable to connect to the network for another reason. */
+  STATUS_WIFI_NETWORK_UNAVAILABLE = -11;
+}
+
+/**
+ * <p>Constants for the Bluetooth transport protocol</p>
+ */
+enum WifiConstants {
+  /** Version number for Wi-Fi projection RFCOMM channel protocol **/
+  PROTOCOL_MAJOR_VERSION = 4;
+  PROTOCOL_MINOR_VERSION = 3;
+}
+
+/**
+ * @type MESSAGE_WIFI_PING_REQUEST_BT
+ * <p>The MD sends this message periodically to the HU. The HU must send a
+ * WifiPingResponse as soon as possible upon receipt.</p>
+ */
+message WifiPingRequest {
+  /** Required local timestamp of the sender in milliseconds. */
+  optional int64 timestamp_ms = 1;
+  /** Optional field for passing raw data to test throughput and latency. */
+  optional bytes data = 2;
+}
+
+/**
+ * @type MESSAGE_WIFI_PING_RESPONSE_BT
+ * <p>The HU sends this message to MD in response to WifiPingRequest.</p>
+ */
+message WifiPingResponse {
+  /** Required timestamp of the sender copied from the WifiPingRequest. */
+  optional int64 timestamp_ms = 1;
+  /** Optional data copied from the WifiPingRequest. */
+  optional bytes data = 2;
+}

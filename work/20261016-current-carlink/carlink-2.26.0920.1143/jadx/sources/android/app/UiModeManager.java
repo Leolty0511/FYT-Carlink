@@ -1,0 +1,108 @@
+package android.app;
+
+import android.content.Context;
+import android.os.RemoteException;
+import android.os.ServiceManager;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+/* JADX INFO: loaded from: classes.dex */
+public class UiModeManager {
+    public static String ACTION_ENTER_CAR_MODE = "android.app.action.ENTER_CAR_MODE";
+    public static String ACTION_ENTER_DESK_MODE = "android.app.action.ENTER_DESK_MODE";
+    public static String ACTION_EXIT_CAR_MODE = "android.app.action.EXIT_CAR_MODE";
+    public static String ACTION_EXIT_DESK_MODE = "android.app.action.EXIT_DESK_MODE";
+    public static final int DISABLE_CAR_MODE_GO_HOME = 1;
+    public static final int ENABLE_CAR_MODE_ALLOW_SLEEP = 2;
+    public static final int ENABLE_CAR_MODE_GO_CAR_HOME = 1;
+    public static final int MODE_NIGHT_AUTO = 0;
+    public static final int MODE_NIGHT_NO = 1;
+    public static final int MODE_NIGHT_YES = 2;
+    private static final String TAG = "UiModeManager";
+    private IUiModeManager mService = IUiModeManager.Stub.asInterface(ServiceManager.getServiceOrThrow(Context.UI_MODE_SERVICE));
+
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface NightMode {
+    }
+
+    public void disableCarMode(int i2) {
+        IUiModeManager iUiModeManager = this.mService;
+        if (iUiModeManager != null) {
+            try {
+                iUiModeManager.disableCarMode(i2);
+            } catch (RemoteException e2) {
+                throw e2.rethrowFromSystemServer();
+            }
+        }
+    }
+
+    public void enableCarMode(int i2) {
+        IUiModeManager iUiModeManager = this.mService;
+        if (iUiModeManager != null) {
+            try {
+                iUiModeManager.enableCarMode(i2);
+            } catch (RemoteException e2) {
+                throw e2.rethrowFromSystemServer();
+            }
+        }
+    }
+
+    public int getCurrentModeType() {
+        IUiModeManager iUiModeManager = this.mService;
+        if (iUiModeManager == null) {
+            return 1;
+        }
+        try {
+            return iUiModeManager.getCurrentModeType();
+        } catch (RemoteException e2) {
+            throw e2.rethrowFromSystemServer();
+        }
+    }
+
+    public int getNightMode() {
+        IUiModeManager iUiModeManager = this.mService;
+        if (iUiModeManager == null) {
+            return -1;
+        }
+        try {
+            return iUiModeManager.getNightMode();
+        } catch (RemoteException e2) {
+            throw e2.rethrowFromSystemServer();
+        }
+    }
+
+    public boolean isNightModeLocked() {
+        IUiModeManager iUiModeManager = this.mService;
+        if (iUiModeManager == null) {
+            return true;
+        }
+        try {
+            return iUiModeManager.isNightModeLocked();
+        } catch (RemoteException e2) {
+            throw e2.rethrowFromSystemServer();
+        }
+    }
+
+    public boolean isUiModeLocked() {
+        IUiModeManager iUiModeManager = this.mService;
+        if (iUiModeManager == null) {
+            return true;
+        }
+        try {
+            return iUiModeManager.isUiModeLocked();
+        } catch (RemoteException e2) {
+            throw e2.rethrowFromSystemServer();
+        }
+    }
+
+    public void setNightMode(int i2) {
+        IUiModeManager iUiModeManager = this.mService;
+        if (iUiModeManager != null) {
+            try {
+                iUiModeManager.setNightMode(i2);
+            } catch (RemoteException e2) {
+                throw e2.rethrowFromSystemServer();
+            }
+        }
+    }
+}

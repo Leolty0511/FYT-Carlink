@@ -1,0 +1,33 @@
+Manifest-Version: 1.0
+Created-By: 1.0 (Android)
+
+Name: AndroidManifest.xml
+SHA1-Digest: KmbyKXlULGeS1EsTSMaavvkZulo=
+
+Name: assets/core_ogg/res_bt.ogg
+SHA1-Digest: 2j5CGmnXH8hZGiXahmbWtXhQ5lo=
+
+Name: classes.dex
+SHA1-Digest: Mp4DT8g2OPgzdEBPvnSgIpLIY0E=
+
+Name: res/drawable-nodpi-v4/bt_bk.png
+SHA1-Digest: 3znaxqdoYocniIKQfhnnGfPsxbc=
+
+Name: res/drawable/bitmap_bk.xml
+SHA1-Digest: u/GTCQKZzLpSFPjJO7q/stESraw=
+
+Name: res/drawable/bt_icon.png
+SHA1-Digest: uBmg4h/WdRc8iN5sJdvM1uiSIro=
+
+Name: res/drawable/bt_icon_1.png
+SHA1-Digest: Ffox0Bh8g+cygEJqD8z3lmHuCz8=
+
+Name: res/raw/conf_client.xml
+SHA1-Digest: 6Fbj/YJBrja1FPV9Fo0u4Yfk6Wo=
+
+Name: res/raw/conf_platform.xml
+SHA1-Digest: tKW25P/wjrYN3QrRMpiH27wboQM=
+
+Name: resources.arsc
+SHA1-Digest: SsV0bbopCgcsB3+A2RrlH0tqWkA=
+

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?><manifest xmlns:android="http://schemas.android.com/apk/res/android" android:sharedUserId="android.uid.system" package="com.syu.bt" platformBuildVersionCode="27" platformBuildVersionName="8.1.0">
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS"/>
+    <uses-permission android:name="android.permission.READ_CALL_LOG"/>
+    <uses-permission android:name="android.permission.WRITE_CALL_LOG"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION"/>
+    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES"/>
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_MEDIA_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.STOP_APP_SWITCHES"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <permission android:name="com.syu.bt"/>
+    <uses-permission android:name="com.syu.bt"/>
+    <application android:allowBackup="true" android:icon="@drawable/bt_icon" android:label="@string/app_name" android:name="com.syu.app.AppBluetooth" android:resizeableActivity="false" android:theme="@style/AppTheme">
+        <meta-data android:name="platform" android:value="7862"/>
+        <meta-data android:name="client" android:value="SYU"/>
+        <meta-data android:name="ui_id" android:value="2"/>
+        <meta-data android:name="compile" android:value="2026-08-25 20:27:27/190000010_com.syu.bt"/>
+        <activity android:configChanges="uiMode" android:hardwareAccelerated="true" android:launchMode="singleInstance" android:name="com.syu.bt.act.ActBt" android:screenOrientation="landscape" android:theme="@style/ActivityStart" android:windowSoftInputMode="adjustPan|stateHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:configChanges="uiMode" android:launchMode="singleInstance" android:name="com.syu.bt.BtAct" android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.syu.bt"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:configChanges="uiMode" android:launchMode="singleInstance" android:name="com.syu.bt.PhoneActivity" android:screenOrientation="landscape" android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="android.intent.action.CALL"/>
+                <action android:name="android.intent.action.DIAL"/>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:scheme="tel"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.CALL"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="vnd.android.cursor.item/phone"/>
+                <data android:mimeType="vnd.android.cursor.item/phone_v2"/>
+                <data android:mimeType="vnd.android.cursor.item/person"/>
+            </intent-filter>
+        </activity>
+        <activity android:configChanges="uiMode" android:launchMode="singleInstance" android:name="com.syu.bt.act.ActBtAvStart" android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="com.syu.btav"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:configChanges="uiMode" android:launchMode="singleInstance" android:name="com.syu.bt.act.ActBtPairDevices" android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="com.syu.bt.act.ActBtPairDevices"/>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:configChanges="uiMode" android:launchMode="singleInstance" android:name="com.syu.bt.act.ActBtContact" android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="com.syu.bt.act.ActBtContact"/>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:configChanges="uiMode" android:launchMode="singleInstance" android:name="com.syu.bt.act.ActBtHistory" android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="com.syu.bt.act.ActBtHistory"/>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:configChanges="uiMode" android:launchMode="singleInstance" android:name="com.syu.bt.act.ActBtDial" android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="com.syu.bt.favrorite"/>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:configChanges="uiMode" android:launchMode="singleInstance" android:name="com.syu.bt.act.ActBtSettings" android:theme="@android:style/Theme.NoDisplay" android:windowSoftInputMode="adjustResize|stateHidden">
+            <intent-filter>
+                <action android:name="com.syu.bt.act.ActBtSettings"/>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.syu.bt.btset"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <service android:name="com.syu.broadcast.MyService">
+            <intent-filter>
+                <action android:name="com.syu.ms.bt"/>
+                <action android:name="com.syu.bt.pip"/>
+                <action android:name="com.syu.bt.bywork"/>
+                <action android:name="com.syu.bt.bykey"/>
+                <action android:name="com.syu.bt.byav"/>
+                <action android:name="com.syu.bt.byav.force"/>
+                <action android:name="com.syu.bt.phone.voice"/>
+                <action android:name="com.syu.bt.phone.sms"/>
+            </intent-filter>
+        </service>
+        <service android:name="com.syu.broadcast.BtavNextService">
+            <intent-filter>
+                <action android:name="com.syu.bt.byav.widgetNext"/>
+            </intent-filter>
+        </service>
+        <service android:name="com.syu.broadcast.BtavPrevService">
+            <intent-filter>
+                <action android:name="com.syu.bt.byav.widgetPrev"/>
+            </intent-filter>
+        </service>
+        <service android:name="com.syu.broadcast.BtavPlayPauseService">
+            <intent-filter>
+                <action android:name="com.syu.bt.byav.widgetPlayPause"/>
+            </intent-filter>
+        </service>
+        <service android:exported="true" android:name="com.syu.preloadimg.PreloadImage">
+            <intent-filter>
+                <action android:name="com.syu.bt"/>
+            </intent-filter>
+        </service>
+    </application>
+</manifest>

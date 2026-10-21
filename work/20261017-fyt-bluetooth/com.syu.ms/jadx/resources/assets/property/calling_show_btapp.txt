@@ -1,0 +1,7 @@
+#在以下应用状态来电时，拉起蓝牙电话应用，否则进入蓝牙PIP显示
+# %开头，表示该行为正则表达式
+%com\.syu.#以com.syu打头的所有应用
+%com\.fyt.#以com.fyt打头的所有应用
+net.easyconn
+%com\.android.
+%com\.android\.launch.

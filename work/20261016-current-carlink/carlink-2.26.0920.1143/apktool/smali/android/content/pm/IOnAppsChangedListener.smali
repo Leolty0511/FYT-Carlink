@@ -1,0 +1,40 @@
+.class public interface abstract Landroid/content/pm/IOnAppsChangedListener;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Landroid/os/IInterface;
+
+
+# annotations
+.annotation system Ldalvik/annotation/MemberClasses;
+    value = {
+        Landroid/content/pm/IOnAppsChangedListener$Stub;
+    }
+.end annotation
+
+
+# virtual methods
+.method public abstract onPackageAdded(Landroid/os/UserHandle;Ljava/lang/String;)V
+.end method
+
+.method public abstract onPackageChanged(Landroid/os/UserHandle;Ljava/lang/String;)V
+.end method
+
+.method public abstract onPackageRemoved(Landroid/os/UserHandle;Ljava/lang/String;)V
+.end method
+
+.method public abstract onPackagesAvailable(Landroid/os/UserHandle;[Ljava/lang/String;Z)V
+.end method
+
+.method public abstract onPackagesSuspended(Landroid/os/UserHandle;[Ljava/lang/String;)V
+.end method
+
+.method public abstract onPackagesUnavailable(Landroid/os/UserHandle;[Ljava/lang/String;Z)V
+.end method
+
+.method public abstract onPackagesUnsuspended(Landroid/os/UserHandle;[Ljava/lang/String;)V
+.end method
+
+.method public abstract onShortcutChanged(Landroid/os/UserHandle;Ljava/lang/String;Landroid/content/pm/ParceledListSlice;)V
+.end method

@@ -1,0 +1,64 @@
+syntax = "proto2";
+
+package common;
+
+option java_outer_classname = "Common";
+option java_package = "com.google.android.projection.proto";
+
+// Use lite runtime for C++ generated code, to minimize dependencies.
+option optimize_for = LITE_RUNTIME;
+
+// For both GAL & RFComm communication, PhoneInfo contains a MD's info including
+// device_id for HU to identify a connection.
+message PhoneInfo {
+  // A randomly generated UUID that can be used to link Bluetooth/Wifi/USB
+  // connections to a specific device. This id is generated once and stored
+  // in Shared Preferences. Note that this value should not be considered
+  // stable and can change if AA is reinstalled.
+  optional string instance_id = 1;
+
+  // Randomly generated ID that is unique for a connectivity session.
+  optional string connectivity_lifetime_id = 2;
+
+  // Name of the mobile device. This name is meant to be used as a friendly name
+  // (typically Bluetooth device name alias) that can be used by the HU to
+  // display availability of a projection source. This name can change between
+  // projection sessions and should not be relied upon as a unique identifier.
+  optional string device_name = 3;
+
+  // Bluetooth MAC address of the phone. This can be used to associate a
+  // phone which is performing Wi-Fi discovery directly over Wi-Fi with a device
+  // that has previously projected + connected over Bluetooth. This is typically
+  // meant to be used in the HU connection manager so that even if there is
+  // currently no Bluetooth connection with the phone, but there is an active
+  // Wi-Fi discovery session over Wi-Fi, it can be displayed as a known device
+  // after the exchange of the version request/response.
+  optional string bluetooth_address = 4 ;
+}
+
+/*
+ * For both GAL and RFComm. HeadUnitInfo contains info such as
+ * make/model.
+ */
+message HeadUnitInfo {
+  /** Vehicle make. */
+  optional string make = 1;
+  /** Vehicle model. */
+  optional string model = 2;
+  /** Model year. */
+  optional string year = 3;
+  /**
+   * Identifier for the vehicle (does not need to be the VIN) that is ideally
+   * regenerated for every factory reset performed on the head unit.
+   */
+  optional string vehicle_id = 4;
+  /** Head unit make. */
+  optional string head_unit_make = 5;
+  /** Head unit model. */
+  optional string head_unit_model = 6;
+  /** Head unit software build. */
+  optional string head_unit_software_build = 7;
+  /** Head unit software version. */
+  optional string head_unit_software_version = 8;
+}
+

@@ -1,0 +1,35 @@
+package android.media;
+
+import java.util.Arrays;
+import java.util.UUID;
+
+/* JADX INFO: loaded from: classes.dex */
+public abstract class DrmInitData {
+
+    public static final class SchemeInitData {
+        public final byte[] data;
+        public final String mimeType;
+
+        public SchemeInitData(String str, byte[] bArr) {
+            this.mimeType = str;
+            this.data = bArr;
+        }
+
+        public boolean equals(Object obj) {
+            if (!(obj instanceof SchemeInitData)) {
+                return false;
+            }
+            if (obj == this) {
+                return true;
+            }
+            SchemeInitData schemeInitData = (SchemeInitData) obj;
+            return this.mimeType.equals(schemeInitData.mimeType) && Arrays.equals(this.data, schemeInitData.data);
+        }
+
+        public int hashCode() {
+            return (Arrays.hashCode(this.data) * 31) + this.mimeType.hashCode();
+        }
+    }
+
+    public abstract SchemeInitData get(UUID uuid);
+}

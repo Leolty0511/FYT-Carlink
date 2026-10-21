@@ -1,0 +1,9 @@
+com.mirrtalk.app #微蜜开机启动有问题，不能开机就拉起来
+net.easyconn
+#com.syu.dvr	# 5009
+com.syu.rightcamera
+com.syu.frontvideo
+com.eryanet.vlink
+com.syu.hicar
+com.syu.doublecamera
+com.syu.carui

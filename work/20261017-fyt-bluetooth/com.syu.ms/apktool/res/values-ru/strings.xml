@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">сервис</string>
+    <string name="ic_error">Шифрование аутентификации СК удается КОД :</string>
+    <string name="mcu_need_update">MCU необходимо обновить!</string>
+    <string name="please_reboot">Пожалуйста, перезагрузите систему!</string>
+    <string name="ui_and_mcu_match_error">Пользовательский интерфейс и MCU несоответствие</string>
+</resources>

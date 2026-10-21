@@ -1,0 +1,68 @@
+package android.net;
+
+import android.os.Parcel;
+import android.os.ParcelFileDescriptor;
+import android.os.Parcelable;
+import java.io.FileDescriptor;
+
+/* JADX INFO: loaded from: classes.dex */
+public final class IpSecUdpEncapResponse implements Parcelable {
+    public static final Parcelable.Creator<IpSecUdpEncapResponse> CREATOR = new Parcelable.Creator<IpSecUdpEncapResponse>() { // from class: android.net.IpSecUdpEncapResponse.1
+        /* JADX WARN: Can't rename method to resolve collision */
+        @Override // android.os.Parcelable.Creator
+        public IpSecUdpEncapResponse createFromParcel(Parcel parcel) {
+            return new IpSecUdpEncapResponse(parcel);
+        }
+
+        /* JADX WARN: Can't rename method to resolve collision */
+        @Override // android.os.Parcelable.Creator
+        public IpSecUdpEncapResponse[] newArray(int i2) {
+            return new IpSecUdpEncapResponse[i2];
+        }
+    };
+    private static final String TAG = "IpSecUdpEncapResponse";
+    public final ParcelFileDescriptor fileDescriptor;
+    public final int port;
+    public final int resourceId;
+    public final int status;
+
+    @Override // android.os.Parcelable
+    public int describeContents() {
+        return this.fileDescriptor != null ? 1 : 0;
+    }
+
+    @Override // android.os.Parcelable
+    public void writeToParcel(Parcel parcel, int i2) {
+        parcel.writeInt(this.status);
+        parcel.writeInt(this.resourceId);
+        parcel.writeInt(this.port);
+        parcel.writeParcelable(this.fileDescriptor, 1);
+    }
+
+    public IpSecUdpEncapResponse(int i2) {
+        if (i2 == 0) {
+            throw new IllegalArgumentException("Valid status implies other args must be provided");
+        }
+        this.status = i2;
+        this.resourceId = 0;
+        this.port = -1;
+        this.fileDescriptor = null;
+    }
+
+    public IpSecUdpEncapResponse(int i2, int i3, int i4, FileDescriptor fileDescriptor) {
+        if (i2 == 0 && fileDescriptor == null) {
+            throw new IllegalArgumentException("Valid status implies FD must be non-null");
+        }
+        this.status = i2;
+        this.resourceId = i3;
+        this.port = i4;
+        this.fileDescriptor = i2 == 0 ? ParcelFileDescriptor.dup(fileDescriptor) : null;
+    }
+
+    private IpSecUdpEncapResponse(Parcel parcel) {
+        this.status = parcel.readInt();
+        this.resourceId = parcel.readInt();
+        this.port = parcel.readInt();
+        this.fileDescriptor = (ParcelFileDescriptor) parcel.readParcelable(ParcelFileDescriptor.class.getClassLoader());
+    }
+}

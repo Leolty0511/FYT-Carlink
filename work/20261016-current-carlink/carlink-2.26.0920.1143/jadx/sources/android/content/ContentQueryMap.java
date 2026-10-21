@@ -1,0 +1,124 @@
+package android.content;
+
+import android.database.ContentObserver;
+import android.database.Cursor;
+import android.os.Handler;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Observable;
+
+/* JADX INFO: loaded from: classes.dex */
+public class ContentQueryMap extends Observable {
+    private String[] mColumnNames;
+    private ContentObserver mContentObserver;
+    private volatile Cursor mCursor;
+    private Handler mHandlerForUpdateNotifications;
+    private int mKeyColumn;
+    private boolean mKeepUpdated = false;
+    private Map<String, ContentValues> mValues = null;
+    private boolean mDirty = false;
+
+    public ContentQueryMap(Cursor cursor, String str, boolean z2, Handler handler) {
+        this.mHandlerForUpdateNotifications = null;
+        this.mCursor = cursor;
+        this.mColumnNames = this.mCursor.getColumnNames();
+        this.mKeyColumn = this.mCursor.getColumnIndexOrThrow(str);
+        this.mHandlerForUpdateNotifications = handler;
+        setKeepUpdated(z2);
+        if (z2) {
+            return;
+        }
+        readCursorIntoCache(cursor);
+    }
+
+    private synchronized void readCursorIntoCache(Cursor cursor) {
+        Map<String, ContentValues> map = this.mValues;
+        this.mValues = new HashMap(map != null ? map.size() : 0);
+        while (cursor.moveToNext()) {
+            ContentValues contentValues = new ContentValues();
+            int i2 = 0;
+            while (true) {
+                String[] strArr = this.mColumnNames;
+                if (i2 < strArr.length) {
+                    if (i2 != this.mKeyColumn) {
+                        contentValues.put(strArr[i2], cursor.getString(i2));
+                    }
+                    i2++;
+                }
+            }
+            this.mValues.put(cursor.getString(this.mKeyColumn), contentValues);
+        }
+    }
+
+    public synchronized void close() {
+        if (this.mContentObserver != null) {
+            this.mCursor.unregisterContentObserver(this.mContentObserver);
+            this.mContentObserver = null;
+        }
+        this.mCursor.close();
+        this.mCursor = null;
+    }
+
+    public void finalize() throws Throwable {
+        if (this.mCursor != null) {
+            close();
+        }
+        super.finalize();
+    }
+
+    public synchronized Map<String, ContentValues> getRows() {
+        if (this.mDirty) {
+            requery();
+        }
+        return this.mValues;
+    }
+
+    public synchronized ContentValues getValues(String str) {
+        if (this.mDirty) {
+            requery();
+        }
+        return this.mValues.get(str);
+    }
+
+    public void requery() {
+        Cursor cursor = this.mCursor;
+        if (cursor == null) {
+            return;
+        }
+        this.mDirty = false;
+        if (cursor.requery()) {
+            readCursorIntoCache(cursor);
+            setChanged();
+            notifyObservers();
+        }
+    }
+
+    public void setKeepUpdated(boolean z2) {
+        if (z2 == this.mKeepUpdated) {
+            return;
+        }
+        this.mKeepUpdated = z2;
+        if (!z2) {
+            this.mCursor.unregisterContentObserver(this.mContentObserver);
+            this.mContentObserver = null;
+            return;
+        }
+        if (this.mHandlerForUpdateNotifications == null) {
+            this.mHandlerForUpdateNotifications = new Handler();
+        }
+        if (this.mContentObserver == null) {
+            this.mContentObserver = new ContentObserver(this.mHandlerForUpdateNotifications) { // from class: android.content.ContentQueryMap.1
+                @Override // android.database.ContentObserver
+                public void onChange(boolean z3) {
+                    if (ContentQueryMap.this.countObservers() != 0) {
+                        ContentQueryMap.this.requery();
+                    } else {
+                        ContentQueryMap.this.mDirty = true;
+                    }
+                }
+            };
+        }
+        this.mCursor.registerContentObserver(this.mContentObserver);
+        this.mDirty = true;
+    }
+}

@@ -1,0 +1,19 @@
+package android.provider;
+
+/* JADX INFO: loaded from: classes.dex */
+public abstract class OneTimeUseBuilder<T> {
+    private boolean used = false;
+
+    public abstract T build();
+
+    public void checkNotUsed() {
+        if (this.used) {
+            throw new IllegalStateException("This Builder should not be reused. Use a new Builder instance instead");
+        }
+    }
+
+    public void markUsed() {
+        checkNotUsed();
+        this.used = true;
+    }
+}

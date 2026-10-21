@@ -1,0 +1,28 @@
+.class public interface abstract Landroid/print/ILayoutResultCallback;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Landroid/os/IInterface;
+
+
+# annotations
+.annotation system Ldalvik/annotation/MemberClasses;
+    value = {
+        Landroid/print/ILayoutResultCallback$Stub;
+    }
+.end annotation
+
+
+# virtual methods
+.method public abstract onLayoutCanceled(I)V
+.end method
+
+.method public abstract onLayoutFailed(Ljava/lang/CharSequence;I)V
+.end method
+
+.method public abstract onLayoutFinished(Landroid/print/PrintDocumentInfo;ZI)V
+.end method
+
+.method public abstract onLayoutStarted(Landroid/os/ICancellationSignal;I)V
+.end method

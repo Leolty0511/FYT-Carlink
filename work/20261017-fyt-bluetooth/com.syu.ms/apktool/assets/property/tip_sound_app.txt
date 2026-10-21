@@ -1,0 +1,33 @@
+#播放提示音的应用
+com.fyt.localspeech		#语音助手
+#com.iflytek.speechcloud #科大讯飞
+#com.syu.voice 			#语音助手
+com.mirrtalk.app 		#微蜜
+com.syu.tire			#我们的胎压
+org.prowl.torque		#OBD
+com.comit.gooddriver	#OBD优驾
+com.syu.car				#语音播报
+com.maihong.vehicleapp	#16/5/6
+com.adasplus.cheji
+com.example.zhourong.myapplication
+com.ilincar.advertising.videoplayer.chinamobile
+com.teyes.carkit
+com.tpms3
+com.ava.car
+com.ava.acessbilityapplication
+tw.com.ainvest.outpack
+com.fvsm.camera
+com.fvu.camera
+
+com.dudu.lsdvr
+com.dudu.ttsplugin.local2
+com.ankai.cardvr
+air.Strelka #Strelka（俄罗斯著名测速预警/电子狗应用）
+com.macsoftex.antiradar #Antiradar（反测速/电子狗应用）
+com.ivolk #iVolk Radar Detector（反测速/电子狗应用）
+com.mybedy.antiradar #Antiradar（反测速/电子狗应用）
+info.mapcam.droid #MapcamDroid（俄罗斯测速预警/电子狗应用）
+my.saphelink #Saphe Link（丹麦电子狗/测速预警设备配套App）
+org.prowl.speedhud #SpeedHUD（HUD抬头显示，含测速提醒功能）
+pl.neptis.yanosik.mobi.android #Yanosik（波兰测速预警/电子狗应用）
+police.speed.gps.antiradar #Police Speed GPS Antiradar（电子狗/测速预警应用）

@@ -1,0 +1,302 @@
+package android.service.euicc;
+
+import android.os.Binder;
+import android.os.IBinder;
+import android.os.IInterface;
+import android.os.Parcel;
+import android.telephony.euicc.DownloadableSubscription;
+
+/* JADX INFO: loaded from: classes2.dex */
+public interface IEuiccService extends IInterface {
+
+    public static abstract class Stub extends Binder implements IEuiccService {
+        private static final String DESCRIPTOR = "android.service.euicc.IEuiccService";
+        static final int TRANSACTION_deleteSubscription = 7;
+        static final int TRANSACTION_downloadSubscription = 1;
+        static final int TRANSACTION_eraseSubscriptions = 10;
+        static final int TRANSACTION_getDefaultDownloadableSubscriptionList = 5;
+        static final int TRANSACTION_getDownloadableSubscriptionMetadata = 2;
+        static final int TRANSACTION_getEid = 3;
+        static final int TRANSACTION_getEuiccInfo = 6;
+        static final int TRANSACTION_getEuiccProfileInfoList = 4;
+        static final int TRANSACTION_retainSubscriptionsForFactoryReset = 11;
+        static final int TRANSACTION_switchToSubscription = 8;
+        static final int TRANSACTION_updateSubscriptionNickname = 9;
+
+        public static class Proxy implements IEuiccService {
+            private IBinder mRemote;
+
+            public Proxy(IBinder iBinder) {
+                this.mRemote = iBinder;
+            }
+
+            @Override // android.os.IInterface
+            public IBinder asBinder() {
+                return this.mRemote;
+            }
+
+            @Override // android.service.euicc.IEuiccService
+            public void deleteSubscription(int i2, String str, IDeleteSubscriptionCallback iDeleteSubscriptionCallback) {
+                Parcel parcelObtain = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    parcelObtain.writeInt(i2);
+                    parcelObtain.writeString(str);
+                    parcelObtain.writeStrongBinder(iDeleteSubscriptionCallback != null ? iDeleteSubscriptionCallback.asBinder() : null);
+                    this.mRemote.transact(7, parcelObtain, null, 1);
+                } finally {
+                    parcelObtain.recycle();
+                }
+            }
+
+            @Override // android.service.euicc.IEuiccService
+            public void downloadSubscription(int i2, DownloadableSubscription downloadableSubscription, boolean z2, boolean z3, IDownloadSubscriptionCallback iDownloadSubscriptionCallback) {
+                Parcel parcelObtain = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    parcelObtain.writeInt(i2);
+                    if (downloadableSubscription != null) {
+                        parcelObtain.writeInt(1);
+                        downloadableSubscription.writeToParcel(parcelObtain, 0);
+                    } else {
+                        parcelObtain.writeInt(0);
+                    }
+                    parcelObtain.writeInt(z2 ? 1 : 0);
+                    parcelObtain.writeInt(z3 ? 1 : 0);
+                    parcelObtain.writeStrongBinder(iDownloadSubscriptionCallback != null ? iDownloadSubscriptionCallback.asBinder() : null);
+                    this.mRemote.transact(1, parcelObtain, null, 1);
+                } finally {
+                    parcelObtain.recycle();
+                }
+            }
+
+            @Override // android.service.euicc.IEuiccService
+            public void eraseSubscriptions(int i2, IEraseSubscriptionsCallback iEraseSubscriptionsCallback) {
+                Parcel parcelObtain = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    parcelObtain.writeInt(i2);
+                    parcelObtain.writeStrongBinder(iEraseSubscriptionsCallback != null ? iEraseSubscriptionsCallback.asBinder() : null);
+                    this.mRemote.transact(10, parcelObtain, null, 1);
+                } finally {
+                    parcelObtain.recycle();
+                }
+            }
+
+            @Override // android.service.euicc.IEuiccService
+            public void getDefaultDownloadableSubscriptionList(int i2, boolean z2, IGetDefaultDownloadableSubscriptionListCallback iGetDefaultDownloadableSubscriptionListCallback) {
+                Parcel parcelObtain = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    parcelObtain.writeInt(i2);
+                    parcelObtain.writeInt(z2 ? 1 : 0);
+                    parcelObtain.writeStrongBinder(iGetDefaultDownloadableSubscriptionListCallback != null ? iGetDefaultDownloadableSubscriptionListCallback.asBinder() : null);
+                    this.mRemote.transact(5, parcelObtain, null, 1);
+                } finally {
+                    parcelObtain.recycle();
+                }
+            }
+
+            @Override // android.service.euicc.IEuiccService
+            public void getDownloadableSubscriptionMetadata(int i2, DownloadableSubscription downloadableSubscription, boolean z2, IGetDownloadableSubscriptionMetadataCallback iGetDownloadableSubscriptionMetadataCallback) {
+                Parcel parcelObtain = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    parcelObtain.writeInt(i2);
+                    if (downloadableSubscription != null) {
+                        parcelObtain.writeInt(1);
+                        downloadableSubscription.writeToParcel(parcelObtain, 0);
+                    } else {
+                        parcelObtain.writeInt(0);
+                    }
+                    parcelObtain.writeInt(z2 ? 1 : 0);
+                    parcelObtain.writeStrongBinder(iGetDownloadableSubscriptionMetadataCallback != null ? iGetDownloadableSubscriptionMetadataCallback.asBinder() : null);
+                    this.mRemote.transact(2, parcelObtain, null, 1);
+                } finally {
+                    parcelObtain.recycle();
+                }
+            }
+
+            @Override // android.service.euicc.IEuiccService
+            public void getEid(int i2, IGetEidCallback iGetEidCallback) {
+                Parcel parcelObtain = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    parcelObtain.writeInt(i2);
+                    parcelObtain.writeStrongBinder(iGetEidCallback != null ? iGetEidCallback.asBinder() : null);
+                    this.mRemote.transact(3, parcelObtain, null, 1);
+                } finally {
+                    parcelObtain.recycle();
+                }
+            }
+
+            @Override // android.service.euicc.IEuiccService
+            public void getEuiccInfo(int i2, IGetEuiccInfoCallback iGetEuiccInfoCallback) {
+                Parcel parcelObtain = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    parcelObtain.writeInt(i2);
+                    parcelObtain.writeStrongBinder(iGetEuiccInfoCallback != null ? iGetEuiccInfoCallback.asBinder() : null);
+                    this.mRemote.transact(6, parcelObtain, null, 1);
+                } finally {
+                    parcelObtain.recycle();
+                }
+            }
+
+            @Override // android.service.euicc.IEuiccService
+            public void getEuiccProfileInfoList(int i2, IGetEuiccProfileInfoListCallback iGetEuiccProfileInfoListCallback) {
+                Parcel parcelObtain = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    parcelObtain.writeInt(i2);
+                    parcelObtain.writeStrongBinder(iGetEuiccProfileInfoListCallback != null ? iGetEuiccProfileInfoListCallback.asBinder() : null);
+                    this.mRemote.transact(4, parcelObtain, null, 1);
+                } finally {
+                    parcelObtain.recycle();
+                }
+            }
+
+            public String getInterfaceDescriptor() {
+                return Stub.DESCRIPTOR;
+            }
+
+            @Override // android.service.euicc.IEuiccService
+            public void retainSubscriptionsForFactoryReset(int i2, IRetainSubscriptionsForFactoryResetCallback iRetainSubscriptionsForFactoryResetCallback) {
+                Parcel parcelObtain = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    parcelObtain.writeInt(i2);
+                    parcelObtain.writeStrongBinder(iRetainSubscriptionsForFactoryResetCallback != null ? iRetainSubscriptionsForFactoryResetCallback.asBinder() : null);
+                    this.mRemote.transact(11, parcelObtain, null, 1);
+                } finally {
+                    parcelObtain.recycle();
+                }
+            }
+
+            @Override // android.service.euicc.IEuiccService
+            public void switchToSubscription(int i2, String str, boolean z2, ISwitchToSubscriptionCallback iSwitchToSubscriptionCallback) {
+                Parcel parcelObtain = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    parcelObtain.writeInt(i2);
+                    parcelObtain.writeString(str);
+                    parcelObtain.writeInt(z2 ? 1 : 0);
+                    parcelObtain.writeStrongBinder(iSwitchToSubscriptionCallback != null ? iSwitchToSubscriptionCallback.asBinder() : null);
+                    this.mRemote.transact(8, parcelObtain, null, 1);
+                } finally {
+                    parcelObtain.recycle();
+                }
+            }
+
+            @Override // android.service.euicc.IEuiccService
+            public void updateSubscriptionNickname(int i2, String str, String str2, IUpdateSubscriptionNicknameCallback iUpdateSubscriptionNicknameCallback) {
+                Parcel parcelObtain = Parcel.obtain();
+                try {
+                    parcelObtain.writeInterfaceToken(Stub.DESCRIPTOR);
+                    parcelObtain.writeInt(i2);
+                    parcelObtain.writeString(str);
+                    parcelObtain.writeString(str2);
+                    parcelObtain.writeStrongBinder(iUpdateSubscriptionNicknameCallback != null ? iUpdateSubscriptionNicknameCallback.asBinder() : null);
+                    this.mRemote.transact(9, parcelObtain, null, 1);
+                } finally {
+                    parcelObtain.recycle();
+                }
+            }
+        }
+
+        public Stub() {
+            attachInterface(this, DESCRIPTOR);
+        }
+
+        public static IEuiccService asInterface(IBinder iBinder) {
+            if (iBinder == null) {
+                return null;
+            }
+            IInterface iInterfaceQueryLocalInterface = iBinder.queryLocalInterface(DESCRIPTOR);
+            return (iInterfaceQueryLocalInterface == null || !(iInterfaceQueryLocalInterface instanceof IEuiccService)) ? new Proxy(iBinder) : (IEuiccService) iInterfaceQueryLocalInterface;
+        }
+
+        @Override // android.os.IInterface
+        public IBinder asBinder() {
+            return this;
+        }
+
+        @Override // android.os.Binder
+        public boolean onTransact(int i2, Parcel parcel, Parcel parcel2, int i3) {
+            if (i2 == 1598968902) {
+                parcel2.writeString(DESCRIPTOR);
+                return true;
+            }
+            switch (i2) {
+                case 1:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    downloadSubscription(parcel.readInt(), parcel.readInt() != 0 ? DownloadableSubscription.CREATOR.createFromParcel(parcel) : null, parcel.readInt() != 0, parcel.readInt() != 0, IDownloadSubscriptionCallback.Stub.asInterface(parcel.readStrongBinder()));
+                    return true;
+                case 2:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    getDownloadableSubscriptionMetadata(parcel.readInt(), parcel.readInt() != 0 ? DownloadableSubscription.CREATOR.createFromParcel(parcel) : null, parcel.readInt() != 0, IGetDownloadableSubscriptionMetadataCallback.Stub.asInterface(parcel.readStrongBinder()));
+                    return true;
+                case 3:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    getEid(parcel.readInt(), IGetEidCallback.Stub.asInterface(parcel.readStrongBinder()));
+                    return true;
+                case 4:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    getEuiccProfileInfoList(parcel.readInt(), IGetEuiccProfileInfoListCallback.Stub.asInterface(parcel.readStrongBinder()));
+                    return true;
+                case 5:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    getDefaultDownloadableSubscriptionList(parcel.readInt(), parcel.readInt() != 0, IGetDefaultDownloadableSubscriptionListCallback.Stub.asInterface(parcel.readStrongBinder()));
+                    return true;
+                case 6:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    getEuiccInfo(parcel.readInt(), IGetEuiccInfoCallback.Stub.asInterface(parcel.readStrongBinder()));
+                    return true;
+                case 7:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    deleteSubscription(parcel.readInt(), parcel.readString(), IDeleteSubscriptionCallback.Stub.asInterface(parcel.readStrongBinder()));
+                    return true;
+                case 8:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    switchToSubscription(parcel.readInt(), parcel.readString(), parcel.readInt() != 0, ISwitchToSubscriptionCallback.Stub.asInterface(parcel.readStrongBinder()));
+                    return true;
+                case 9:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    updateSubscriptionNickname(parcel.readInt(), parcel.readString(), parcel.readString(), IUpdateSubscriptionNicknameCallback.Stub.asInterface(parcel.readStrongBinder()));
+                    return true;
+                case 10:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    eraseSubscriptions(parcel.readInt(), IEraseSubscriptionsCallback.Stub.asInterface(parcel.readStrongBinder()));
+                    return true;
+                case 11:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    retainSubscriptionsForFactoryReset(parcel.readInt(), IRetainSubscriptionsForFactoryResetCallback.Stub.asInterface(parcel.readStrongBinder()));
+                    return true;
+                default:
+                    return super.onTransact(i2, parcel, parcel2, i3);
+            }
+        }
+    }
+
+    void deleteSubscription(int i2, String str, IDeleteSubscriptionCallback iDeleteSubscriptionCallback);
+
+    void downloadSubscription(int i2, DownloadableSubscription downloadableSubscription, boolean z2, boolean z3, IDownloadSubscriptionCallback iDownloadSubscriptionCallback);
+
+    void eraseSubscriptions(int i2, IEraseSubscriptionsCallback iEraseSubscriptionsCallback);
+
+    void getDefaultDownloadableSubscriptionList(int i2, boolean z2, IGetDefaultDownloadableSubscriptionListCallback iGetDefaultDownloadableSubscriptionListCallback);
+
+    void getDownloadableSubscriptionMetadata(int i2, DownloadableSubscription downloadableSubscription, boolean z2, IGetDownloadableSubscriptionMetadataCallback iGetDownloadableSubscriptionMetadataCallback);
+
+    void getEid(int i2, IGetEidCallback iGetEidCallback);
+
+    void getEuiccInfo(int i2, IGetEuiccInfoCallback iGetEuiccInfoCallback);
+
+    void getEuiccProfileInfoList(int i2, IGetEuiccProfileInfoListCallback iGetEuiccProfileInfoListCallback);
+
+    void retainSubscriptionsForFactoryReset(int i2, IRetainSubscriptionsForFactoryResetCallback iRetainSubscriptionsForFactoryResetCallback);
+
+    void switchToSubscription(int i2, String str, boolean z2, ISwitchToSubscriptionCallback iSwitchToSubscriptionCallback);
+
+    void updateSubscriptionNickname(int i2, String str, String str2, IUpdateSubscriptionNicknameCallback iUpdateSubscriptionNicknameCallback);
+}

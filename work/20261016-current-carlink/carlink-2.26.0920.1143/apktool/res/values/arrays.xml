@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="ap_bands">
+        <item>5G</item>
+        <item>2.4G</item>
+    </string-array>
+    <string-array name="car_marks">
+        <item>car_logo_000</item>
+        <item>car_logo_001</item>
+        <item>car_logo_002</item>
+        <item>car_logo_003</item>
+        <item>car_logo_004</item>
+        <item>car_logo_005</item>
+        <item>car_logo_006</item>
+        <item>car_logo_007</item>
+        <item>car_logo_008</item>
+        <item>car_logo_009</item>
+        <item>car_logo_010</item>
+        <item>car_logo_011</item>
+        <item>car_logo_012</item>
+        <item>car_logo_013</item>
+        <item>car_logo_014</item>
+        <item>car_logo_015</item>
+    </string-array>
+    <string-array name="noise_support">
+        <item>@string/not_needed</item>
+        <item>@string/right_channel</item>
+        <item>@string/left_channel</item>
+    </string-array>
+    <string-array name="pref_location_source_list_titles">
+        <item>GPS</item>
+        <item>Simulation</item>
+    </string-array>
+    <string-array name="pref_location_source_list_values">
+        <item>@string/pref_location_source_gps</item>
+        <item>@string/pref_location_source_simulation</item>
+    </string-array>
+    <string-array name="pref_preset_list_titles">
+        <item>Native</item>
+        <item>Custom</item>
+        <item>800x480 7\" (133 dpi)</item>
+        <item>800x480 6\" (155 dpi)</item>
+        <item>800x480 ~6\" (160 dpi)</item>
+        <item>1280x720 7\" (215 dpi)</item>
+    </string-array>
+    <string-array name="pref_preset_list_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+    <string-array name="pref_wifi_security_list_titles">
+        <item>OPEN</item>
+        <item>WEP_64</item>
+        <item>WEP_128</item>
+        <item>WPA_PERSONAL</item>
+        <item>WPA2_PERSONAL</item>
+        <item>WPA/WPA2_PERSONAL</item>
+        <item>WPA_ENTERPRISE</item>
+        <item>WPA2_ENTERPRISE</item>
+        <item>WPA/WPA2_ENTERPRISE</item>
+    </string-array>
+    <string-array name="pref_wifi_security_list_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>8</item>
+        <item>12</item>
+        <item>20</item>
+        <item>24</item>
+        <item>28</item>
+    </string-array>
+</resources>

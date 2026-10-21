@@ -1,0 +1,68 @@
+.class public final Landroidx/coordinatorlayout/R$attr;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Landroidx/coordinatorlayout/R;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x19
+    name = "attr"
+.end annotation
+
+
+# static fields
+.field public static alpha:I = 0x7f04002c
+
+.field public static coordinatorLayoutStyle:I = 0x7f0400fe
+
+.field public static font:I = 0x7f040184
+
+.field public static fontProviderAuthority:I = 0x7f040186
+
+.field public static fontProviderCerts:I = 0x7f040187
+
+.field public static fontProviderFetchStrategy:I = 0x7f040188
+
+.field public static fontProviderFetchTimeout:I = 0x7f040189
+
+.field public static fontProviderPackage:I = 0x7f04018a
+
+.field public static fontProviderQuery:I = 0x7f04018b
+
+.field public static fontStyle:I = 0x7f04018d
+
+.field public static fontVariationSettings:I = 0x7f04018e
+
+.field public static fontWeight:I = 0x7f04018f
+
+.field public static keylines:I = 0x7f0401df
+
+.field public static layout_anchor:I = 0x7f0401e9
+
+.field public static layout_anchorGravity:I = 0x7f0401ea
+
+.field public static layout_behavior:I = 0x7f0401eb
+
+.field public static layout_dodgeInsetEdges:I = 0x7f04021c
+
+.field public static layout_insetEdge:I = 0x7f040226
+
+.field public static layout_keyline:I = 0x7f040227
+
+.field public static statusBarBackground:I = 0x7f040319
+
+.field public static ttcIndex:I = 0x7f0403b2
+
+
+# direct methods
+.method private constructor <init>()V
+    .locals 0
+
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    return-void
+.end method

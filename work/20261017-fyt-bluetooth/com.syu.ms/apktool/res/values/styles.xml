@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AnimRightTrans">
+        <item name="android:windowEnterAnimation">@anim/trans_right_enter</item>
+        <item name="android:windowExitAnimation">@anim/trans_right_exit</item>
+    </style>
+    <style name="AnimScale">
+        <item name="android:windowEnterAnimation">@anim/scale_enter</item>
+        <item name="android:windowExitAnimation">@anim/scale_exit</item>
+    </style>
+    <style name="AnimTopTrans">
+        <item name="android:windowEnterAnimation">@anim/trans_top_enter</item>
+        <item name="android:windowExitAnimation">@anim/trans_top_exit</item>
+    </style>
+</resources>

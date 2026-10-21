@@ -1,0 +1,37 @@
+package android.os;
+
+import libcore.util.NativeAllocationRegistry;
+
+/* JADX INFO: loaded from: classes.dex */
+public class HwRemoteBinder implements IHwBinder {
+    private static final String TAG = "HwRemoteBinder";
+    private static final NativeAllocationRegistry sNativeRegistry = new NativeAllocationRegistry(HwRemoteBinder.class.getClassLoader(), native_init(), 128);
+    private long mNativeContext;
+
+    public HwRemoteBinder() {
+        native_setup_empty();
+        sNativeRegistry.registerNativeAllocation(this, this.mNativeContext);
+    }
+
+    private static final native long native_init();
+
+    private final native void native_setup_empty();
+
+    private static final void sendDeathNotice(IHwBinder.DeathRecipient deathRecipient, long j2) {
+        deathRecipient.serviceDied(j2);
+    }
+
+    @Override // android.os.IHwBinder, android.hardware.cas.V1_0.ICas, android.hidl.base.V1_0.IBase
+    public native boolean linkToDeath(IHwBinder.DeathRecipient deathRecipient, long j2);
+
+    @Override // android.os.IHwBinder
+    public IHwInterface queryLocalInterface(String str) {
+        return null;
+    }
+
+    @Override // android.os.IHwBinder
+    public final native void transact(int i2, HwParcel hwParcel, HwParcel hwParcel2, int i3);
+
+    @Override // android.os.IHwBinder, android.hardware.cas.V1_0.ICas, android.hidl.base.V1_0.IBase
+    public native boolean unlinkToDeath(IHwBinder.DeathRecipient deathRecipient);
+}

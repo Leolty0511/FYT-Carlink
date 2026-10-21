@@ -1,0 +1,2267 @@
+package vendor.sprd.hardware.wifi.supplicant.V1_2;
+
+import android.hardware.wifi.supplicant.V1_0.ISupplicantIface;
+import android.hardware.wifi.supplicant.V1_0.ISupplicantNetwork;
+import android.hardware.wifi.supplicant.V1_0.ISupplicantStaIfaceCallback;
+import android.hardware.wifi.supplicant.V1_0.SupplicantStatus;
+import android.hidl.base.V1_0.DebugInfo;
+import android.hidl.base.V1_0.IBase;
+import android.os.HidlSupport;
+import android.os.HwBinder;
+import android.os.HwBlob;
+import android.os.HwParcel;
+import android.os.IHwBinder;
+import android.os.IHwInterface;
+import android.os.NativeHandle;
+import android.os.RemoteException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
+
+/* JADX INFO: loaded from: classes.dex */
+public interface ISupplicantStaIface extends android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface {
+    public static final String kInterfaceName = "vendor.sprd.hardware.wifi.supplicant@1.2::ISupplicantStaIface";
+
+    @Override // android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+    IHwBinder asBinder();
+
+    @Override // android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+    void debug(NativeHandle nativeHandle, ArrayList<String> arrayList) throws RemoteException;
+
+    @Override // android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+    DebugInfo getDebugInfo() throws RemoteException;
+
+    @Override // android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+    ArrayList<byte[]> getHashChain() throws RemoteException;
+
+    @Override // android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+    ArrayList<String> interfaceChain() throws RemoteException;
+
+    @Override // android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+    String interfaceDescriptor() throws RemoteException;
+
+    @Override // android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+    boolean linkToDeath(IHwBinder.DeathRecipient deathRecipient, long j) throws RemoteException;
+
+    @Override // android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+    void notifySyspropsChanged() throws RemoteException;
+
+    @Override // android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+    void ping() throws RemoteException;
+
+    SupplicantStatus registerCallback_sprd_1_2(ISupplicantStaIfaceCallbackEx iSupplicantStaIfaceCallbackEx) throws RemoteException;
+
+    @Override // android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+    void setHALInstrumentation() throws RemoteException;
+
+    SupplicantStatus setParamToSupplicant(String str, String str2) throws RemoteException;
+
+    @Override // android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+    boolean unlinkToDeath(IHwBinder.DeathRecipient deathRecipient) throws RemoteException;
+
+    static ISupplicantStaIface asInterface(IHwBinder binder) {
+        if (binder == null) {
+            return null;
+        }
+        IHwInterface iface = binder.queryLocalInterface(kInterfaceName);
+        if (iface != null && (iface instanceof ISupplicantStaIface)) {
+            return (ISupplicantStaIface) iface;
+        }
+        ISupplicantStaIface proxy = new Proxy(binder);
+        try {
+            for (String descriptor : proxy.interfaceChain()) {
+                if (descriptor.equals(kInterfaceName)) {
+                    return proxy;
+                }
+            }
+        } catch (RemoteException e) {
+        }
+        return null;
+    }
+
+    static ISupplicantStaIface castFrom(IHwInterface iface) {
+        if (iface == null) {
+            return null;
+        }
+        return asInterface(iface.asBinder());
+    }
+
+    static ISupplicantStaIface getService(String serviceName, boolean retry) throws RemoteException {
+        return asInterface(HwBinder.getService(kInterfaceName, serviceName, retry));
+    }
+
+    static ISupplicantStaIface getService(boolean retry) throws RemoteException {
+        return getService("default", retry);
+    }
+
+    static ISupplicantStaIface getService(String serviceName) throws RemoteException {
+        return asInterface(HwBinder.getService(kInterfaceName, serviceName));
+    }
+
+    static ISupplicantStaIface getService() throws RemoteException {
+        return getService("default");
+    }
+
+    public static final class Proxy implements ISupplicantStaIface {
+        private IHwBinder mRemote;
+
+        public Proxy(IHwBinder remote) {
+            this.mRemote = (IHwBinder) Objects.requireNonNull(remote);
+        }
+
+        @Override // vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+        public IHwBinder asBinder() {
+            return this.mRemote;
+        }
+
+        public String toString() {
+            try {
+                return interfaceDescriptor() + "@Proxy";
+            } catch (RemoteException e) {
+                return "[class or subclass of vendor.sprd.hardware.wifi.supplicant@1.2::ISupplicantStaIface]@Proxy";
+            }
+        }
+
+        public final boolean equals(Object other) {
+            return HidlSupport.interfacesEqual(this, other);
+        }
+
+        public final int hashCode() {
+            return asBinder().hashCode();
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantIface
+        public void getName(ISupplicantIface.getNameCallback _hidl_cb) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(ISupplicantIface.kInterfaceName);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(1, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                String _hidl_out_name = _hidl_reply.readString();
+                _hidl_cb.onValues(_hidl_out_status, _hidl_out_name);
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantIface
+        public void getType(ISupplicantIface.getTypeCallback _hidl_cb) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(ISupplicantIface.kInterfaceName);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(2, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                int _hidl_out_type = _hidl_reply.readInt32();
+                _hidl_cb.onValues(_hidl_out_status, _hidl_out_type);
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantIface
+        public void addNetwork(ISupplicantIface.addNetworkCallback _hidl_cb) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(ISupplicantIface.kInterfaceName);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(3, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                ISupplicantNetwork _hidl_out_network = ISupplicantNetwork.asInterface(_hidl_reply.readStrongBinder());
+                _hidl_cb.onValues(_hidl_out_status, _hidl_out_network);
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantIface
+        public SupplicantStatus removeNetwork(int id) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(ISupplicantIface.kInterfaceName);
+            _hidl_request.writeInt32(id);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(4, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantIface
+        public void getNetwork(int id, ISupplicantIface.getNetworkCallback _hidl_cb) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(ISupplicantIface.kInterfaceName);
+            _hidl_request.writeInt32(id);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(5, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                ISupplicantNetwork _hidl_out_network = ISupplicantNetwork.asInterface(_hidl_reply.readStrongBinder());
+                _hidl_cb.onValues(_hidl_out_status, _hidl_out_network);
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantIface
+        public void listNetworks(ISupplicantIface.listNetworksCallback _hidl_cb) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(ISupplicantIface.kInterfaceName);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(6, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                ArrayList<Integer> _hidl_out_networkIds = _hidl_reply.readInt32Vector();
+                _hidl_cb.onValues(_hidl_out_status, _hidl_out_networkIds);
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantIface
+        public SupplicantStatus setWpsDeviceName(String name) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(ISupplicantIface.kInterfaceName);
+            _hidl_request.writeString(name);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(7, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantIface
+        public SupplicantStatus setWpsDeviceType(byte[] type) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(ISupplicantIface.kInterfaceName);
+            HwBlob _hidl_blob = new HwBlob(8);
+            if (type == null || type.length != 8) {
+                throw new IllegalArgumentException("Array element is not of the expected length");
+            }
+            _hidl_blob.putInt8Array(0L, type);
+            _hidl_request.writeBuffer(_hidl_blob);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(8, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantIface
+        public SupplicantStatus setWpsManufacturer(String manufacturer) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(ISupplicantIface.kInterfaceName);
+            _hidl_request.writeString(manufacturer);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(9, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantIface
+        public SupplicantStatus setWpsModelName(String modelName) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(ISupplicantIface.kInterfaceName);
+            _hidl_request.writeString(modelName);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(10, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantIface
+        public SupplicantStatus setWpsModelNumber(String modelNumber) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(ISupplicantIface.kInterfaceName);
+            _hidl_request.writeString(modelNumber);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(11, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantIface
+        public SupplicantStatus setWpsSerialNumber(String serialNumber) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(ISupplicantIface.kInterfaceName);
+            _hidl_request.writeString(serialNumber);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(12, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantIface
+        public SupplicantStatus setWpsConfigMethods(short configMethods) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(ISupplicantIface.kInterfaceName);
+            _hidl_request.writeInt16(configMethods);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(13, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public SupplicantStatus registerCallback(ISupplicantStaIfaceCallback callback) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            _hidl_request.writeStrongBinder(callback == null ? null : callback.asBinder());
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(14, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public SupplicantStatus reassociate() throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(15, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public SupplicantStatus reconnect() throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(16, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public SupplicantStatus disconnect() throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(17, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public SupplicantStatus setPowerSave(boolean enable) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            _hidl_request.writeBool(enable);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(18, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public SupplicantStatus initiateTdlsDiscover(byte[] macAddress) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            HwBlob _hidl_blob = new HwBlob(6);
+            if (macAddress == null || macAddress.length != 6) {
+                throw new IllegalArgumentException("Array element is not of the expected length");
+            }
+            _hidl_blob.putInt8Array(0L, macAddress);
+            _hidl_request.writeBuffer(_hidl_blob);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(19, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public SupplicantStatus initiateTdlsSetup(byte[] macAddress) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            HwBlob _hidl_blob = new HwBlob(6);
+            if (macAddress == null || macAddress.length != 6) {
+                throw new IllegalArgumentException("Array element is not of the expected length");
+            }
+            _hidl_blob.putInt8Array(0L, macAddress);
+            _hidl_request.writeBuffer(_hidl_blob);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(20, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public SupplicantStatus initiateTdlsTeardown(byte[] macAddress) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            HwBlob _hidl_blob = new HwBlob(6);
+            if (macAddress == null || macAddress.length != 6) {
+                throw new IllegalArgumentException("Array element is not of the expected length");
+            }
+            _hidl_blob.putInt8Array(0L, macAddress);
+            _hidl_request.writeBuffer(_hidl_blob);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(21, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public SupplicantStatus initiateAnqpQuery(byte[] macAddress, ArrayList<Short> infoElements, ArrayList<Integer> subTypes) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            HwBlob _hidl_blob = new HwBlob(6);
+            if (macAddress == null || macAddress.length != 6) {
+                throw new IllegalArgumentException("Array element is not of the expected length");
+            }
+            _hidl_blob.putInt8Array(0L, macAddress);
+            _hidl_request.writeBuffer(_hidl_blob);
+            _hidl_request.writeInt16Vector(infoElements);
+            _hidl_request.writeInt32Vector(subTypes);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(22, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public SupplicantStatus initiateHs20IconQuery(byte[] macAddress, String fileName) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            HwBlob _hidl_blob = new HwBlob(6);
+            if (macAddress == null || macAddress.length != 6) {
+                throw new IllegalArgumentException("Array element is not of the expected length");
+            }
+            _hidl_blob.putInt8Array(0L, macAddress);
+            _hidl_request.writeBuffer(_hidl_blob);
+            _hidl_request.writeString(fileName);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(23, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public void getMacAddress(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.getMacAddressCallback _hidl_cb) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(24, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                byte[] _hidl_out_macAddr = new byte[6];
+                HwBlob _hidl_blob = _hidl_reply.readBuffer(6L);
+                _hidl_blob.copyToInt8Array(0L, _hidl_out_macAddr, 6);
+                _hidl_cb.onValues(_hidl_out_status, _hidl_out_macAddr);
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public SupplicantStatus startRxFilter() throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(25, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public SupplicantStatus stopRxFilter() throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(26, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public SupplicantStatus addRxFilter(byte type) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            _hidl_request.writeInt8(type);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(27, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public SupplicantStatus removeRxFilter(byte type) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            _hidl_request.writeInt8(type);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(28, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public SupplicantStatus setBtCoexistenceMode(byte mode) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            _hidl_request.writeInt8(mode);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(29, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public SupplicantStatus setBtCoexistenceScanModeEnabled(boolean enable) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            _hidl_request.writeBool(enable);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(30, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public SupplicantStatus setSuspendModeEnabled(boolean enable) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            _hidl_request.writeBool(enable);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(31, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public SupplicantStatus setCountryCode(byte[] code) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            HwBlob _hidl_blob = new HwBlob(2);
+            if (code == null || code.length != 2) {
+                throw new IllegalArgumentException("Array element is not of the expected length");
+            }
+            _hidl_blob.putInt8Array(0L, code);
+            _hidl_request.writeBuffer(_hidl_blob);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(32, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public SupplicantStatus startWpsRegistrar(byte[] bssid, String pin) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            HwBlob _hidl_blob = new HwBlob(6);
+            if (bssid == null || bssid.length != 6) {
+                throw new IllegalArgumentException("Array element is not of the expected length");
+            }
+            _hidl_blob.putInt8Array(0L, bssid);
+            _hidl_request.writeBuffer(_hidl_blob);
+            _hidl_request.writeString(pin);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(33, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public SupplicantStatus startWpsPbc(byte[] bssid) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            HwBlob _hidl_blob = new HwBlob(6);
+            if (bssid == null || bssid.length != 6) {
+                throw new IllegalArgumentException("Array element is not of the expected length");
+            }
+            _hidl_blob.putInt8Array(0L, bssid);
+            _hidl_request.writeBuffer(_hidl_blob);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(34, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public SupplicantStatus startWpsPinKeypad(String pin) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            _hidl_request.writeString(pin);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(35, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public void startWpsPinDisplay(byte[] bssid, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.startWpsPinDisplayCallback _hidl_cb) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            HwBlob _hidl_blob = new HwBlob(6);
+            if (bssid == null || bssid.length != 6) {
+                throw new IllegalArgumentException("Array element is not of the expected length");
+            }
+            _hidl_blob.putInt8Array(0L, bssid);
+            _hidl_request.writeBuffer(_hidl_blob);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(36, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                String _hidl_out_generatedPin = _hidl_reply.readString();
+                _hidl_cb.onValues(_hidl_out_status, _hidl_out_generatedPin);
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public SupplicantStatus cancelWps() throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(37, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public SupplicantStatus setExternalSim(boolean useExternalSim) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            _hidl_request.writeBool(useExternalSim);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(38, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public void addExtRadioWork(String name, int freqInMhz, int timeoutInSec, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.addExtRadioWorkCallback _hidl_cb) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            _hidl_request.writeString(name);
+            _hidl_request.writeInt32(freqInMhz);
+            _hidl_request.writeInt32(timeoutInSec);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(39, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                int _hidl_out_id = _hidl_reply.readInt32();
+                _hidl_cb.onValues(_hidl_out_status, _hidl_out_id);
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public SupplicantStatus removeExtRadioWork(int id) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            _hidl_request.writeInt32(id);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(40, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface
+        public SupplicantStatus enableAutoReconnect(boolean enable) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+            _hidl_request.writeBool(enable);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(41, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface
+        public SupplicantStatus registerCallback_1_1(android.hardware.wifi.supplicant.V1_1.ISupplicantStaIfaceCallback callback) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface.kInterfaceName);
+            _hidl_request.writeStrongBinder(callback == null ? null : callback.asBinder());
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(42, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface
+        public SupplicantStatus registerCallback_1_2(android.hardware.wifi.supplicant.V1_2.ISupplicantStaIfaceCallback callback) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.kInterfaceName);
+            _hidl_request.writeStrongBinder(callback == null ? null : callback.asBinder());
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(43, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface
+        public void getKeyMgmtCapabilities(android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.getKeyMgmtCapabilitiesCallback _hidl_cb) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.kInterfaceName);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(44, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                int _hidl_out_keyMgmtMask = _hidl_reply.readInt32();
+                _hidl_cb.onValues(_hidl_out_status, _hidl_out_keyMgmtMask);
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface
+        public void addDppPeerUri(String uri, android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.addDppPeerUriCallback _hidl_cb) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.kInterfaceName);
+            _hidl_request.writeString(uri);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(45, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                int _hidl_out_id = _hidl_reply.readInt32();
+                _hidl_cb.onValues(_hidl_out_status, _hidl_out_id);
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface
+        public SupplicantStatus removeDppUri(int id) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.kInterfaceName);
+            _hidl_request.writeInt32(id);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(46, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface
+        public SupplicantStatus startDppConfiguratorInitiator(int peerBootstrapId, int ownBootstrapId, String ssid, String password, String psk, int netRole, int securityAkm) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.kInterfaceName);
+            _hidl_request.writeInt32(peerBootstrapId);
+            _hidl_request.writeInt32(ownBootstrapId);
+            _hidl_request.writeString(ssid);
+            _hidl_request.writeString(password);
+            _hidl_request.writeString(psk);
+            _hidl_request.writeInt32(netRole);
+            _hidl_request.writeInt32(securityAkm);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(47, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface
+        public SupplicantStatus startDppEnrolleeInitiator(int peerBootstrapId, int ownBootstrapId) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.kInterfaceName);
+            _hidl_request.writeInt32(peerBootstrapId);
+            _hidl_request.writeInt32(ownBootstrapId);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(48, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface
+        public SupplicantStatus stopDppInitiator() throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.kInterfaceName);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(49, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface
+        public SupplicantStatus setParamToSupplicant(String key, String value) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(ISupplicantStaIface.kInterfaceName);
+            _hidl_request.writeString(key);
+            _hidl_request.writeString(value);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(50, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface
+        public SupplicantStatus registerCallback_sprd_1_2(ISupplicantStaIfaceCallbackEx callback) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(ISupplicantStaIface.kInterfaceName);
+            _hidl_request.writeStrongBinder(callback == null ? null : callback.asBinder());
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(51, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                SupplicantStatus _hidl_out_status = new SupplicantStatus();
+                _hidl_out_status.readFromParcel(_hidl_reply);
+                return _hidl_out_status;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+        public ArrayList<String> interfaceChain() throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(IBase.kInterfaceName);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(256067662, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                ArrayList<String> _hidl_out_descriptors = _hidl_reply.readStringVector();
+                return _hidl_out_descriptors;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+        public void debug(NativeHandle fd, ArrayList<String> options) throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(IBase.kInterfaceName);
+            _hidl_request.writeNativeHandle(fd);
+            _hidl_request.writeStringVector(options);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(256131655, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+        public String interfaceDescriptor() throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(IBase.kInterfaceName);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(256136003, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                String _hidl_out_descriptor = _hidl_reply.readString();
+                return _hidl_out_descriptor;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+        public ArrayList<byte[]> getHashChain() throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(IBase.kInterfaceName);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(256398152, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                ArrayList<byte[]> _hidl_out_hashchain = new ArrayList<>();
+                HwBlob _hidl_blob = _hidl_reply.readBuffer(16L);
+                int _hidl_vec_size = _hidl_blob.getInt32(8L);
+                HwBlob childBlob = _hidl_reply.readEmbeddedBuffer(_hidl_vec_size * 32, _hidl_blob.handle(), 0L, true);
+                _hidl_out_hashchain.clear();
+                for (int _hidl_index_0 = 0; _hidl_index_0 < _hidl_vec_size; _hidl_index_0++) {
+                    byte[] _hidl_vec_element = new byte[32];
+                    long _hidl_array_offset_1 = _hidl_index_0 * 32;
+                    childBlob.copyToInt8Array(_hidl_array_offset_1, _hidl_vec_element, 32);
+                    _hidl_out_hashchain.add(_hidl_vec_element);
+                }
+                _hidl_reply.release();
+                return _hidl_out_hashchain;
+            } catch (Throwable th) {
+                _hidl_reply.release();
+                throw th;
+            }
+        }
+
+        @Override // vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+        public void setHALInstrumentation() throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(IBase.kInterfaceName);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(256462420, _hidl_request, _hidl_reply, 1);
+                _hidl_request.releaseTemporaryStorage();
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+        public boolean linkToDeath(IHwBinder.DeathRecipient recipient, long cookie) throws RemoteException {
+            return this.mRemote.linkToDeath(recipient, cookie);
+        }
+
+        @Override // vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+        public void ping() throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(IBase.kInterfaceName);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(256921159, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+        public DebugInfo getDebugInfo() throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(IBase.kInterfaceName);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(257049926, _hidl_request, _hidl_reply, 0);
+                _hidl_reply.verifySuccess();
+                _hidl_request.releaseTemporaryStorage();
+                DebugInfo _hidl_out_info = new DebugInfo();
+                _hidl_out_info.readFromParcel(_hidl_reply);
+                return _hidl_out_info;
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+        public void notifySyspropsChanged() throws RemoteException {
+            HwParcel _hidl_request = new HwParcel();
+            _hidl_request.writeInterfaceToken(IBase.kInterfaceName);
+            HwParcel _hidl_reply = new HwParcel();
+            try {
+                this.mRemote.transact(257120595, _hidl_request, _hidl_reply, 1);
+                _hidl_request.releaseTemporaryStorage();
+            } finally {
+                _hidl_reply.release();
+            }
+        }
+
+        @Override // vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+        public boolean unlinkToDeath(IHwBinder.DeathRecipient recipient) throws RemoteException {
+            return this.mRemote.unlinkToDeath(recipient);
+        }
+    }
+
+    public static abstract class Stub extends HwBinder implements ISupplicantStaIface {
+        @Override // vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+        public IHwBinder asBinder() {
+            return this;
+        }
+
+        @Override // vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+        public final ArrayList<String> interfaceChain() {
+            return new ArrayList<>(Arrays.asList(ISupplicantStaIface.kInterfaceName, android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.kInterfaceName, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface.kInterfaceName, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName, ISupplicantIface.kInterfaceName, IBase.kInterfaceName));
+        }
+
+        @Override // vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+        public void debug(NativeHandle fd, ArrayList<String> options) {
+        }
+
+        @Override // vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+        public final String interfaceDescriptor() {
+            return ISupplicantStaIface.kInterfaceName;
+        }
+
+        @Override // vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+        public final ArrayList<byte[]> getHashChain() {
+            return new ArrayList<>(Arrays.asList(new byte[]{77, 115, -93, 38, -28, 94, -41, -120, -97, -38, 48, -13, -71, 39, 123, 61, -69, 62, 11, 86, 45, 65, -75, -23, -114, 85, 52, 14, -2, -60, 110, -9}, new byte[]{126, -2, 43, 5, 126, -97, -109, -121, -77, 80, 14, 103, -81, -105, -108, 42, -89, -56, 0, -114, 110, -25, -40, -36, -86, -28, 16, 127, -38, -124, 1, 107}, new byte[]{33, 117, 125, 14, 93, -44, -73, -28, -67, -104, 26, 74, 32, 83, 27, -54, 60, 50, 39, 26, -39, 119, 123, 23, -73, 78, -75, -95, -22, 80, -125, -124}, new byte[]{119, 82, -31, -34, -109, -86, -11, -2, -45, 112, 17, -62, 25, -84, 36, 112, 105, -10, -81, 50, 11, 8, 16, -38, -87, -123, 16, 88, 74, 16, -25, -76}, new byte[]{53, -70, 123, -51, -15, -113, 36, -88, 102, -89, -27, 66, -107, 72, -16, 103, 104, -69, 32, -94, 87, -9, 91, 16, -93, -105, -60, -40, 37, -17, -124, 56}, new byte[]{-20, 127, -41, -98, -48, 45, -6, -123, -68, 73, -108, 38, -83, -82, 62, -66, 35, -17, 5, 36, -13, -51, 105, 87, 19, -109, 36, -72, 59, 24, -54, 76}));
+        }
+
+        @Override // vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+        public final void setHALInstrumentation() {
+        }
+
+        @Override // vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+        public final boolean linkToDeath(IHwBinder.DeathRecipient recipient, long cookie) {
+            return true;
+        }
+
+        @Override // vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+        public final void ping() {
+        }
+
+        @Override // vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+        public final DebugInfo getDebugInfo() {
+            DebugInfo info = new DebugInfo();
+            info.pid = HidlSupport.getPidIfSharable();
+            info.ptr = 0L;
+            info.arch = 0;
+            return info;
+        }
+
+        @Override // vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+        public final void notifySyspropsChanged() {
+            HwBinder.enableInstrumentation();
+        }
+
+        @Override // vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface, android.hardware.wifi.supplicant.V1_0.ISupplicantIface, android.hidl.base.V1_0.IBase
+        public final boolean unlinkToDeath(IHwBinder.DeathRecipient recipient) {
+            return true;
+        }
+
+        public IHwInterface queryLocalInterface(String descriptor) {
+            if (ISupplicantStaIface.kInterfaceName.equals(descriptor)) {
+                return this;
+            }
+            return null;
+        }
+
+        public void registerAsService(String serviceName) throws RemoteException {
+            registerService(serviceName);
+        }
+
+        public String toString() {
+            return interfaceDescriptor() + "@Stub";
+        }
+
+        public void onTransact(int _hidl_code, HwParcel _hidl_request, final HwParcel _hidl_reply, int _hidl_flags) throws RemoteException {
+            switch (_hidl_code) {
+                case 1:
+                    boolean _hidl_is_oneway = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    } else {
+                        _hidl_request.enforceInterface(ISupplicantIface.kInterfaceName);
+                        getName(new ISupplicantIface.getNameCallback() { // from class: vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.Stub.1
+                            @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantIface.getNameCallback
+                            public void onValues(SupplicantStatus status, String name) {
+                                _hidl_reply.writeStatus(0);
+                                status.writeToParcel(_hidl_reply);
+                                _hidl_reply.writeString(name);
+                                _hidl_reply.send();
+                            }
+                        });
+                        return;
+                    }
+                case 2:
+                    boolean _hidl_is_oneway2 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway2) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    } else {
+                        _hidl_request.enforceInterface(ISupplicantIface.kInterfaceName);
+                        getType(new ISupplicantIface.getTypeCallback() { // from class: vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.Stub.2
+                            @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantIface.getTypeCallback
+                            public void onValues(SupplicantStatus status, int type) {
+                                _hidl_reply.writeStatus(0);
+                                status.writeToParcel(_hidl_reply);
+                                _hidl_reply.writeInt32(type);
+                                _hidl_reply.send();
+                            }
+                        });
+                        return;
+                    }
+                case 3:
+                    boolean _hidl_is_oneway3 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway3) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    } else {
+                        _hidl_request.enforceInterface(ISupplicantIface.kInterfaceName);
+                        addNetwork(new ISupplicantIface.addNetworkCallback() { // from class: vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.Stub.3
+                            @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantIface.addNetworkCallback
+                            public void onValues(SupplicantStatus status, ISupplicantNetwork network) {
+                                _hidl_reply.writeStatus(0);
+                                status.writeToParcel(_hidl_reply);
+                                _hidl_reply.writeStrongBinder(network == null ? null : network.asBinder());
+                                _hidl_reply.send();
+                            }
+                        });
+                        return;
+                    }
+                case 4:
+                    boolean _hidl_is_oneway4 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway4) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(ISupplicantIface.kInterfaceName);
+                    int id = _hidl_request.readInt32();
+                    SupplicantStatus _hidl_out_status = removeNetwork(id);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 5:
+                    boolean _hidl_is_oneway5 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway5) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    } else {
+                        _hidl_request.enforceInterface(ISupplicantIface.kInterfaceName);
+                        int id2 = _hidl_request.readInt32();
+                        getNetwork(id2, new ISupplicantIface.getNetworkCallback() { // from class: vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.Stub.4
+                            @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantIface.getNetworkCallback
+                            public void onValues(SupplicantStatus status, ISupplicantNetwork network) {
+                                _hidl_reply.writeStatus(0);
+                                status.writeToParcel(_hidl_reply);
+                                _hidl_reply.writeStrongBinder(network == null ? null : network.asBinder());
+                                _hidl_reply.send();
+                            }
+                        });
+                        return;
+                    }
+                case 6:
+                    boolean _hidl_is_oneway6 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway6) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    } else {
+                        _hidl_request.enforceInterface(ISupplicantIface.kInterfaceName);
+                        listNetworks(new ISupplicantIface.listNetworksCallback() { // from class: vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.Stub.5
+                            @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantIface.listNetworksCallback
+                            public void onValues(SupplicantStatus status, ArrayList<Integer> networkIds) {
+                                _hidl_reply.writeStatus(0);
+                                status.writeToParcel(_hidl_reply);
+                                _hidl_reply.writeInt32Vector(networkIds);
+                                _hidl_reply.send();
+                            }
+                        });
+                        return;
+                    }
+                case 7:
+                    boolean _hidl_is_oneway7 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway7) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(ISupplicantIface.kInterfaceName);
+                    String name = _hidl_request.readString();
+                    SupplicantStatus _hidl_out_status2 = setWpsDeviceName(name);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status2.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 8:
+                    boolean _hidl_is_oneway8 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway8) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(ISupplicantIface.kInterfaceName);
+                    byte[] type = new byte[8];
+                    HwBlob _hidl_blob = _hidl_request.readBuffer(8L);
+                    _hidl_blob.copyToInt8Array(0L, type, 8);
+                    SupplicantStatus _hidl_out_status3 = setWpsDeviceType(type);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status3.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 9:
+                    boolean _hidl_is_oneway9 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway9) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(ISupplicantIface.kInterfaceName);
+                    String manufacturer = _hidl_request.readString();
+                    SupplicantStatus _hidl_out_status4 = setWpsManufacturer(manufacturer);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status4.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 10:
+                    boolean _hidl_is_oneway10 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway10) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(ISupplicantIface.kInterfaceName);
+                    String modelName = _hidl_request.readString();
+                    SupplicantStatus _hidl_out_status5 = setWpsModelName(modelName);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status5.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 11:
+                    boolean _hidl_is_oneway11 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway11) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(ISupplicantIface.kInterfaceName);
+                    String modelNumber = _hidl_request.readString();
+                    SupplicantStatus _hidl_out_status6 = setWpsModelNumber(modelNumber);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status6.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 12:
+                    boolean _hidl_is_oneway12 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway12) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(ISupplicantIface.kInterfaceName);
+                    String serialNumber = _hidl_request.readString();
+                    SupplicantStatus _hidl_out_status7 = setWpsSerialNumber(serialNumber);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status7.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 13:
+                    boolean _hidl_is_oneway13 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway13) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(ISupplicantIface.kInterfaceName);
+                    short configMethods = _hidl_request.readInt16();
+                    SupplicantStatus _hidl_out_status8 = setWpsConfigMethods(configMethods);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status8.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 14:
+                    boolean _hidl_is_oneway14 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway14) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    ISupplicantStaIfaceCallback callback = ISupplicantStaIfaceCallback.asInterface(_hidl_request.readStrongBinder());
+                    SupplicantStatus _hidl_out_status9 = registerCallback(callback);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status9.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 15:
+                    boolean _hidl_is_oneway15 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway15) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    SupplicantStatus _hidl_out_status10 = reassociate();
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status10.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 16:
+                    boolean _hidl_is_oneway16 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway16) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    SupplicantStatus _hidl_out_status11 = reconnect();
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status11.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 17:
+                    boolean _hidl_is_oneway17 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway17) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    SupplicantStatus _hidl_out_status12 = disconnect();
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status12.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 18:
+                    boolean _hidl_is_oneway18 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway18) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    boolean enable = _hidl_request.readBool();
+                    SupplicantStatus _hidl_out_status13 = setPowerSave(enable);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status13.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 19:
+                    boolean _hidl_is_oneway19 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway19) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    byte[] macAddress = new byte[6];
+                    HwBlob _hidl_blob2 = _hidl_request.readBuffer(6L);
+                    _hidl_blob2.copyToInt8Array(0L, macAddress, 6);
+                    SupplicantStatus _hidl_out_status14 = initiateTdlsDiscover(macAddress);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status14.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 20:
+                    boolean _hidl_is_oneway20 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway20) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    byte[] macAddress2 = new byte[6];
+                    HwBlob _hidl_blob3 = _hidl_request.readBuffer(6L);
+                    _hidl_blob3.copyToInt8Array(0L, macAddress2, 6);
+                    SupplicantStatus _hidl_out_status15 = initiateTdlsSetup(macAddress2);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status15.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case ISupplicantStaIfaceCallback.ReasonCode.UNSUPPORTED_RSN_IE_VERSION /* 21 */:
+                    boolean _hidl_is_oneway21 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway21) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    byte[] macAddress3 = new byte[6];
+                    HwBlob _hidl_blob4 = _hidl_request.readBuffer(6L);
+                    _hidl_blob4.copyToInt8Array(0L, macAddress3, 6);
+                    SupplicantStatus _hidl_out_status16 = initiateTdlsTeardown(macAddress3);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status16.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 22:
+                    boolean _hidl_is_oneway22 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway22) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    byte[] macAddress4 = new byte[6];
+                    HwBlob _hidl_blob5 = _hidl_request.readBuffer(6L);
+                    _hidl_blob5.copyToInt8Array(0L, macAddress4, 6);
+                    ArrayList<Short> infoElements = _hidl_request.readInt16Vector();
+                    ArrayList<Integer> subTypes = _hidl_request.readInt32Vector();
+                    SupplicantStatus _hidl_out_status17 = initiateAnqpQuery(macAddress4, infoElements, subTypes);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status17.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 23:
+                    boolean _hidl_is_oneway23 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway23) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    byte[] macAddress5 = new byte[6];
+                    HwBlob _hidl_blob6 = _hidl_request.readBuffer(6L);
+                    _hidl_blob6.copyToInt8Array(0L, macAddress5, 6);
+                    String fileName = _hidl_request.readString();
+                    SupplicantStatus _hidl_out_status18 = initiateHs20IconQuery(macAddress5, fileName);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status18.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 24:
+                    boolean _hidl_is_oneway24 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway24) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    } else {
+                        _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                        getMacAddress(new android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.getMacAddressCallback() { // from class: vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.Stub.6
+                            @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.getMacAddressCallback
+                            public void onValues(SupplicantStatus status, byte[] macAddr) {
+                                _hidl_reply.writeStatus(0);
+                                status.writeToParcel(_hidl_reply);
+                                HwBlob _hidl_blob7 = new HwBlob(6);
+                                if (macAddr == null || macAddr.length != 6) {
+                                    throw new IllegalArgumentException("Array element is not of the expected length");
+                                }
+                                _hidl_blob7.putInt8Array(0L, macAddr);
+                                _hidl_reply.writeBuffer(_hidl_blob7);
+                                _hidl_reply.send();
+                            }
+                        });
+                        return;
+                    }
+                case 25:
+                    boolean _hidl_is_oneway25 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway25) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    SupplicantStatus _hidl_out_status19 = startRxFilter();
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status19.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case ISupplicantStaIfaceCallback.ReasonCode.TDLS_TEARDOWN_UNSPECIFIED /* 26 */:
+                    boolean _hidl_is_oneway26 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway26) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    SupplicantStatus _hidl_out_status20 = stopRxFilter();
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status20.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 27:
+                    boolean _hidl_is_oneway27 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway27) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    SupplicantStatus _hidl_out_status21 = addRxFilter(_hidl_request.readInt8());
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status21.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 28:
+                    boolean _hidl_is_oneway28 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway28) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    SupplicantStatus _hidl_out_status22 = removeRxFilter(_hidl_request.readInt8());
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status22.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 29:
+                    boolean _hidl_is_oneway29 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway29) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    byte mode = _hidl_request.readInt8();
+                    SupplicantStatus _hidl_out_status23 = setBtCoexistenceMode(mode);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status23.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 30:
+                    boolean _hidl_is_oneway30 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway30) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    boolean enable2 = _hidl_request.readBool();
+                    SupplicantStatus _hidl_out_status24 = setBtCoexistenceScanModeEnabled(enable2);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status24.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 31:
+                    boolean _hidl_is_oneway31 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway31) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    boolean enable3 = _hidl_request.readBool();
+                    SupplicantStatus _hidl_out_status25 = setSuspendModeEnabled(enable3);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status25.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 32:
+                    boolean _hidl_is_oneway32 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway32) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    byte[] code = new byte[2];
+                    HwBlob _hidl_blob7 = _hidl_request.readBuffer(2L);
+                    _hidl_blob7.copyToInt8Array(0L, code, 2);
+                    SupplicantStatus _hidl_out_status26 = setCountryCode(code);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status26.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 33:
+                    boolean _hidl_is_oneway33 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway33) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    byte[] bssid = new byte[6];
+                    HwBlob _hidl_blob8 = _hidl_request.readBuffer(6L);
+                    _hidl_blob8.copyToInt8Array(0L, bssid, 6);
+                    String pin = _hidl_request.readString();
+                    SupplicantStatus _hidl_out_status27 = startWpsRegistrar(bssid, pin);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status27.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 34:
+                    boolean _hidl_is_oneway34 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway34) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    byte[] bssid2 = new byte[6];
+                    HwBlob _hidl_blob9 = _hidl_request.readBuffer(6L);
+                    _hidl_blob9.copyToInt8Array(0L, bssid2, 6);
+                    SupplicantStatus _hidl_out_status28 = startWpsPbc(bssid2);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status28.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 35:
+                    boolean _hidl_is_oneway35 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway35) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    String pin2 = _hidl_request.readString();
+                    SupplicantStatus _hidl_out_status29 = startWpsPinKeypad(pin2);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status29.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case ISupplicantStaIfaceCallback.ReasonCode.STA_LEAVING /* 36 */:
+                    boolean _hidl_is_oneway36 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway36) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    byte[] bssid3 = new byte[6];
+                    HwBlob _hidl_blob10 = _hidl_request.readBuffer(6L);
+                    _hidl_blob10.copyToInt8Array(0L, bssid3, 6);
+                    startWpsPinDisplay(bssid3, new android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.startWpsPinDisplayCallback() { // from class: vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.Stub.7
+                        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.startWpsPinDisplayCallback
+                        public void onValues(SupplicantStatus status, String generatedPin) {
+                            _hidl_reply.writeStatus(0);
+                            status.writeToParcel(_hidl_reply);
+                            _hidl_reply.writeString(generatedPin);
+                            _hidl_reply.send();
+                        }
+                    });
+                    return;
+                case 37:
+                    boolean _hidl_is_oneway37 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway37) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    SupplicantStatus _hidl_out_status30 = cancelWps();
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status30.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 38:
+                    boolean _hidl_is_oneway38 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway38) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    boolean useExternalSim = _hidl_request.readBool();
+                    SupplicantStatus _hidl_out_status31 = setExternalSim(useExternalSim);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status31.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 39:
+                    boolean _hidl_is_oneway39 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway39) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    String name2 = _hidl_request.readString();
+                    int freqInMhz = _hidl_request.readInt32();
+                    int timeoutInSec = _hidl_request.readInt32();
+                    addExtRadioWork(name2, freqInMhz, timeoutInSec, new android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.addExtRadioWorkCallback() { // from class: vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.Stub.8
+                        @Override // android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.addExtRadioWorkCallback
+                        public void onValues(SupplicantStatus status, int id3) {
+                            _hidl_reply.writeStatus(0);
+                            status.writeToParcel(_hidl_reply);
+                            _hidl_reply.writeInt32(id3);
+                            _hidl_reply.send();
+                        }
+                    });
+                    return;
+                case 40:
+                    boolean _hidl_is_oneway40 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway40) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    int id3 = _hidl_request.readInt32();
+                    SupplicantStatus _hidl_out_status32 = removeExtRadioWork(id3);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status32.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case ISupplicantStaIfaceCallback.StatusCode.GROUP_CIPHER_NOT_VALID /* 41 */:
+                    boolean _hidl_is_oneway41 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway41) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_0.ISupplicantStaIface.kInterfaceName);
+                    boolean enable4 = _hidl_request.readBool();
+                    SupplicantStatus _hidl_out_status33 = enableAutoReconnect(enable4);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status33.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 42:
+                    boolean _hidl_is_oneway42 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway42) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_1.ISupplicantStaIface.kInterfaceName);
+                    android.hardware.wifi.supplicant.V1_1.ISupplicantStaIfaceCallback callback2 = android.hardware.wifi.supplicant.V1_1.ISupplicantStaIfaceCallback.asInterface(_hidl_request.readStrongBinder());
+                    SupplicantStatus _hidl_out_status34 = registerCallback_1_1(callback2);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status34.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 43:
+                    boolean _hidl_is_oneway43 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway43) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.kInterfaceName);
+                    android.hardware.wifi.supplicant.V1_2.ISupplicantStaIfaceCallback callback3 = android.hardware.wifi.supplicant.V1_2.ISupplicantStaIfaceCallback.asInterface(_hidl_request.readStrongBinder());
+                    SupplicantStatus _hidl_out_status35 = registerCallback_1_2(callback3);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status35.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case ISupplicantStaIfaceCallback.StatusCode.UNSUPPORTED_RSN_IE_VERSION /* 44 */:
+                    boolean _hidl_is_oneway44 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway44) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    } else {
+                        _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.kInterfaceName);
+                        getKeyMgmtCapabilities(new android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.getKeyMgmtCapabilitiesCallback() { // from class: vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.Stub.9
+                            @Override // android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.getKeyMgmtCapabilitiesCallback
+                            public void onValues(SupplicantStatus status, int keyMgmtMask) {
+                                _hidl_reply.writeStatus(0);
+                                status.writeToParcel(_hidl_reply);
+                                _hidl_reply.writeInt32(keyMgmtMask);
+                                _hidl_reply.send();
+                            }
+                        });
+                        return;
+                    }
+                case 45:
+                    boolean _hidl_is_oneway45 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway45) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    } else {
+                        _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.kInterfaceName);
+                        String uri = _hidl_request.readString();
+                        addDppPeerUri(uri, new android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.addDppPeerUriCallback() { // from class: vendor.sprd.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.Stub.10
+                            @Override // android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.addDppPeerUriCallback
+                            public void onValues(SupplicantStatus status, int id4) {
+                                _hidl_reply.writeStatus(0);
+                                status.writeToParcel(_hidl_reply);
+                                _hidl_reply.writeInt32(id4);
+                                _hidl_reply.send();
+                            }
+                        });
+                        return;
+                    }
+                case 46:
+                    boolean _hidl_is_oneway46 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway46) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.kInterfaceName);
+                    int id4 = _hidl_request.readInt32();
+                    SupplicantStatus _hidl_out_status36 = removeDppUri(id4);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status36.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 47:
+                    boolean _hidl_is_oneway47 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway47) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.kInterfaceName);
+                    int peerBootstrapId = _hidl_request.readInt32();
+                    int ownBootstrapId = _hidl_request.readInt32();
+                    String ssid = _hidl_request.readString();
+                    String password = _hidl_request.readString();
+                    String psk = _hidl_request.readString();
+                    int netRole = _hidl_request.readInt32();
+                    int securityAkm = _hidl_request.readInt32();
+                    SupplicantStatus _hidl_out_status37 = startDppConfiguratorInitiator(peerBootstrapId, ownBootstrapId, ssid, password, psk, netRole, securityAkm);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status37.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 48:
+                    boolean _hidl_is_oneway48 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway48) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.kInterfaceName);
+                    int peerBootstrapId2 = _hidl_request.readInt32();
+                    int ownBootstrapId2 = _hidl_request.readInt32();
+                    SupplicantStatus _hidl_out_status38 = startDppEnrolleeInitiator(peerBootstrapId2, ownBootstrapId2);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status38.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 49:
+                    boolean _hidl_is_oneway49 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway49) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface.kInterfaceName);
+                    SupplicantStatus _hidl_out_status39 = stopDppInitiator();
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status39.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 50:
+                    boolean _hidl_is_oneway50 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway50) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(ISupplicantStaIface.kInterfaceName);
+                    String key = _hidl_request.readString();
+                    String value = _hidl_request.readString();
+                    SupplicantStatus _hidl_out_status40 = setParamToSupplicant(key, value);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status40.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                case 51:
+                    boolean _hidl_is_oneway51 = (_hidl_flags & 1) != 0;
+                    if (_hidl_is_oneway51) {
+                        _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                        _hidl_reply.send();
+                        return;
+                    }
+                    _hidl_request.enforceInterface(ISupplicantStaIface.kInterfaceName);
+                    ISupplicantStaIfaceCallbackEx callback4 = ISupplicantStaIfaceCallbackEx.asInterface(_hidl_request.readStrongBinder());
+                    SupplicantStatus _hidl_out_status41 = registerCallback_sprd_1_2(callback4);
+                    _hidl_reply.writeStatus(0);
+                    _hidl_out_status41.writeToParcel(_hidl_reply);
+                    _hidl_reply.send();
+                    return;
+                default:
+                    switch (_hidl_code) {
+                        case 256067662:
+                            boolean _hidl_is_oneway52 = (_hidl_flags & 1) != 0;
+                            if (_hidl_is_oneway52) {
+                                _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                                _hidl_reply.send();
+                                return;
+                            }
+                            _hidl_request.enforceInterface(IBase.kInterfaceName);
+                            ArrayList<String> _hidl_out_descriptors = interfaceChain();
+                            _hidl_reply.writeStatus(0);
+                            _hidl_reply.writeStringVector(_hidl_out_descriptors);
+                            _hidl_reply.send();
+                            return;
+                        case 256131655:
+                            boolean _hidl_is_oneway53 = (_hidl_flags & 1) != 0;
+                            if (_hidl_is_oneway53) {
+                                _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                                _hidl_reply.send();
+                                return;
+                            }
+                            _hidl_request.enforceInterface(IBase.kInterfaceName);
+                            NativeHandle fd = _hidl_request.readNativeHandle();
+                            ArrayList<String> options = _hidl_request.readStringVector();
+                            debug(fd, options);
+                            _hidl_reply.writeStatus(0);
+                            _hidl_reply.send();
+                            return;
+                        case 256136003:
+                            boolean _hidl_is_oneway54 = (_hidl_flags & 1) != 0;
+                            if (_hidl_is_oneway54) {
+                                _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                                _hidl_reply.send();
+                                return;
+                            }
+                            _hidl_request.enforceInterface(IBase.kInterfaceName);
+                            String _hidl_out_descriptor = interfaceDescriptor();
+                            _hidl_reply.writeStatus(0);
+                            _hidl_reply.writeString(_hidl_out_descriptor);
+                            _hidl_reply.send();
+                            return;
+                        case 256398152:
+                            boolean _hidl_is_oneway55 = (_hidl_flags & 1) != 0;
+                            if (_hidl_is_oneway55) {
+                                _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                                _hidl_reply.send();
+                                return;
+                            }
+                            _hidl_request.enforceInterface(IBase.kInterfaceName);
+                            ArrayList<byte[]> _hidl_out_hashchain = getHashChain();
+                            _hidl_reply.writeStatus(0);
+                            HwBlob _hidl_blob11 = new HwBlob(16);
+                            int _hidl_vec_size = _hidl_out_hashchain.size();
+                            _hidl_blob11.putInt32(8L, _hidl_vec_size);
+                            _hidl_blob11.putBool(12L, false);
+                            HwBlob childBlob = new HwBlob(_hidl_vec_size * 32);
+                            for (int _hidl_index_0 = 0; _hidl_index_0 < _hidl_vec_size; _hidl_index_0++) {
+                                long _hidl_array_offset_1 = _hidl_index_0 * 32;
+                                byte[] _hidl_array_item_1 = _hidl_out_hashchain.get(_hidl_index_0);
+                                if (_hidl_array_item_1 == null || _hidl_array_item_1.length != 32) {
+                                    throw new IllegalArgumentException("Array element is not of the expected length");
+                                }
+                                childBlob.putInt8Array(_hidl_array_offset_1, _hidl_array_item_1);
+                            }
+                            _hidl_blob11.putBlob(0L, childBlob);
+                            _hidl_reply.writeBuffer(_hidl_blob11);
+                            _hidl_reply.send();
+                            return;
+                        case 256462420:
+                            boolean _hidl_is_oneway56 = (_hidl_flags & 1) != 0;
+                            if (!_hidl_is_oneway56) {
+                                _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                                _hidl_reply.send();
+                                return;
+                            } else {
+                                _hidl_request.enforceInterface(IBase.kInterfaceName);
+                                setHALInstrumentation();
+                                return;
+                            }
+                        case 256660548:
+                            boolean _hidl_is_oneway57 = (_hidl_flags & 1) != 0;
+                            if (_hidl_is_oneway57) {
+                                _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                                _hidl_reply.send();
+                                return;
+                            }
+                            return;
+                        case 256921159:
+                            boolean _hidl_is_oneway58 = (_hidl_flags & 1) != 0;
+                            if (_hidl_is_oneway58) {
+                                _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                                _hidl_reply.send();
+                                return;
+                            } else {
+                                _hidl_request.enforceInterface(IBase.kInterfaceName);
+                                ping();
+                                _hidl_reply.writeStatus(0);
+                                _hidl_reply.send();
+                                return;
+                            }
+                        case 257049926:
+                            boolean _hidl_is_oneway59 = (_hidl_flags & 1) != 0;
+                            if (_hidl_is_oneway59) {
+                                _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                                _hidl_reply.send();
+                                return;
+                            }
+                            _hidl_request.enforceInterface(IBase.kInterfaceName);
+                            DebugInfo _hidl_out_info = getDebugInfo();
+                            _hidl_reply.writeStatus(0);
+                            _hidl_out_info.writeToParcel(_hidl_reply);
+                            _hidl_reply.send();
+                            return;
+                        case 257120595:
+                            boolean _hidl_is_oneway60 = (_hidl_flags & 1) != 0;
+                            if (!_hidl_is_oneway60) {
+                                _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                                _hidl_reply.send();
+                                return;
+                            } else {
+                                _hidl_request.enforceInterface(IBase.kInterfaceName);
+                                notifySyspropsChanged();
+                                return;
+                            }
+                        case 257250372:
+                            boolean _hidl_is_oneway61 = (_hidl_flags & 1) != 0;
+                            if (_hidl_is_oneway61) {
+                                _hidl_reply.writeStatus(Integer.MIN_VALUE);
+                                _hidl_reply.send();
+                                return;
+                            }
+                            return;
+                        default:
+                            return;
+                    }
+            }
+        }
+    }
+}

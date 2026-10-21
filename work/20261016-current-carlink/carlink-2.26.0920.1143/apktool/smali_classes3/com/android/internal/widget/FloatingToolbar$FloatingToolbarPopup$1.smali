@@ -1,0 +1,81 @@
+.class Lcom/android/internal/widget/FloatingToolbar$FloatingToolbarPopup$1;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Ljava/lang/Runnable;
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Lcom/android/internal/widget/FloatingToolbar$FloatingToolbarPopup;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x1
+    name = null
+.end annotation
+
+
+# instance fields
+.field final synthetic this$0:Lcom/android/internal/widget/FloatingToolbar$FloatingToolbarPopup;
+
+
+# direct methods
+.method public constructor <init>(Lcom/android/internal/widget/FloatingToolbar$FloatingToolbarPopup;)V
+    .locals 0
+
+    iput-object p1, p0, Lcom/android/internal/widget/FloatingToolbar$FloatingToolbarPopup$1;->this$0:Lcom/android/internal/widget/FloatingToolbar$FloatingToolbarPopup;
+
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    return-void
+.end method
+
+
+# virtual methods
+.method public run()V
+    .locals 2
+
+    .line 1
+    iget-object v0, p0, Lcom/android/internal/widget/FloatingToolbar$FloatingToolbarPopup$1;->this$0:Lcom/android/internal/widget/FloatingToolbar$FloatingToolbarPopup;
+
+    .line 2
+    .line 3
+    invoke-static {v0}, Lcom/android/internal/widget/FloatingToolbar$FloatingToolbarPopup;->access$200(Lcom/android/internal/widget/FloatingToolbar$FloatingToolbarPopup;)V
+
+    .line 4
+    .line 5
+    .line 6
+    iget-object v0, p0, Lcom/android/internal/widget/FloatingToolbar$FloatingToolbarPopup$1;->this$0:Lcom/android/internal/widget/FloatingToolbar$FloatingToolbarPopup;
+
+    .line 7
+    .line 8
+    invoke-static {v0}, Lcom/android/internal/widget/FloatingToolbar$FloatingToolbarPopup;->access$300(Lcom/android/internal/widget/FloatingToolbar$FloatingToolbarPopup;)V
+
+    .line 9
+    .line 10
+    .line 11
+    iget-object v0, p0, Lcom/android/internal/widget/FloatingToolbar$FloatingToolbarPopup$1;->this$0:Lcom/android/internal/widget/FloatingToolbar$FloatingToolbarPopup;
+
+    .line 12
+    .line 13
+    invoke-static {v0}, Lcom/android/internal/widget/FloatingToolbar$FloatingToolbarPopup;->access$400(Lcom/android/internal/widget/FloatingToolbar$FloatingToolbarPopup;)Landroid/view/ViewGroup;
+
+    .line 14
+    .line 15
+    .line 16
+    move-result-object v0
+
+    .line 17
+    const/high16 v1, 0x3f800000    # 1.0f
+
+    .line 18
+    .line 19
+    invoke-virtual {v0, v1}, Landroid/view/View;->setAlpha(F)V
+
+    .line 20
+    .line 21
+    .line 22
+    return-void
+.end method

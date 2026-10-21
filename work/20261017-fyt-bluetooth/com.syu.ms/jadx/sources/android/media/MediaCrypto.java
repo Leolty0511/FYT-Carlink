@@ -1,0 +1,49 @@
+package android.media;
+
+import java.util.UUID;
+
+/* JADX INFO: loaded from: classes.dex */
+public final class MediaCrypto {
+    private int mNativeContext;
+
+    static {
+        System.loadLibrary("media_jni");
+        native_init();
+    }
+
+    public MediaCrypto(UUID uuid, byte[] bArr) {
+        native_setup(getByteArrayFromUUID(uuid), bArr);
+    }
+
+    private static final byte[] getByteArrayFromUUID(UUID uuid) {
+        long mostSignificantBits = uuid.getMostSignificantBits();
+        long leastSignificantBits = uuid.getLeastSignificantBits();
+        byte[] bArr = new byte[16];
+        for (int i2 = 0; i2 < 8; i2++) {
+            int i3 = (7 - i2) * 8;
+            bArr[i2] = (byte) (mostSignificantBits >>> i3);
+            bArr[i2 + 8] = (byte) (leastSignificantBits >>> i3);
+        }
+        return bArr;
+    }
+
+    public static final boolean isCryptoSchemeSupported(UUID uuid) {
+        return isCryptoSchemeSupportedNative(getByteArrayFromUUID(uuid));
+    }
+
+    private static final native boolean isCryptoSchemeSupportedNative(byte[] bArr);
+
+    private final native void native_finalize();
+
+    private static final native void native_init();
+
+    private final native void native_setup(byte[] bArr, byte[] bArr2);
+
+    public void finalize() {
+        native_finalize();
+    }
+
+    public final native void release();
+
+    public final native boolean requiresSecureDecoderComponent(String str);
+}

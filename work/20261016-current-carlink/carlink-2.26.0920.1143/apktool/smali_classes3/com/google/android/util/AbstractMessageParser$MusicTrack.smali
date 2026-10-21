@@ -1,0 +1,94 @@
+.class public Lcom/google/android/util/AbstractMessageParser$MusicTrack;
+.super Lcom/google/android/util/AbstractMessageParser$Token;
+.source "SourceFile"
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Lcom/google/android/util/AbstractMessageParser;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x9
+    name = "MusicTrack"
+.end annotation
+
+
+# instance fields
+.field private track:Ljava/lang/String;
+
+
+# direct methods
+.method public constructor <init>(Ljava/lang/String;)V
+    .locals 1
+
+    .line 1
+    sget-object v0, Lcom/google/android/util/AbstractMessageParser$Token$Type;->MUSIC:Lcom/google/android/util/AbstractMessageParser$Token$Type;
+
+    .line 2
+    .line 3
+    invoke-direct {p0, v0, p1}, Lcom/google/android/util/AbstractMessageParser$Token;-><init>(Lcom/google/android/util/AbstractMessageParser$Token$Type;Ljava/lang/String;)V
+
+    .line 4
+    .line 5
+    .line 6
+    iput-object p1, p0, Lcom/google/android/util/AbstractMessageParser$MusicTrack;->track:Ljava/lang/String;
+
+    .line 7
+    .line 8
+    return-void
+.end method
+
+
+# virtual methods
+.method public getInfo()Ljava/util/List;
+    .locals 2
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "()",
+            "Ljava/util/List<",
+            "Ljava/lang/String;",
+            ">;"
+        }
+    .end annotation
+
+    .line 1
+    invoke-super {p0}, Lcom/google/android/util/AbstractMessageParser$Token;->getInfo()Ljava/util/List;
+
+    .line 2
+    .line 3
+    .line 4
+    move-result-object v0
+
+    .line 5
+    invoke-virtual {p0}, Lcom/google/android/util/AbstractMessageParser$MusicTrack;->getTrack()Ljava/lang/String;
+
+    .line 6
+    .line 7
+    .line 8
+    move-result-object v1
+
+    .line 9
+    invoke-interface {v0, v1}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    .line 10
+    .line 11
+    .line 12
+    return-object v0
+.end method
+
+.method public getTrack()Ljava/lang/String;
+    .locals 1
+
+    iget-object v0, p0, Lcom/google/android/util/AbstractMessageParser$MusicTrack;->track:Ljava/lang/String;
+
+    return-object v0
+.end method
+
+.method public isHtml()Z
+    .locals 1
+
+    const/4 v0, 0x0
+
+    return v0
+.end method

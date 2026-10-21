@@ -1,0 +1,111 @@
+package android.filterpacks.imageproc;
+
+import android.filterfw.core.Filter;
+import android.filterfw.core.FilterContext;
+import android.filterfw.core.Frame;
+import android.filterfw.core.FrameFormat;
+import android.filterfw.core.GenerateFieldPort;
+import android.filterfw.core.Program;
+import android.filterfw.core.ShaderProgram;
+import android.filterfw.format.ImageFormat;
+import android.os.BatteryManager;
+import android.util.DisplayMetrics;
+
+/* JADX INFO: loaded from: classes.dex */
+public class FisheyeFilter extends Filter {
+    private static final String TAG = "FisheyeFilter";
+    private static final String mFisheyeShader = "precision mediump float;\nuniform sampler2D tex_sampler_0;\nuniform vec2 scale;\nuniform float alpha;\nuniform float radius2;\nuniform float factor;\nvarying vec2 v_texcoord;\nvoid main() {\n  const float m_pi_2 = 1.570963;\n  vec2 coord = v_texcoord - vec2(0.5, 0.5);\n  float dist = length(coord * scale);\n  float radian = m_pi_2 - atan(alpha * sqrt(radius2 - dist * dist), dist);\n  float scalar = radian * factor / dist;\n  vec2 new_coord = coord * scalar + vec2(0.5, 0.5);\n  gl_FragColor = texture2D(tex_sampler_0, new_coord);\n}\n";
+    private int mHeight;
+    private Program mProgram;
+
+    @GenerateFieldPort(hasDefault = true, name = BatteryManager.EXTRA_SCALE)
+    private float mScale;
+    private int mTarget;
+
+    @GenerateFieldPort(hasDefault = true, name = "tile_size")
+    private int mTileSize;
+    private int mWidth;
+
+    public FisheyeFilter(String str) {
+        super(str);
+        this.mScale = 0.0f;
+        this.mTileSize = DisplayMetrics.DENSITY_XXXHIGH;
+        this.mWidth = 0;
+        this.mHeight = 0;
+        this.mTarget = 0;
+    }
+
+    private void updateFrameSize(int i2, int i3) {
+        this.mWidth = i2;
+        this.mHeight = i3;
+        updateProgramParams();
+    }
+
+    private void updateProgramParams() {
+        float[] fArr = new float[2];
+        int i2 = this.mWidth;
+        int i3 = this.mHeight;
+        if (i2 > i3) {
+            fArr[0] = 1.0f;
+            fArr[1] = i3 / i2;
+        } else {
+            fArr[0] = i2 / i3;
+            fArr[1] = 1.0f;
+        }
+        float f2 = (this.mScale * 2.0f) + 0.75f;
+        float f3 = ((fArr[0] * fArr[0]) + (fArr[1] * fArr[1])) * 0.25f;
+        float fSqrt = (float) Math.sqrt(f3);
+        float f4 = 1.15f * fSqrt;
+        float f5 = f4 * f4;
+        float fAtan = fSqrt / (1.5707964f - ((float) Math.atan((f2 / fSqrt) * ((float) Math.sqrt(f5 - f3)))));
+        this.mProgram.setHostValue(BatteryManager.EXTRA_SCALE, fArr);
+        this.mProgram.setHostValue("radius2", Float.valueOf(f5));
+        this.mProgram.setHostValue("factor", Float.valueOf(fAtan));
+        this.mProgram.setHostValue("alpha", Float.valueOf(f2));
+    }
+
+    @Override // android.filterfw.core.Filter
+    public void fieldPortValueUpdated(String str, FilterContext filterContext) {
+        if (this.mProgram != null) {
+            updateProgramParams();
+        }
+    }
+
+    @Override // android.filterfw.core.Filter
+    public FrameFormat getOutputFormat(String str, FrameFormat frameFormat) {
+        return frameFormat;
+    }
+
+    public void initProgram(FilterContext filterContext, int i2) {
+        if (i2 == 3) {
+            ShaderProgram shaderProgram = new ShaderProgram(filterContext, mFisheyeShader);
+            shaderProgram.setMaximumTileSize(this.mTileSize);
+            this.mProgram = shaderProgram;
+            this.mTarget = i2;
+            return;
+        }
+        throw new RuntimeException("Filter FisheyeFilter does not support frames of target " + i2 + "!");
+    }
+
+    @Override // android.filterfw.core.Filter
+    public void process(FilterContext filterContext) {
+        Frame framePullInput = pullInput("image");
+        FrameFormat format = framePullInput.getFormat();
+        Frame frameNewFrame = filterContext.getFrameManager().newFrame(format);
+        if (this.mProgram == null || format.getTarget() != this.mTarget) {
+            initProgram(filterContext, format.getTarget());
+        }
+        if (format.getWidth() != this.mWidth || format.getHeight() != this.mHeight) {
+            updateFrameSize(format.getWidth(), format.getHeight());
+        }
+        this.mProgram.process(framePullInput, frameNewFrame);
+        pushOutput("image", frameNewFrame);
+        frameNewFrame.release();
+    }
+
+    @Override // android.filterfw.core.Filter
+    public void setupPorts() {
+        addMaskedInputPort("image", ImageFormat.create(3));
+        addOutputBasedOnInput("image", "image");
+    }
+}

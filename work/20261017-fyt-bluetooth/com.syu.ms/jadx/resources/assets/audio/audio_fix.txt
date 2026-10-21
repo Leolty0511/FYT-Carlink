@@ -1,0 +1,5 @@
+#包名/时间阀门(ms)/守护时间(s)
+#com.autonavi.xmgd.navigator/618/15
+com.autonavi.xmgd.navigator/1000/15
+com.fyt.localspeech/2000/2
+com.syu.voice/2000/2

@@ -1,0 +1,40 @@
+.class Landroid/app/backup/BackupDataInput$EntityHeader;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Landroid/app/backup/BackupDataInput;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x9
+    name = "EntityHeader"
+.end annotation
+
+
+# instance fields
+.field public dataSize:I
+
+.field public key:Ljava/lang/String;
+
+
+# direct methods
+.method private constructor <init>()V
+    .locals 0
+
+    .line 1
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    return-void
+.end method
+
+.method public synthetic constructor <init>(Landroid/app/backup/BackupDataInput$1;)V
+    .locals 0
+
+    .line 2
+    invoke-direct {p0}, Landroid/app/backup/BackupDataInput$EntityHeader;-><init>()V
+
+    return-void
+.end method

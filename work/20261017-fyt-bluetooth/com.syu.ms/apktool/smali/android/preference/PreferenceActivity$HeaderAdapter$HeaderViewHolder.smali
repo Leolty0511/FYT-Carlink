@@ -1,0 +1,42 @@
+.class Landroid/preference/PreferenceActivity$HeaderAdapter$HeaderViewHolder;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Landroid/preference/PreferenceActivity$HeaderAdapter;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x9
+    name = "HeaderViewHolder"
+.end annotation
+
+
+# instance fields
+.field public icon:Landroid/widget/ImageView;
+
+.field public summary:Landroid/widget/TextView;
+
+.field public title:Landroid/widget/TextView;
+
+
+# direct methods
+.method private constructor <init>()V
+    .locals 0
+
+    .line 1
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    return-void
+.end method
+
+.method public synthetic constructor <init>(Landroid/preference/PreferenceActivity$1;)V
+    .locals 0
+
+    .line 2
+    invoke-direct {p0}, Landroid/preference/PreferenceActivity$HeaderAdapter$HeaderViewHolder;-><init>()V
+
+    return-void
+.end method

@@ -1,0 +1,55 @@
+package android.content;
+
+import android.content.pm.RegisteredServicesCache;
+import android.content.pm.XmlSerializerAndParser;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.provider.ContactsContract;
+import android.util.AttributeSet;
+import i.a;
+import java.io.IOException;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlSerializer;
+
+/* JADX INFO: loaded from: classes.dex */
+public class SyncAdaptersCache extends RegisteredServicesCache<SyncAdapterType> {
+    private static final String ATTRIBUTES_NAME = "sync-adapter";
+    private static final String SERVICE_INTERFACE = "android.content.SyncAdapter";
+    private static final String SERVICE_META_DATA = "android.content.SyncAdapter";
+    private static final String TAG = "Account";
+    private static final MySerializer sSerializer = new MySerializer();
+
+    public static class MySerializer implements XmlSerializerAndParser<SyncAdapterType> {
+        /* JADX WARN: Can't rename method to resolve collision */
+        @Override // android.content.pm.XmlSerializerAndParser
+        public SyncAdapterType createFromXml(XmlPullParser xmlPullParser) {
+            return SyncAdapterType.newKey(xmlPullParser.getAttributeValue(null, ContactsContract.Directory.DIRECTORY_AUTHORITY), xmlPullParser.getAttributeValue(null, "accountType"));
+        }
+
+        @Override // android.content.pm.XmlSerializerAndParser
+        public void writeAsXml(SyncAdapterType syncAdapterType, XmlSerializer xmlSerializer) throws IOException {
+            xmlSerializer.attribute(null, ContactsContract.Directory.DIRECTORY_AUTHORITY, syncAdapterType.authority);
+            xmlSerializer.attribute(null, "accountType", syncAdapterType.accountType);
+        }
+    }
+
+    public SyncAdaptersCache(Context context) {
+        super(context, "android.content.SyncAdapter", "android.content.SyncAdapter", ATTRIBUTES_NAME, sSerializer);
+    }
+
+    /* JADX WARN: Can't rename method to resolve collision */
+    @Override // android.content.pm.RegisteredServicesCache
+    public SyncAdapterType parseServiceAttributes(Resources resources, String str, AttributeSet attributeSet) {
+        TypedArray typedArrayObtainAttributes = resources.obtainAttributes(attributeSet, a.SyncAdapter);
+        try {
+            String string = typedArrayObtainAttributes.getString(2);
+            String string2 = typedArrayObtainAttributes.getString(1);
+            if (string != null && string2 != null) {
+                return new SyncAdapterType(string, string2, typedArrayObtainAttributes.getBoolean(3, true), typedArrayObtainAttributes.getBoolean(4, true), typedArrayObtainAttributes.getBoolean(6, false), typedArrayObtainAttributes.getBoolean(5, false), typedArrayObtainAttributes.getString(0));
+            }
+            return null;
+        } finally {
+            typedArrayObtainAttributes.recycle();
+        }
+    }
+}

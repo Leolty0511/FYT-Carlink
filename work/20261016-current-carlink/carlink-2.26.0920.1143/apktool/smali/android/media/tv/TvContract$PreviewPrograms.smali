@@ -1,0 +1,64 @@
+.class public final Landroid/media/tv/TvContract$PreviewPrograms;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Landroid/media/tv/TvContract$BaseTvColumns;
+.implements Landroid/media/tv/TvContract$ProgramColumns;
+.implements Landroid/media/tv/TvContract$PreviewProgramColumns;
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Landroid/media/tv/TvContract;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x19
+    name = "PreviewPrograms"
+.end annotation
+
+
+# static fields
+.field public static final COLUMN_CHANNEL_ID:Ljava/lang/String; = "channel_id"
+
+.field public static final COLUMN_WEIGHT:Ljava/lang/String; = "weight"
+
+.field public static final CONTENT_ITEM_TYPE:Ljava/lang/String; = "vnd.android.cursor.item/preview_program"
+
+.field public static final CONTENT_TYPE:Ljava/lang/String; = "vnd.android.cursor.dir/preview_program"
+
+.field public static final CONTENT_URI:Landroid/net/Uri;
+
+
+# direct methods
+.method public static constructor <clinit>()V
+    .locals 1
+
+    .line 1
+    const-string v0, "content://android.media.tv/preview_program"
+
+    .line 2
+    .line 3
+    invoke-static {v0}, Landroid/net/Uri;->parse(Ljava/lang/String;)Landroid/net/Uri;
+
+    .line 4
+    .line 5
+    .line 6
+    move-result-object v0
+
+    .line 7
+    sput-object v0, Landroid/media/tv/TvContract$PreviewPrograms;->CONTENT_URI:Landroid/net/Uri;
+
+    .line 8
+    .line 9
+    return-void
+.end method
+
+.method private constructor <init>()V
+    .locals 0
+
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    return-void
+.end method

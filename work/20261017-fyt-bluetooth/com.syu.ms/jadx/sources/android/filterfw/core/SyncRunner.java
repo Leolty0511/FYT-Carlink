@@ -1,0 +1,199 @@
+package android.filterfw.core;
+
+import android.os.ConditionVariable;
+import android.util.Log;
+import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+/* JADX INFO: loaded from: classes.dex */
+public class SyncRunner extends GraphRunner {
+    private static final String TAG = "SyncRunner";
+    private GraphRunner.OnRunnerDoneListener mDoneListener;
+    private final boolean mLogVerbose;
+    private Scheduler mScheduler;
+    private StopWatchMap mTimer;
+    private ConditionVariable mWakeCondition;
+    private ScheduledThreadPoolExecutor mWakeExecutor;
+
+    public SyncRunner(FilterContext filterContext, FilterGraph filterGraph, Class cls) {
+        super(filterContext);
+        this.mScheduler = null;
+        this.mDoneListener = null;
+        this.mWakeExecutor = new ScheduledThreadPoolExecutor(1);
+        this.mWakeCondition = new ConditionVariable();
+        this.mTimer = null;
+        boolean zIsLoggable = Log.isLoggable(TAG, 2);
+        this.mLogVerbose = zIsLoggable;
+        if (zIsLoggable) {
+            Log.v(TAG, "Initializing SyncRunner");
+        }
+        if (!Scheduler.class.isAssignableFrom(cls)) {
+            throw new IllegalArgumentException("Class provided is not a Scheduler subclass!");
+        }
+        try {
+            this.mScheduler = (Scheduler) cls.getConstructor(FilterGraph.class).newInstance(filterGraph);
+            this.mFilterContext = filterContext;
+            filterContext.addGraph(filterGraph);
+            this.mTimer = new StopWatchMap();
+            if (zIsLoggable) {
+                Log.v(TAG, "Setting up filters");
+            }
+            filterGraph.setupFilters();
+        } catch (IllegalAccessException e2) {
+            throw new RuntimeException("Cannot access Scheduler constructor!", e2);
+        } catch (InstantiationException e3) {
+            throw new RuntimeException("Could not instantiate the Scheduler instance!", e3);
+        } catch (NoSuchMethodException e4) {
+            throw new RuntimeException("Scheduler does not have constructor <init>(FilterGraph)!", e4);
+        } catch (InvocationTargetException e5) {
+            throw new RuntimeException("Scheduler constructor threw an exception", e5);
+        } catch (Exception e6) {
+            throw new RuntimeException("Could not instantiate Scheduler", e6);
+        }
+    }
+
+    public void assertReadyToStep() {
+        if (this.mScheduler == null) {
+            throw new RuntimeException("Attempting to run schedule with no scheduler in place!");
+        }
+        if (getGraph() == null) {
+            throw new RuntimeException("Calling step on scheduler with no graph in place!");
+        }
+    }
+
+    public void beginProcessing() {
+        this.mScheduler.reset();
+        getGraph().beginProcessing();
+    }
+
+    @Override // android.filterfw.core.GraphRunner
+    public void close() {
+        if (this.mLogVerbose) {
+            Log.v(TAG, "Closing graph.");
+        }
+        getGraph().closeFilters(this.mFilterContext);
+        this.mScheduler.reset();
+    }
+
+    public int determinePostRunState() {
+        for (Filter filter : this.mScheduler.getGraph().getFilters()) {
+            if (filter.isOpen()) {
+                return filter.getStatus() == 4 ? 3 : 4;
+            }
+        }
+        return 2;
+    }
+
+    @Override // android.filterfw.core.GraphRunner
+    public synchronized Exception getError() {
+        return null;
+    }
+
+    @Override // android.filterfw.core.GraphRunner
+    public FilterGraph getGraph() {
+        Scheduler scheduler = this.mScheduler;
+        if (scheduler != null) {
+            return scheduler.getGraph();
+        }
+        return null;
+    }
+
+    @Override // android.filterfw.core.GraphRunner
+    public boolean isRunning() {
+        return false;
+    }
+
+    public boolean performStep() {
+        if (this.mLogVerbose) {
+            Log.v(TAG, "Performing one step.");
+        }
+        Filter filterScheduleNextNode = this.mScheduler.scheduleNextNode();
+        if (filterScheduleNextNode == null) {
+            return false;
+        }
+        this.mTimer.start(filterScheduleNextNode.getName());
+        processFilterNode(filterScheduleNextNode);
+        this.mTimer.stop(filterScheduleNextNode.getName());
+        return true;
+    }
+
+    public void processFilterNode(Filter filter) {
+        if (this.mLogVerbose) {
+            Log.v(TAG, "Processing filter node");
+        }
+        filter.performProcess(this.mFilterContext);
+        if (filter.getStatus() == 6) {
+            throw new RuntimeException("There was an error executing " + filter + "!");
+        }
+        if (filter.getStatus() == 4) {
+            if (this.mLogVerbose) {
+                Log.v(TAG, "Scheduling filter wakeup");
+            }
+            scheduleFilterWake(filter, filter.getSleepDelay());
+        }
+    }
+
+    @Override // android.filterfw.core.GraphRunner
+    public void run() {
+        if (this.mLogVerbose) {
+            Log.v(TAG, "Beginning run.");
+        }
+        assertReadyToStep();
+        beginProcessing();
+        boolean zActivateGlContext = activateGlContext();
+        boolean zPerformStep = true;
+        while (zPerformStep) {
+            zPerformStep = performStep();
+        }
+        if (zActivateGlContext) {
+            deactivateGlContext();
+        }
+        if (this.mDoneListener != null) {
+            if (this.mLogVerbose) {
+                Log.v(TAG, "Calling completion listener.");
+            }
+            this.mDoneListener.onRunnerDone(determinePostRunState());
+        }
+        if (this.mLogVerbose) {
+            Log.v(TAG, "Run complete");
+        }
+    }
+
+    public void scheduleFilterWake(final Filter filter, int i2) {
+        this.mWakeCondition.close();
+        final ConditionVariable conditionVariable = this.mWakeCondition;
+        this.mWakeExecutor.schedule(new Runnable() { // from class: android.filterfw.core.SyncRunner.1
+            @Override // java.lang.Runnable
+            public void run() {
+                filter.unsetStatus(4);
+                conditionVariable.open();
+            }
+        }, i2, TimeUnit.MILLISECONDS);
+    }
+
+    @Override // android.filterfw.core.GraphRunner
+    public void setDoneCallback(GraphRunner.OnRunnerDoneListener onRunnerDoneListener) {
+        this.mDoneListener = onRunnerDoneListener;
+    }
+
+    public int step() {
+        assertReadyToStep();
+        if (!getGraph().isReady()) {
+            throw new RuntimeException("Trying to process graph that is not open!");
+        }
+        if (performStep()) {
+            return 1;
+        }
+        return determinePostRunState();
+    }
+
+    @Override // android.filterfw.core.GraphRunner
+    public void stop() {
+        throw new RuntimeException("SyncRunner does not support stopping a graph!");
+    }
+
+    public void waitUntilWake() {
+        this.mWakeCondition.block();
+    }
+}
