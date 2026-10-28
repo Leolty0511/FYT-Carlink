@@ -8,6 +8,7 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.Parcel
 import android.os.PersistableBundle
+import android.os.SystemClock
 import android.view.Surface
 import com.shilapi.xcertplay.network.CarHotspotTethering
 import com.shilapi.xcertplay.network.FytHeadUnit
@@ -89,6 +90,7 @@ class VendorCarplayClient(
         const val CMD_PROJECTION = 210
         const val CMD_MUSIC_PLAY = 216
         const val CMD_DISPLAY_CONFIGURATION = 218
+        const val CMD_DISPLAY_COMMIT = 219
         const val CMD_HOTSPOT_CONFIGURATION = 225
         const val CMD_BLUETOOTH_IDENTITY = 226
         const val CMD_BLUETOOTH_CONTROL = 229
@@ -98,7 +100,9 @@ class VendorCarplayClient(
         const val DISPLAY_WIDTH = 1024
         const val DISPLAY_HEIGHT = 600
 
-        private const val PHYSICAL_DISPLAY_WIDTH_MILLIMETRES = 221
+        /** Stock CarLink hard-codes `h/c.f917f = 331` for the physical display hint. */
+        private const val PHYSICAL_DISPLAY_WIDTH_MILLIMETRES = 331
+        // Stock CarLink defaults to its 25 fps medium setting (20/25/60 are selectable there).
         private const val DEFAULT_FRAME_RATE = 25
         private const val DISPLAY_PIXEL_FORMAT = 1_399_222_387
 
@@ -106,7 +110,8 @@ class VendorCarplayClient(
         private const val PROP_CP_STATE = "sys.lsec.cp.state"
         private const val RECONNECT_DELAY_MILLIS = 800L
         private const val ENGINE_PROPERTY_EDGE_MILLIS = 20L
-        private const val BLUETOOTH_RETRY_MILLIS = 2_000L
+        private const val BLUETOOTH_SYNC_DELAY_MILLIS = 800L
+        private const val BLUETOOTH_RETRY_MILLIS = 5_000L
         private const val CALLBACK_TOKEN = "CarplayServer.ICarplayListener"
     }
 
@@ -143,6 +148,12 @@ class VendorCarplayClient(
     private var callbackState = ""
 
     @Volatile
+    private var serverState = -1
+
+    @Volatile
+    private var lastHotspotRequestMillis = Long.MIN_VALUE
+
+    @Volatile
     private var hotspotStarting = false
 
     @Volatile
@@ -164,10 +175,8 @@ class VendorCarplayClient(
         )
     }
 
-    private val bluetoothRetry = object : Runnable {
-        override fun run() {
-            maintainBluetoothBridge()
-        }
+    private val bluetoothSync = Runnable {
+        maintainBluetoothBridge()
     }
 
     /** Callback binder implemented by Carlink 2.0's `h/e.java`. */
@@ -444,12 +453,14 @@ class VendorCarplayClient(
         bluetoothServerRequestedStop = false
         handler.post {
             if (transport == VendorCarplayTransport.WIRELESS) {
-                startCarHotspot()
-                val advertised = maintainBluetoothBridge()
+                // Stock CarLink sends linkMode(1) first. The engine then requests the hotspot
+                // through callback 109; command 225 completion schedules another Bluetooth sync.
                 command(CMD_AUDIO, intArrayOf(transport.audioMode))
-                diagnose("vendor wireless session requested bluetoothAdvertised=$advertised")
+                handler.removeCallbacks(bluetoothSync)
+                handler.postDelayed(bluetoothSync, BLUETOOTH_SYNC_DELAY_MILLIS)
+                diagnose("vendor wireless session requested")
             } else {
-                handler.removeCallbacks(bluetoothRetry)
+                handler.removeCallbacks(bluetoothSync)
                 bluetoothBridge?.disconnect(sendStopped = false)
                 command(CMD_AUDIO, intArrayOf(transport.audioMode))
                 diagnose("vendor wired session requested")
@@ -471,7 +482,7 @@ class VendorCarplayClient(
         if (closed || !linkActive) return
         handler.post {
             bluetoothServerRequestedStop = true
-            handler.removeCallbacks(bluetoothRetry)
+            handler.removeCallbacks(bluetoothSync)
             sendBluetoothControl("IA")
             diagnose("vendor Bluetooth bridge: FYT phone Bluetooth disconnected")
         }
@@ -479,7 +490,7 @@ class VendorCarplayClient(
 
     /** Stop the APK-owned Bluetooth bridge. Full session teardown is command 201 in [linkStop]. */
     fun stopSession() {
-        handler.removeCallbacks(bluetoothRetry)
+        handler.removeCallbacks(bluetoothSync)
         bluetoothServerRequestedStop = true
         bluetoothBridge?.disconnect(sendStopped = true)
         linkActive = false
@@ -539,6 +550,10 @@ class VendorCarplayClient(
             diagnose("vendor display negotiation failed result=$result")
             return false
         }
+        // Stock CarLink follows command 218 with an empty command 219 in the same link setup
+        // block (`e/k.a`), so the engine sees the same "display committed" edge.
+        val commit = command(CMD_DISPLAY_COMMIT, intArrayOf())
+        diagnose("vendor display commit result=$commit")
         displayWidth = display.width
         displayHeight = display.height
         diagnose(
@@ -584,6 +599,7 @@ class VendorCarplayClient(
     }
 
     private fun handleServerState(serverState: Int) {
+        this.serverState = serverState
         callbackState = VendorWirelessProtocol.callbackState(serverState)
         diagnose("vendor server state=$serverState")
         listener?.let { target -> main.post { target.onSessionStateChanged(callbackState) } }
@@ -591,7 +607,14 @@ class VendorCarplayClient(
 
     private fun handleWirelessState(wirelessState: Int) {
         diagnose("vendor wireless state=$wirelessState")
-        if (VendorWirelessProtocol.shouldStartHotspot(wirelessState)) startCarHotspot()
+        if (!VendorWirelessProtocol.shouldStartHotspot(wirelessState)) return
+        val now = SystemClock.elapsedRealtime()
+        if (!VendorWirelessProtocol.shouldRepeatHotspotRequest(lastHotspotRequestMillis, now)) {
+            diagnose("vendor hotspot request debounced")
+            return
+        }
+        lastHotspotRequestMillis = now
+        startCarHotspot()
     }
 
     private fun handleBluetoothControl(bundle: PersistableBundle?) {
@@ -601,12 +624,10 @@ class VendorCarplayClient(
                 command.startsWith("AT#SP") -> {
                     bluetoothServerRequestedStop = false
                     bluetoothBridge?.connect()
-                    handler.removeCallbacks(bluetoothRetry)
-                    handler.postDelayed(bluetoothRetry, BLUETOOTH_RETRY_MILLIS)
                 }
                 command.startsWith("AT#SH") -> {
                     bluetoothServerRequestedStop = true
-                    handler.removeCallbacks(bluetoothRetry)
+                    handler.removeCallbacks(bluetoothSync)
                     bluetoothBridge?.disconnect(sendStopped = true)
                 }
                 command.startsWith("AT#CD") -> {
@@ -630,30 +651,36 @@ class VendorCarplayClient(
     }
 
     private fun maintainBluetoothBridge(): Boolean {
-        handler.removeCallbacks(bluetoothRetry)
+        handler.removeCallbacks(bluetoothSync)
         val bridge = bluetoothBridge ?: return false
-        if (!VendorBluetoothRecoveryPolicy.shouldRetry(
-                linkActive = linkActive && !closed,
-                transportConnected = bridge.isTransportConnected(),
-                serverRequestedStop = bluetoothServerRequestedStop,
-            )) return bridge.isTransportConnected()
+        if (!linkActive || closed || bluetoothServerRequestedStop || bridge.isTransportConnected()) {
+            return bridge.isTransportConnected()
+        }
+        if (!VendorWirelessProtocol.shouldSyncBluetooth(serverState)) {
+            diagnose("vendor Bluetooth bridge: link already established; sync stopped")
+            return bridge.isTransportConnected()
+        }
         val advertised = bridge.advertise()
-        handler.postDelayed(bluetoothRetry, BLUETOOTH_RETRY_MILLIS)
+        if (!bridge.isTransportConnected()) {
+            // Stock CarLink re-runs syncBluetoothInfo on every Bluetooth event until the engine
+            // answers with AT#SP and the RFCOMM leg comes up, so keep offering the phone.
+            handler.postDelayed(bluetoothSync, BLUETOOTH_RETRY_MILLIS)
+            diagnose("vendor Bluetooth bridge: announced=$advertised; waiting for AT#SP")
+        }
         return advertised
     }
 
     private fun handleBluetoothTransportState(connected: Boolean) {
         handler.post {
-            handler.removeCallbacks(bluetoothRetry)
+            handler.removeCallbacks(bluetoothSync)
             if (connected) {
                 diagnose("vendor Bluetooth bridge: control transport ready")
-            } else if (VendorBluetoothRecoveryPolicy.shouldRetry(
-                    linkActive = linkActive && !closed,
-                    transportConnected = false,
-                    serverRequestedStop = bluetoothServerRequestedStop,
-                )) {
-                diagnose("vendor Bluetooth bridge: control transport lost; retrying")
-                handler.post(bluetoothRetry)
+            } else {
+                diagnose("vendor Bluetooth bridge: control transport lost; waiting for engine request")
+                if (linkActive && !closed && !bluetoothServerRequestedStop) {
+                    handler.removeCallbacks(bluetoothSync)
+                    handler.postDelayed(bluetoothSync, BLUETOOTH_RETRY_MILLIS)
+                }
             }
         }
     }
@@ -744,6 +771,10 @@ class VendorCarplayClient(
             "vendor hotspot configuration synced result=$result " +
                 "channel=${configuration.channel} security=${configuration.security} band=${configuration.band}",
         )
+        if (result >= 0) {
+            handler.removeCallbacks(bluetoothSync)
+            handler.postDelayed(bluetoothSync, BLUETOOTH_SYNC_DELAY_MILLIS)
+        }
     }
 
     private fun diagnose(message: String) {

@@ -32,6 +32,25 @@ internal object VendorWirelessProtocol {
 
     fun shouldStartHotspot(wirelessState: Int): Boolean = wirelessState == 1
 
+    /**
+     * CarLink keeps announcing the selected phone until the engine reports a live link.
+     *
+     * Stock CarLink gates `syncBluetoothInfo` on its own link state, which is still idle because
+     * it announces the phone *before* command 200. T-link follows the engine's own handshake
+     * instead (200 -> callback 109 -> hotspot -> 225), so by the time it announces the phone the
+     * engine has already left state 0. Matching the *intent* rather than the raw constant means
+     * announcing while the link is not established yet.
+     */
+    fun shouldSyncBluetooth(serverState: Int): Boolean = !isProjectionActive(serverState)
+
+    /**
+     * Stock CarLink debounces repeat hotspot requests with `JobInfo.MIN_BACKOFF_MILLIS`
+     * (30 s). Re-arming `startTethering` any sooner restarts the soft AP underneath the iPhone,
+     * which is exactly when the Wi-Fi leg of the wireless handshake never completes.
+     */
+    fun shouldRepeatHotspotRequest(lastRequestMillis: Long, nowMillis: Long): Boolean =
+        lastRequestMillis == Long.MIN_VALUE || nowMillis - lastRequestMillis >= 30_000L
+
     fun isProjectionActive(serverState: Int): Boolean = serverState == 4
 }
 
@@ -58,14 +77,6 @@ object VendorCarplayAudioProtocol {
         )
         else -> null
     }
-}
-
-internal object VendorBluetoothRecoveryPolicy {
-    fun shouldRetry(
-        linkActive: Boolean,
-        transportConnected: Boolean,
-        serverRequestedStop: Boolean,
-    ): Boolean = linkActive && !transportConnected && !serverRequestedStop
 }
 
 internal object VendorBluetoothUuidPolicy {
@@ -169,6 +180,9 @@ internal class VendorBluetoothBridge(
     @Volatile private var sdpRefreshAddress: String? = null
     @Volatile private var lastSdpRequestMillis = Long.MIN_VALUE
 
+    /** True when the phone came from FYT's own module, which bypasses Android's UUID cache. */
+    @Volatile private var selectedFromPhoneModule = false
+
     private val sdpTimeout = Runnable {
         val timedOutAddress = synchronized(lock) {
             sdpRefreshAddress.also { sdpRefreshAddress = null }
@@ -215,12 +229,24 @@ internal class VendorBluetoothBridge(
         }
         selectedDevice = device
         val uuids = runCatching { device.uuids?.map { it.uuid }.orEmpty() }.getOrDefault(emptyList())
-        if (!VendorBluetoothUuidPolicy.containsCarplayService(uuids)) {
-            requestUuidRefresh(device, uuids)
-            return false
+        val announced = when {
+            VendorBluetoothUuidPolicy.containsCarplayService(uuids) -> uuids
+            selectedFromPhoneModule -> {
+                // FYT's BLINK stack owns Bluetooth and never fills Android's UUID cache, so SDP
+                // always comes back empty even while the iPhone is connected. CarLink announces the
+                // fixed CarPlay service in that case; without it the engine has nothing to dial and
+                // the session never leaves "opening CarPlay".
+                diagnostics("vendor Bluetooth bridge: no Android UUID cache; announcing the CarPlay service")
+                listOf(VendorWirelessProtocol.PRIMARY_UUID)
+            }
+            else -> {
+                requestUuidRefresh(device, uuids)
+                return false
+            }
         }
 
         val localName = runCatching { adapter.name }.getOrNull().orEmpty()
+            .ifBlank { Settings.Secure.getString(appContext.contentResolver, "bluetooth_name").orEmpty() }
         val localAddress = Settings.Secure.getString(
             appContext.contentResolver,
             "bluetooth_address",
@@ -233,9 +259,9 @@ internal class VendorBluetoothBridge(
 
         sendControl("IB")
         sendControl("US")
-        uuids.forEach { sendControl(VendorWirelessProtocol.uuidAnnouncement(it)) }
+        announced.forEach { sendControl(VendorWirelessProtocol.uuidAnnouncement(it)) }
         sendControl("UE")
-        diagnostics("vendor Bluetooth bridge: advertised ${uuids.size} phone UUIDs")
+        diagnostics("vendor Bluetooth bridge: advertised ${announced.size} phone UUIDs")
         return true
     }
 
@@ -405,12 +431,16 @@ internal class VendorBluetoothBridge(
     }
 
     private fun findPhone(adapter: BluetoothAdapter): BluetoothDevice? {
-        val devices = runCatching { adapter.bondedDevices.toList() }.getOrDefault(emptyList())
-        val preferred = preferredDeviceAddress().orEmpty()
-        if (preferred.isNotBlank()) {
-            devices.firstOrNull { runCatching { it.address.equals(preferred, ignoreCase = true) }.getOrDefault(false) }
-                ?.let { return it }
+        val preferred = VendorBluetoothDevicePolicy.validAddress(preferredDeviceAddress())
+        if (preferred != null) {
+            val device = runCatching { adapter.getRemoteDevice(preferred) }.getOrNull()
+            if (device != null) {
+                selectedFromPhoneModule = true
+                return device
+            }
         }
+        selectedFromPhoneModule = false
+        val devices = runCatching { adapter.bondedDevices.toList() }.getOrDefault(emptyList())
         return devices.firstOrNull { device ->
             runCatching {
                 device.uuids?.any {
@@ -426,4 +456,12 @@ internal class VendorBluetoothBridge(
         const val SDP_TIMEOUT_MILLIS = 10_000L
         const val SDP_RETRY_INTERVAL_MILLIS = 15_000L
     }
+}
+
+internal object VendorBluetoothDevicePolicy {
+    fun validAddress(address: String?): String? = address
+        ?.trim()
+        ?.takeIf { BLUETOOTH_ADDRESS.matches(it) }
+
+    private val BLUETOOTH_ADDRESS = Regex("(?i)^[0-9A-F]{2}(?::[0-9A-F]{2}){5}$")
 }

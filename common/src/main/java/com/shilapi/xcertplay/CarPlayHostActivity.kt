@@ -2601,7 +2601,7 @@ class CarPlayHostActivity : ComponentActivity() {
         }
 
         content.addView(
-            settingsCategoryHeader(getString(R.string.settings_vehicle)),
+            settingsCategoryHeader(getString(R.string.carplay)),
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -2614,13 +2614,6 @@ class CarPlayHostActivity : ComponentActivity() {
                 ViewGroup.LayoutParams.WRAP_CONTENT,
             ).apply { topMargin = dp(12) },
         )
-        if (Build.VERSION.SDK_INT == 32) {
-            content.addView(settingsSwitchRow(
-                label = getString(R.string.settings_hide_byd_call_popup),
-                checked = hideBydCallPopup,
-                description = getString(R.string.settings_hide_byd_call_popup_description),
-            ) { hideBydCallPopup = it })
-        }
         content.addView(
             buildAirPlayIconSection(),
             LinearLayout.LayoutParams(

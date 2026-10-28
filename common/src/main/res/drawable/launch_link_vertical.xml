@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dashed wireless link, vertical (portrait launch layout). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="12dp"
+    android:height="72dp"
+    android:viewportWidth="12"
+    android:viewportHeight="72">
+    <path
+        android:strokeColor="#A6C8FF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M6,3 v9 M6,20 v9 M6,37 v9 M6,54 v8" />
+    <path
+        android:strokeColor="#A6C8FF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M2,64 l4,5 l4,-5" />
+</vector>

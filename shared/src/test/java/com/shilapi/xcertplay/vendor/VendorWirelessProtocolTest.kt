@@ -71,6 +71,15 @@ class VendorWirelessProtocolTest {
         assertFalse(VendorBluetoothUuidPolicy.isSelectedDevice(null, "70:B3:06:16:7B:9A"))
     }
 
+    @Test fun fytPhoneAddressDoesNotRequireAnAndroidBondRecord() {
+        assertEquals(
+            "70:B3:06:16:7B:9A",
+            VendorBluetoothDevicePolicy.validAddress(" 70:B3:06:16:7B:9A "),
+        )
+        assertEquals(null, VendorBluetoothDevicePolicy.validAddress("70:B3:06:16:7B"))
+        assertEquals(null, VendorBluetoothDevicePolicy.validAddress(null))
+    }
+
     @Test fun carplayUuidAnnouncementMatchesCurrentVendorApk() {
         assertEquals(
             "UU00000000DECAFADEDECADEAFDECACAFE",
@@ -102,11 +111,19 @@ class VendorWirelessProtocolTest {
         assertEquals(false, VendorCarplayAudioProtocol.decode(4097)?.active)
     }
 
-    @Test fun bluetoothRecoveryRunsOnlyForAnUnexpectedLossDuringAnActiveLink() {
-        assertTrue(VendorBluetoothRecoveryPolicy.shouldRetry(true, false, false))
-        assertFalse(VendorBluetoothRecoveryPolicy.shouldRetry(true, true, false))
-        assertFalse(VendorBluetoothRecoveryPolicy.shouldRetry(true, false, true))
-        assertFalse(VendorBluetoothRecoveryPolicy.shouldRetry(false, false, false))
+    @Test fun bluetoothSyncStopsOnlyOnceTheNativeEngineReportsAnEstablishedLink() {
+        assertTrue(VendorWirelessProtocol.shouldSyncBluetooth(-1))
+        assertTrue(VendorWirelessProtocol.shouldSyncBluetooth(0))
+        assertTrue(VendorWirelessProtocol.shouldSyncBluetooth(1))
+        assertTrue(VendorWirelessProtocol.shouldSyncBluetooth(2))
+        assertTrue(VendorWirelessProtocol.shouldSyncBluetooth(3))
+        assertFalse(VendorWirelessProtocol.shouldSyncBluetooth(4))
+    }
+
+    @Test fun repeatedWirelessCallbacksDebounceHotspotRequestsLikeStockCarLink() {
+        assertTrue(VendorWirelessProtocol.shouldRepeatHotspotRequest(Long.MIN_VALUE, 1_000L))
+        assertFalse(VendorWirelessProtocol.shouldRepeatHotspotRequest(1_000L, 29_999L))
+        assertTrue(VendorWirelessProtocol.shouldRepeatHotspotRequest(1_000L, 31_000L))
     }
 
     @Test fun wirelessStartingStateRequestsTheCarHotspot() {
@@ -222,16 +239,25 @@ class VendorWirelessProtocolTest {
 
     @Test fun displayNegotiationMatchesCurrentVendorCarlink() {
         assertEquals(
-            VendorDisplayProtocol.Viewport(1280, 800),
-            VendorDisplayProtocol.negotiateDisplaySize(1280, 800),
+            VendorDisplayProtocol.Viewport(1920, 1080),
+            VendorDisplayProtocol.negotiateDisplaySize(1920, 1080),
         )
         assertEquals(
             VendorDisplayProtocol.Viewport(1280, 800),
             VendorDisplayProtocol.fitViewport(1280, 800, 1280, 800),
         )
+        // The vendor algorithm also enlarges a small window instead of keeping its pixel size.
         assertEquals(
-            VendorDisplayProtocol.Viewport(768, 1024),
+            VendorDisplayProtocol.Viewport(1728, 1080),
+            VendorDisplayProtocol.negotiateDisplaySize(1280, 800),
+        )
+        assertEquals(
+            VendorDisplayProtocol.Viewport(1080, 1440),
             VendorDisplayProtocol.negotiateDisplaySize(768, 1024),
+        )
+        assertEquals(
+            VendorDisplayProtocol.Viewport(1080, 1232),
+            VendorDisplayProtocol.negotiateDisplaySize(768, 880),
         )
         assertEquals(
             VendorDisplayProtocol.Viewport(1920, 1080),

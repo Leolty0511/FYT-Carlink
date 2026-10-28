@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Cold-start window background (portrait): flat brand color with the line-art phone, dashed
+     link and head unit stacked vertically via gravity+offset insets, like a real layout. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
-        <shape android:shape="rectangle">
-            <solid android:color="#090F1B" />
-        </shape>
+        <color android:color="#090F1B" />
     </item>
-    <item>
-        <bitmap
-            android:gravity="fill"
-            android:src="@drawable/home_background_portrait" />
-    </item>
+    <item
+        android:gravity="center"
+        android:bottom="272dp"
+        android:drawable="@drawable/launch_phone" />
+    <item
+        android:gravity="center"
+        android:top="50dp"
+        android:drawable="@drawable/launch_link_vertical" />
+    <item
+        android:gravity="center"
+        android:top="322dp"
+        android:drawable="@drawable/launch_head_unit" />
 </layer-list>

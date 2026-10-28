@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Launch screen art, head unit: line art only, scales with the panel. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="240dp"
+    android:height="150dp"
+    android:viewportWidth="240"
+    android:viewportHeight="150">
+    <path
+        android:strokeColor="#D7E4F5"
+        android:strokeWidth="3"
+        android:strokeLineJoin="round"
+        android:pathData="M10,14 h220 a10,10 0 0 1 10,10 v102 a10,10 0 0 1 -10,10 h-220 a10,10 0 0 1 -10,-10 v-102 a10,10 0 0 1 10,-10 z" />
+    <path
+        android:strokeColor="#D7E4F5"
+        android:strokeWidth="2.5"
+        android:pathData="M24,26 h192 a6,6 0 0 1 6,6 v76 a6,6 0 0 1 -6,6 h-192 a6,6 0 0 1 -6,-6 v-76 a6,6 0 0 1 6,-6 z" />
+    <path
+        android:strokeColor="#8FA9CC"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:pathData="M64,44 h112" />
+    <path
+        android:strokeColor="#D7E4F5"
+        android:strokeWidth="2.5"
+        android:strokeLineJoin="round"
+        android:pathData="M40,62 h40 v40 h-40 z M160,62 h40 v40 h-40 z" />
+    <path
+        android:strokeColor="#8FA9CC"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:pathData="M44,118 h32 M164,118 h32" />
+    <path
+        android:strokeColor="#8FA9CC"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:pathData="M100,124 h6 M114,124 h6 M128,124 h6" />
+    <path
+        android:strokeColor="#D7E4F5"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M96,144 h48" />
+</vector>

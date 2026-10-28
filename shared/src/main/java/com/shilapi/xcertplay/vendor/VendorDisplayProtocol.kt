@@ -28,14 +28,17 @@ object VendorDisplayProtocol {
         return (value * displaySize / viewSize).toInt().coerceIn(0, displaySize)
     }
 
-    /** Mirrors CarLink 2.0 `f.b.b`: retain native size up to 1920x1080, then align to 8 pixels. */
+    /**
+     * Mirrors CarLink 2.0 `h.c#b(int, int)`: scale the window into 1920x1080 (landscape) or
+     * 1080x1920 (portrait), then align both edges down to 8 pixels. The vendor algorithm also
+     * scales small windows up, so a 768x880 window still gets a 1080x1232 CarPlay canvas.
+     */
     fun negotiateDisplaySize(viewportWidth: Int, viewportHeight: Int): Viewport {
         if (viewportWidth <= 0 || viewportHeight <= 0) return Viewport(0, 0)
         val portrait = viewportWidth <= viewportHeight
         val maximumWidth = if (portrait) VENDOR_MAX_PORTRAIT_WIDTH else VENDOR_MAX_LANDSCAPE_WIDTH
         val maximumHeight = if (portrait) VENDOR_MAX_PORTRAIT_HEIGHT else VENDOR_MAX_LANDSCAPE_HEIGHT
         val scale = minOf(
-            1f,
             maximumWidth.toFloat() / viewportWidth,
             maximumHeight.toFloat() / viewportHeight,
         )

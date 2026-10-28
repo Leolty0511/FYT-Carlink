@@ -146,6 +146,9 @@ class VendorCarplaySessionService : Service(), VendorCarplayClient.Listener {
     private var viewportWidth = 0
     private var viewportHeight = 0
 
+    @Volatile
+    private var viewportConfigured = false
+
     private val wiredUsbRecheck = Runnable {
         if (sessionRequested && sessionTransport == VendorCarplayTransport.WIRED && !vendorIphoneAttached()) {
             record("vendor wired session stopped: iPhone USB detached")
@@ -184,17 +187,38 @@ class VendorCarplaySessionService : Service(), VendorCarplayClient.Listener {
     @Volatile
     private var videoHeight = 0
 
+    private var lastFrameSampleAt = 0L
+    private var lastFrameSample = 0L
+    private var lastSubmittedSample = 0L
+
     private val healthCheck = object : Runnable {
         override fun run() {
             val state = client.currentSessionState()
             val receiverFrames = videoReceiver?.framesRendered ?: 0L
+            val submittedFrames = videoReceiver?.framesSubmitted ?: 0L
+            val now = SystemClock.elapsedRealtime()
             val framesForRecovery = if (directSurfaceCodec && state == ACTIVE_SESSION_STATE) {
-                SystemClock.elapsedRealtime()
+                now
             } else {
                 receiverFrames
             }
+            if (state == ACTIVE_SESSION_STATE && now - lastFrameSampleAt >= FRAME_SAMPLE_MILLIS) {
+                if (lastFrameSampleAt > 0L && receiverFrames >= lastFrameSample) {
+                    val seconds = (now - lastFrameSampleAt) / 1000.0
+                    val fps = (receiverFrames - lastFrameSample) / seconds
+                    val inputFps = (submittedFrames - lastSubmittedSample) / seconds
+                    record(
+                        "video output fps=${"%.1f".format(java.util.Locale.US, fps)} " +
+                            "inputFps=${"%.1f".format(java.util.Locale.US, inputFps)} " +
+                            "size=${videoWidth}x$videoHeight canvas=${client.displayWidth}x${client.displayHeight}",
+                    )
+                }
+                lastFrameSampleAt = now
+                lastFrameSample = receiverFrames
+                lastSubmittedSample = submittedFrames
+            }
             when (recovery.evaluate(
-                nowMillis = SystemClock.elapsedRealtime(),
+                nowMillis = now,
                 sessionRequested = sessionRequested,
                 connected = client.connected,
                 state = state,
@@ -259,10 +283,19 @@ class VendorCarplaySessionService : Service(), VendorCarplayClient.Listener {
             listener = this,
             diagnostics = ::record,
         )
-        resources.displayMetrics.let { metrics ->
-            viewportWidth = metrics.widthPixels
-            viewportHeight = metrics.heightPixels
-        }
+        // Display#getMetrics reports the application area, so the FYT bottom bar (144 px on this
+        // panel) is not included. The Activity reports the final viewport again once it is laid
+        // out, but command 218 must already have a sane size for the launch path that waits for the
+        // session before opening that Activity.
+        val metrics = android.util.DisplayMetrics()
+        @Suppress("DEPRECATION")
+        (getSystemService(WINDOW_SERVICE) as? android.view.WindowManager)
+            ?.defaultDisplay
+            ?.getMetrics(metrics)
+        viewportWidth = metrics.widthPixels.takeIf { it > 0 } ?: resources.displayMetrics.widthPixels
+        viewportHeight = metrics.heightPixels.takeIf { it > 0 } ?: resources.displayMetrics.heightPixels
+        viewportConfigured = viewportWidth > 0 && viewportHeight > 0
+        record("vendor display startup viewport=${viewportWidth}x$viewportHeight")
         directSurfaceCodec = client.usesDirectSurfaceCodec()
         record("vendor video path=${if (directSurfaceCodec) "direct-surface" else "local-decoder"}")
         if (!directSurfaceCodec) videoReceiver = newVideoReceiver().also { it.start() }
@@ -339,14 +372,23 @@ class VendorCarplaySessionService : Service(), VendorCarplayClient.Listener {
         applyDesiredState()
     }
 
-    /** Supplies the actual projection window; CarLink uses this before negotiating command 218. */
+    /**
+     * Supplies the actual projection window; CarLink sizes command 218 from the real view, not
+     * from the display, because the head unit's bottom bar is not part of the CarPlay surface.
+     * Session launch waits for this first measurement.
+     */
     fun configureViewport(width: Int, height: Int) {
         if (width <= 0 || height <= 0 || explicitlyStopped) return
         val next = VendorDisplayProtocol.negotiateDisplaySize(width, height)
         val current = VendorDisplayProtocol.negotiateDisplaySize(viewportWidth, viewportHeight)
+        val changed = width != viewportWidth || height != viewportHeight || !viewportConfigured
         viewportWidth = width
         viewportHeight = height
+        viewportConfigured = true
         if (next != current && !sessionCommandSent) displayConfigured = false
+        if (changed) {
+            record("vendor display viewport=${width}x$height canvas=${next.width}x${next.height}")
+        }
         applyDesiredState()
         publishSnapshot()
     }
@@ -355,8 +397,10 @@ class VendorCarplaySessionService : Service(), VendorCarplayClient.Listener {
         val current = surface
         if (candidate != null && current !== candidate) return
         surface = null
-        if (registered && projectionStarted) client.projection(start = false)
-        projectionStarted = false
+        // Keep the projection running while the Activity is only paused: a projection restart makes
+        // the engine drop the video channel and the iPhone's encoder rebuild its rate control, so
+        // the picture comes back soft and single-digit fps for several seconds after every switch.
+        // The receiver simply stops rendering while there is no Surface.
         if (registered && directSurfaceCodec) client.detachSurface()
         videoReceiver?.surfaceChanged()
     }
@@ -483,6 +527,10 @@ class VendorCarplaySessionService : Service(), VendorCarplayClient.Listener {
 
     private fun applyDesiredState() {
         if (!registered || explicitlyStopped) return
+        // onServiceConnected can happen before the projection Activity has laid out. Launching
+        // command 218 from displayMetrics there would permanently negotiate a canvas that includes
+        // the head unit's bottom bar, so wait for configureViewport().
+        if (!viewportConfigured) return
         if (!displayConfigured) {
             displayConfigured = client.configureDisplay(viewportWidth, viewportHeight)
             if (!displayConfigured) return
@@ -492,7 +540,10 @@ class VendorCarplaySessionService : Service(), VendorCarplayClient.Listener {
             client.startSession(sessionTransport)
             sessionCommandSent = true
         }
-        val shouldProject = sessionRequested && surface?.isValid == true
+        // Once projection has started it stays on until the session is explicitly stopped or the
+        // phone ends it: toggling it per Activity pause restarts the iPhone's video encoder, which
+        // ramps back up from a low-fps, low-quality stream for seconds after every switch.
+        val shouldProject = sessionRequested && (surface?.isValid == true || projectionStarted)
         if (projectionStarted != shouldProject) {
             client.projection(shouldProject)
             projectionStarted = shouldProject
@@ -673,6 +724,7 @@ class VendorCarplaySessionService : Service(), VendorCarplayClient.Listener {
         private const val REQUEST_OPEN = 20
         private const val REQUEST_STOP = 21
         private const val HEALTH_CHECK_MILLIS = 2_000L
+        private const val FRAME_SAMPLE_MILLIS = 6_000L
         private const val VIDEO_SHUTDOWN_WAIT_MILLIS = 1_000L
         private const val PHONE_DISCONNECT_GRACE_MILLIS = 2_000L
         private const val USB_RECHECK_DELAY_MILLIS = 1_500L

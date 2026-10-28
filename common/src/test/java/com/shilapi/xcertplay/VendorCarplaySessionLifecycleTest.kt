@@ -32,7 +32,7 @@ class VendorCarplaySessionLifecycleTest {
     }
 
     @Test fun stalledSessionUsesBoundedRecoveryOrder() {
-        val policy = VendorSessionRecoveryPolicy(stallTimeoutMillis = 100L)
+        val policy = VendorSessionRecoveryPolicy(stallTimeoutMillis = 100L, negotiationStallTimeoutMillis = 100L)
         assertEquals(VendorSessionRecoveryPolicy.Action.NONE,
             policy.evaluate(1L, true, false, "wireless-0", 0))
         assertEquals(VendorSessionRecoveryPolicy.Action.NONE,
@@ -48,7 +48,7 @@ class VendorCarplaySessionLifecycleTest {
     }
 
     @Test fun observedProgressResetsRecoveryAndStoppedSessionsStayIdle() {
-        val policy = VendorSessionRecoveryPolicy(stallTimeoutMillis = 100L)
+        val policy = VendorSessionRecoveryPolicy(stallTimeoutMillis = 100L, negotiationStallTimeoutMillis = 100L)
         policy.evaluate(1L, true, false, "wireless-0", 0)
         assertEquals(VendorSessionRecoveryPolicy.Action.RECONNECT_BINDER,
             policy.evaluate(101L, true, false, "wireless-0", 0))
@@ -63,7 +63,7 @@ class VendorCarplaySessionLifecycleTest {
     }
 
     @Test fun activeSessionNeverRestartsForAStaticVideoFrame() {
-        val policy = VendorSessionRecoveryPolicy(stallTimeoutMillis = 100L)
+        val policy = VendorSessionRecoveryPolicy(stallTimeoutMillis = 100L, negotiationStallTimeoutMillis = 100L)
         assertEquals(VendorSessionRecoveryPolicy.Action.NONE,
             policy.evaluate(1L, true, true, VendorSessionRecoveryPolicy.ACTIVE_SESSION_STATE, 1))
         assertEquals(VendorSessionRecoveryPolicy.Action.NONE,
@@ -198,8 +198,13 @@ class VendorCarplaySessionLifecycleTest {
             "intArrayOf(configuration.channel, configuration.security, configuration.band)",
         ))
         assertTrue(source.contains("handleWirelessState(state)"))
-        assertTrue(source.substringAfter("fun startSession(").substringBefore("fun stopSession()")
-            .contains("startCarHotspot()"))
+        val startSession = source.substringAfter("fun startSession(").substringBefore("fun stopSession()")
+        // Stock CarLink sends linkMode(1) first; callback 109 opens the hotspot afterwards, so
+        // starting it from startSession would race the engine's own request.
+        assertFalse(startSession.contains("startCarHotspot()"))
+        assertTrue(startSession.contains("handler.postDelayed(bluetoothSync, BLUETOOTH_SYNC_DELAY_MILLIS)"))
+        assertTrue(source.contains("if (!VendorWirelessProtocol.shouldStartHotspot(wirelessState)) return"))
+        assertTrue(source.contains("CMD_DISPLAY_COMMIT = 219"))
         assertTrue(source.contains("command(CMD_AUDIO, intArrayOf(transport.audioMode))"))
         assertTrue(source.substringAfter("fun startSession(").substringBefore("fun stopSession()")
             .contains("vendor wired session requested"))

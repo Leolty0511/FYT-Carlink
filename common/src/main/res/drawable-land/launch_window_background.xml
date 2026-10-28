@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Cold-start window background (landscape): the same line art arranged horizontally. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
-        <shape android:shape="rectangle">
-            <solid android:color="#090F1B" />
-        </shape>
+        <color android:color="#090F1B" />
     </item>
-    <item>
-        <bitmap
-            android:gravity="fill"
-            android:src="@drawable/home_background_landscape" />
-    </item>
+    <item
+        android:gravity="center"
+        android:right="362dp"
+        android:drawable="@drawable/launch_phone" />
+    <item
+        android:gravity="center"
+        android:right="120dp"
+        android:drawable="@drawable/launch_link_horizontal" />
+    <item
+        android:gravity="center"
+        android:left="242dp"
+        android:drawable="@drawable/launch_head_unit" />
 </layer-list>

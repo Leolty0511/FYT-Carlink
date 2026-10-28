@@ -39,3 +39,8 @@ release-signing.properties
 *.key
 *.apk
 *.aab
+
+# Local release build drop and agent working data (never commit)
+/mobile/release/
+/work/
+/.workbuddy/

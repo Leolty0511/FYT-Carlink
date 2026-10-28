@@ -18,6 +18,7 @@ import android.content.res.Configuration
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.RippleDrawable
 import android.hardware.usb.UsbDevice
@@ -73,6 +74,7 @@ import com.shilapi.xcertplay.media.AmbientColorSource
 import com.shilapi.xcertplay.media.AmbientMusicSettings
 import com.shilapi.xcertplay.media.MtkDecoderTuning
 import com.shilapi.xcertplay.network.CarHotspotSettings
+import com.shilapi.xcertplay.network.CarHotspotStatus
 import com.shilapi.xcertplay.network.CarHotspotTethering
 import com.shilapi.xcertplay.network.FytHeadUnit
 import com.shilapi.xcertplay.network.WifiP2pChannels
@@ -127,14 +129,16 @@ internal object SettingsInformationArchitecture {
             SettingsSection.CAR_BUTTON,
         ),
         SettingsCategory.DIAGNOSTICS to setOf(SettingsSection.DIAGNOSTICS),
-        SettingsCategory.ADVANCED to setOf(
-            SettingsSection.CLUSTER_MAP,
-            SettingsSection.VENDOR_ENGINE,
-            SettingsSection.EXPERIMENTAL_DISPLAY,
-            SettingsSection.ADVANCED_MEDIA,
-            SettingsSection.NAVIGATION_WHEEL,
-            SettingsSection.AMBIENT_LIGHTING,
-        ),
+    )
+    // Categories offered in the settings rail and search. Vehicle, navigation and advanced
+    // tuning are not part of the product surface on these head units, so they stay hidden.
+    val visibleCategories: List<SettingsCategory> = listOf(
+        SettingsCategory.OVERVIEW,
+        SettingsCategory.DISPLAY,
+        SettingsCategory.AUDIO,
+        SettingsCategory.LANGUAGE,
+        SettingsCategory.DIAGNOSTICS,
+        SettingsCategory.ABOUT,
     )
 }
 
@@ -421,9 +425,11 @@ class DiPlayActivity : ComponentActivity(), AppAppearanceOwner {
         bydVehicleAdvancedExpanded = savedInstanceState?.getBoolean("byd_vehicle_advanced") ?: false
         settingsCategory = savedInstanceState?.getString("settings_category")
             ?.let { runCatching { SettingsCategory.valueOf(it) }.getOrNull() }
+            ?.takeIf { it in SettingsInformationArchitecture.visibleCategories }
             ?: SettingsCategory.OVERVIEW
         page = savedInstanceState?.getString("page") ?: intent.getStringExtra("page") ?: "home"
         render()
+        if (savedInstanceState == null) playLaunchAnimation()
         scheduleAutomaticVehicleValidation()
         handleWirelessRecovery()
         val usbLaunch = consumeIphoneUsbIntent(intent)
@@ -900,7 +906,14 @@ class DiPlayActivity : ComponentActivity(), AppAppearanceOwner {
         }
     }
 
-    private fun standardHeader(compact: Boolean): LinearLayout = row().apply {
+    private fun standardHeader(compactLayout: Boolean): LinearLayout = row().apply {
+        // Portrait 768dp panels cannot hold the logo, both nav labels and every action button.
+        // Drop the decorative nav labels and shrink the actions there, without forcing the whole
+        // page into the compact layout.
+        val compact = compactLayout || (
+            resources.configuration.screenWidthDp < 850 &&
+                resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        )
         gravity = Gravity.CENTER_VERTICAL
         val logoSize = dp(if (compact) 30 else 36)
         addView(ImageView(this@DiPlayActivity).apply {
@@ -1032,7 +1045,7 @@ class DiPlayActivity : ComponentActivity(), AppAppearanceOwner {
                         if (index > 0) marginStart = dp(22)
                     })
                 }
-            }, LinearLayout.LayoutParams(-2, -2).apply { gravity = Gravity.CENTER_HORIZONTAL })
+            })
             intro.addView(label(getString(R.string.home_hero_support), 14, MUTED).apply {
                 gravity = Gravity.CENTER
                 setPadding(0, dp(14), 0, dp(8))
@@ -1111,27 +1124,32 @@ class DiPlayActivity : ComponentActivity(), AppAppearanceOwner {
             }
         }.apply { visibility = View.GONE }
         card.addView(disconnectButton, matchButton(if (compact) CONTROL_GAP_DP else 16, if (compact) 46 else 56))
-        if (!compact) {
-            body.addView(intro, LinearLayout.LayoutParams(-1, -2))
-            body.addView(space(if (wide) 22 else 26))
-        }
         if (wide && !compact) {
-            val cardWidth = (resources.configuration.screenWidthDp - 160).coerceIn(720, 1040)
-            body.addView(FrameLayout(this).apply {
-                addView(card, FrameLayout.LayoutParams(dp(cardWidth), -2, Gravity.CENTER))
-            }, LinearLayout.LayoutParams(-1, -2))
+            // Landscape: the introduction sits beside the connection card. Stacked on top of each
+            // other they need ~880dp of height on a 1280x800 head unit with the large system font,
+            // which pushes the footer note and the error line under the fold.
+            val split = row().apply { gravity = Gravity.CENTER_VERTICAL }
+            split.addView(intro, LinearLayout.LayoutParams(0, -2, 1f))
+            split.addView(space(32), LinearLayout.LayoutParams(dp(32), 1))
+            val cardWidth = ((resources.configuration.screenWidthDp - 96) * 0.52f).roundToInt().coerceIn(560, 760)
+            split.addView(card, LinearLayout.LayoutParams(dp(cardWidth), -2))
+            body.addView(split, LinearLayout.LayoutParams(-1, -2))
         } else {
+            if (!compact) {
+                body.addView(intro, LinearLayout.LayoutParams(-1, -2))
+                body.addView(space(26))
+            }
             body.addView(card, LinearLayout.LayoutParams(-1, -2))
         }
         // Centre the complete home composition in the space below the header on wide head units.
-        // Compact and portrait windows remain naturally scrollable.
-        val wideBodyHeight = if (!compact && wide) {
+        // That space is only a *minimum*: with a large font or a short landscape window the body has
+        // to be able to grow, otherwise a fixed-height centred column clips its own first and last
+        // lines and no amount of scrolling can reach them.
+        if (!compact && wide) {
             val chromeHeight = 24 + 52 + 24 + 32
-            dp((resources.configuration.screenHeightDp - chromeHeight).coerceAtLeast(520))
-        } else {
-            -2
+            body.minimumHeight = dp((resources.configuration.screenHeightDp - chromeHeight).coerceAtLeast(520))
         }
-        content.addView(body, LinearLayout.LayoutParams(-1, wideBodyHeight))
+        content.addView(body, LinearLayout.LayoutParams(-1, -2))
         setupError?.let {
             content.addView(label(it, 16, WARNING).apply { setPadding(0, dp(16), 0, 0) })
         }
@@ -1204,9 +1222,9 @@ class DiPlayActivity : ComponentActivity(), AppAppearanceOwner {
     private fun settingsRail(): LinearLayout = column().apply {
         background = rounded(SURFACE, BORDER)
         setPadding(dp(12), dp(12), dp(12), dp(12))
-        SettingsCategory.entries.forEach { category ->
+        SettingsInformationArchitecture.visibleCategories.forEachIndexed { index, category ->
             addView(settingsRailDestination(category), matchButton(0, 52).apply {
-                bottomMargin = if (category == SettingsCategory.entries.last()) 0 else dp(8)
+                bottomMargin = if (index == SettingsInformationArchitecture.visibleCategories.lastIndex) 0 else dp(8)
             })
         }
     }
@@ -1305,12 +1323,9 @@ class DiPlayActivity : ComponentActivity(), AppAppearanceOwner {
         val destinations = listOf(
             SettingsCategory.DISPLAY to R.string.settings_display_summary,
             SettingsCategory.AUDIO to R.string.settings_audio_summary,
-            SettingsCategory.NAVIGATION to R.string.settings_navigation_summary,
-            SettingsCategory.VEHICLE to R.string.settings_vehicle_summary,
             SettingsCategory.LANGUAGE to R.string.settings_language_summary,
             SettingsCategory.ABOUT to R.string.about_diplay,
             SettingsCategory.DIAGNOSTICS to R.string.settings_diagnostics_summary,
-            SettingsCategory.ADVANCED to R.string.settings_advanced_subtitle,
         )
         val categoryGap = dp(SETTINGS_BLOCK_GAP_DP)
         val twoColumns = isExpandedSettingsLayout && resources.configuration.let {
@@ -1509,9 +1524,11 @@ class DiPlayActivity : ComponentActivity(), AppAppearanceOwner {
     private fun buildSettingsSearchIndex(): List<SettingsSearchResult> {
         val selected = settingsCategory
         // Category names first, so a card that only links to a category cannot claim its name.
-        val index = SettingsCategory.entries.associateByTo(linkedMapOf(), ::settingsCategoryTitle)
+        val index = SettingsInformationArchitecture.visibleCategories
+            .associateByTo(linkedMapOf(), ::settingsCategoryTitle)
         try {
-            for (category in SettingsCategory.entries.filter { it != SettingsCategory.OVERVIEW } + SettingsCategory.OVERVIEW) {
+            for (category in SettingsInformationArchitecture.visibleCategories
+                .filter { it != SettingsCategory.OVERVIEW } + SettingsCategory.OVERVIEW) {
                 settingsCategory = category
                 val titles = mutableListOf(settingsCategoryTitle(category))
                 searchIndexSink = titles
@@ -2373,21 +2390,11 @@ class DiPlayActivity : ComponentActivity(), AppAppearanceOwner {
 
     private fun about(content: LinearLayout) {
         settingsPageTitle(content, getString(R.string.about_diplay), getString(R.string.carplay_at_home_in_your_car))
-        section(content, getString(R.string.about_public_preview_prefix, version())) { card ->
-            card.addView(label(getString(R.string.an_independent_carplay_receiver_for_android_head_units_wir), 17, TEXT))
-        }
         section(content, getString(R.string.online_update)) { card ->
             card.addView(label(getString(R.string.current_version, version()), 16, MUTED))
             val updateButton = button(getString(R.string.check_for_updates), true) { }
             updateButton.setOnClickListener { checkForOnlineUpdate(updateButton) }
             card.addView(updateButton, matchButton(12, 60))
-        }
-        section(content, getString(R.string.backup_title)) { card ->
-            card.addView(button(getString(R.string.backup_open), false) { openBackup() }, matchButton(0, 60))
-            card.addView(label(getString(R.string.backup_open_description), 14, MUTED).apply { setPadding(0, dp(10), 0, 0) })
-        }
-        section(content, getString(R.string.made_possible_by_open_source)) { card ->
-            card.addView(label(getString(R.string.receiver_based_on_xcertplay_licensed_under_gpl_3_0_diplay), 16, MUTED))
         }
     }
 
@@ -2433,11 +2440,6 @@ class DiPlayActivity : ComponentActivity(), AppAppearanceOwner {
     private fun openReleaseUrl(url: String) {
         runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
             .onFailure { toast(getString(R.string.no_browser_available)) }
-    }
-
-    private fun openBackup() {
-        page = "backup"
-        render()
     }
 
     private fun backup(content: LinearLayout) {
@@ -4807,6 +4809,10 @@ class DiPlayActivity : ComponentActivity(), AppAppearanceOwner {
                 }
                 VendorConnectionPreflight.Action.START_SESSION -> Unit
             }
+            if (requiresHotspotControlPermission()) {
+                requestHotspotControlPermission()
+                return
+            }
             AirPlayPersistence.saveWirelessEnabled(this, true)
             openVendorProjectionWhenReady()
             return
@@ -4830,6 +4836,22 @@ class DiPlayActivity : ComponentActivity(), AppAppearanceOwner {
         }
         if (CarPlayBackgroundSession.hasSession()) CarPlayBackgroundSession.stop { runOnUiThread { open() } }
         else open()
+    }
+
+    /**
+     * The saved-hotspot `startTethering` call needs the WRITE_SETTINGS app-op, which only the system
+     * can grant. FYT ships no adbd on 127.0.0.1:5555, so the silent `appops` route never succeeds
+     * there. The permission is only actually required when the car hotspot is still off — when it is
+     * already on the session can start without it.
+     */
+    private fun requiresHotspotControlPermission(): Boolean =
+        !CarHotspotTethering.permitted(this) && CarHotspotStatus.isEnabled(this) != true
+
+    private fun requestHotspotControlPermission() {
+        val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:$packageName"))
+        val opened = runCatching { startActivity(intent); true }.getOrDefault(false)
+        if (!opened) toast(getString(R.string.open_this_setting_from_your_car_s_settings_app))
+        else toast(getString(R.string.hotspot_permission_needed))
     }
 
     private fun openProjection() {
@@ -5905,7 +5927,25 @@ class DiPlayActivity : ComponentActivity(), AppAppearanceOwner {
         splashScreen.setSplashScreenTheme(R.style.Theme_Xcertplay_Launcher)
     }
 
+    // Cold-start transition that replaced the fixed landscape splash bitmap. The system
+    // starting window draws the same line art (drawable/launch_window_background.xml,
+    // drawable-land) that this layout mirrors (layout/launch_screen.xml, layout-land), so the
+    // hand-off is seamless; the overlay then fades into the page once it is ready.
+    private fun playLaunchAnimation() {
+        val decor = window.decorView as? ViewGroup ?: return
+        val overlay = layoutInflater.inflate(R.layout.launch_screen, decor, false) as ViewGroup
+        decor.addView(overlay, ViewGroup.LayoutParams(-1, -1))
+        handler.postDelayed({
+            overlay.animate().alpha(0f).setDuration(260L)
+                .withEndAction { (overlay.parent as? ViewGroup)?.removeView(overlay) }
+                .start()
+        }, 900L)
+    }
+
     private fun applyWindowAppearance() {
+        // The theme's starting window keeps the branded frame until the first frame is drawn; from
+        // then on the window itself follows the palette so no stale bitmap shows through the UI.
+        window.setBackgroundDrawable(ColorDrawable(palette.background))
         window.statusBarColor = palette.systemBar
         window.navigationBarColor = palette.systemBar
         WindowInsetsControllerCompat(window, window.decorView).apply {

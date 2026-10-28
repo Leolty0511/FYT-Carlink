@@ -16,6 +16,7 @@ import java.util.concurrent.locks.ReentrantLock
 /** Uses the car's saved hotspot configuration. This never stops or reconfigures the hotspot. */
 object CarHotspotTethering {
     const val DEFAULT_TIMEOUT_MILLIS = WirelessStartupPolicy.HOTSPOT_READY_MILLIS
+    private const val GRANT_BUDGET_MILLIS = 4_000L
     private val startupLock = ReentrantLock()
     enum class Result(val diagnostic: String) {
         READY("Car hotspot is on"),
@@ -28,6 +29,37 @@ object CarHotspotTethering {
 
     fun permitted(context: Context): Boolean = Settings.System.canWrite(context)
 
+    /**
+     * Grants the `WRITE_SETTINGS` app-op silently through the head unit's own adbd (127.0.0.1:5555).
+     * The saved-hotspot `startTethering` call needs this permission on firmware that does not ship
+     * T-link as a privileged system app. This is the same grant the settings flow performs, but it
+     * never shows a dialog: it only succeeds when adbd already trusts this device's key.
+     */
+    private fun grantWriteSettings(context: Context, log: (String) -> Unit): Boolean {
+        if (Settings.System.canWrite(context)) return true
+        // Firmware without adbd on 5555 leaves this hanging on the connect timeout, so the grant may
+        // never eat more than a small slice of the hotspot budget.
+        val deadline = System.nanoTime() + GRANT_BUDGET_MILLIS * 1_000_000L
+        val client = AtomicReference<LocalAdb?>()
+        return CarHotspotAdbFallback.bounded(deadline, cancelled = { false },
+            abort = { client.get()?.cancelPendingOperations() }) {
+            val adb = LocalAdb(AdbKeys.load(context))
+            client.set(adb)
+            adb.use {
+                val access = it.connect(mayAsk = false)
+                log("hotspot write-settings grant: local ADB access=$access")
+                if (access != LocalAdb.Access.READY) false
+                else {
+                    val output = it.shell("appops set ${context.packageName} WRITE_SETTINGS allow")
+                    log("hotspot write-settings grant: appops output=$output")
+                    Settings.System.canWrite(context).also { granted ->
+                        log("hotspot write-settings grant: canWrite now=$granted")
+                    }
+                }
+            }
+        }
+    }
+
     /** Blocking; serialize startup and connection requests, checking cancellation after acquiring the lock. */
     fun enable(
         context: Context,
@@ -35,6 +67,10 @@ object CarHotspotTethering {
         timeoutMillis: Long = DEFAULT_TIMEOUT_MILLIS,
         log: (String) -> Unit,
     ): Result {
+        if (!Settings.System.canWrite(context)) {
+            log("hotspot write-settings missing; attempting silent grant")
+            grantWriteSettings(context, log)
+        }
         val deadline = System.nanoTime() + timeoutMillis * 1_000_000L
         val observedAdbState = AtomicReference<Boolean?>()
         val startReflection: (ResultReceiver) -> Unit = { receiver ->

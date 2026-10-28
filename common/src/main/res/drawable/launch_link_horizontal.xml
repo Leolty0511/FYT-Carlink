@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dashed wireless link, horizontal (landscape launch layout). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="72dp"
+    android:height="12dp"
+    android:viewportWidth="72"
+    android:viewportHeight="12">
+    <path
+        android:strokeColor="#A6C8FF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M3,6 h9 M20,6 h9 M37,6 h9 M54,6 h8" />
+    <path
+        android:strokeColor="#A6C8FF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M64,2 l5,4 l-5,4" />
+</vector>

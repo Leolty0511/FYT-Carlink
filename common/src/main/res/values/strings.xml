@@ -78,10 +78,8 @@
     <string name="status_attaching_ncm">Attaching NCM/AirPlay network</string>
     <string name="status_failed">Failed: %1$s</string>
     <string name="msg_car_hotspot_off">The car hotspot “%1$s” is off. Turn it on in the car settings before connecting.</string>
-    <string name="home_public_preview">PUBLIC PREVIEW\u0020·\u0020%1$s</string>
     <string name="choose_iphone_prefix">Choose iPhone ·\u0020</string>
     <string name="audio_saved_value">Saved: %1$d</string>
-    <string name="about_public_preview_prefix">Public preview\u0020·\u0020%1$s</string>
     <string name="msg_car_hotspot_connect">T-link connects through the car hotspot “%1$s”. Turn it on in the car settings, then connect.</string>
     <string name="edit_saved_hotspot_prefix">Edit saved hotspot ·\u0020</string>
     <string name="cluster_adb_multi_device">If ADB lists several devices, use adb -s &lt;car-device-ID&gt; shell appops set %1$s GET_USAGE_STATS allow. Find the ID with adb devices.</string>
@@ -112,7 +110,6 @@
     <string name="allow_nearby_devices_so_diplay_can_connect_to_your_paired">Allow Nearby devices so T-link can connect to your paired iPhone.</string>
     <string name="allow_precise_location_for_diplay_in_the_head_unit_s_app_p">Allow precise Location for T-link in the head unit’s app permissions.</string>
     <string name="allow_the_connection_permission_to_continue">Allow the connection permission to continue</string>
-    <string name="an_independent_carplay_receiver_for_android_head_units_wir">An independent CarPlay receiver for Android head units. Wired and wireless connections run on the head unit, with local authentication. A standard iPhone can connect without a jailbreak, Mac, dongle or sign-in.\n\nThis preview uses an experimental accessory identity. Compatibility with every iPhone and head unit is still being tested. It is not an Apple-certified product.</string>
     <string name="android_9_compatibility">Android 9 compatibility</string>
     <string name="app_permissions">App permissions</string>
     <string name="app_settings">App settings</string>
@@ -279,7 +276,6 @@
     <string name="location">Location</string>
     <string name="longest_height">Longest height</string>
     <string name="looking_for_your_paired_iphone">Looking for your paired iPhone…</string>
-    <string name="made_possible_by_open_source">Made possible by open source</string>
     <string name="make_diplay_feel_right_for_your_car">Make T-link feel right for your car.</string>
     <string name="manual_hotspot">Manual hotspot</string>
     <string name="manual_mode_match_the_cluster_theme_here_the_map_cannot_fo">Manual mode: match the cluster theme here. The map cannot follow card visibility without Usage Access.</string>
@@ -327,7 +323,6 @@
     <string name="preparing_mfi_authentication">Preparing MFi authentication</string>
     <string name="ready">Ready</string>
     <string name="ready_when_you_are">Ready when you are</string>
-    <string name="receiver_based_on_xcertplay_licensed_under_gpl_3_0_diplay">Receiver based on xcertplay, licensed under GPL-3.0. T-link’s interface follows DiAuto’s design, licensed under AGPL-3.0.\n\nIncludes AndroidX, Bouncy Castle, JmDNS and SLF4J. Source and license notices accompany this release.\n\nCarPlay and the CarPlay icon belong to Apple Inc. T-link is an independent project.</string>
     <string name="reconnecting_to_your_iphone">Reconnecting to your iPhone…</string>
     <string name="remote">Remote</string>
     <string name="remote_server_address_contains_u_0000">Remote server address contains U+0000</string>
@@ -672,6 +667,7 @@
     <string name="auto_car_hotspot_description">Starts the saved car hotspot when T-link opens. Turning this on automatically requests the required permissions through ADB; allow the prompt on the car screen. Enable “Open after the car starts” for boot startup. Keeps the hotspot name and password and never turns it off.</string>
     <string name="hotspot_control_missing">Hotspot control permission is missing. Set it up through ADB or open the hotspot in car settings.</string>
     <string name="hotspot_permission_granted">Permission granted.</string>
+    <string name="hotspot_permission_needed">Allow “Modify system settings” for T-link so it can switch on the car hotspot, then tap Open CarPlay again.</string>
     <string name="hotspot_permission_failed">The requested permission was not granted. Check the car settings and try again.</string>
     <string name="hotspot_control_on">The car hotspot is on.</string>
     <string name="hotspot_control_unsupported">This firmware does not support automatic hotspot startup. Open the hotspot in car settings.</string>

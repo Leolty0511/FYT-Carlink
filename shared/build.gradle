@@ -3,7 +3,9 @@ plugins {
 }
 android {
     namespace = 'com.shilapi.xcertplay.shared'
-    compileSdk = 37
+    compileSdk {
+        version = release(37)
+    }
 
     defaultConfig {
         minSdk = 25

@@ -77,10 +77,8 @@
     <string name="status_attaching_ncm">Conectando la red NCM/AirPlay</string>
     <string name="status_failed">Error: %1$s</string>
     <string name="msg_car_hotspot_off">El punto de acceso del coche «%1$s» está apagado. Actívalo en la configuración del coche antes de conectarte.</string>
-    <string name="home_public_preview">VISTA PREVIA PÚBLICA\u0020·\u0020%1$s</string>
     <string name="choose_iphone_prefix">Elegir iPhone ·\u0020</string>
     <string name="audio_saved_value">Guardado: %1$d</string>
-    <string name="about_public_preview_prefix">Vista previa\u0020·\u0020%1$s</string>
     <string name="msg_car_hotspot_connect">T-link se conecta a través del punto de acceso del coche «%1$s». Actívalo en la configuración del coche y luego conéctate.</string>
     <string name="edit_saved_hotspot_prefix">Editar punto de acceso guardado ·\u0020</string>
     <string name="cluster_adb_multi_device">Si ADB lista varios dispositivos, usa adb -s &lt;car-device-ID&gt; shell appops set %1$s GET_USAGE_STATS allow. Encuentra el ID con adb devices.</string>
@@ -109,7 +107,6 @@
     <string name="allow_nearby_devices_so_diplay_can_connect_to_your_paired">Permite «Dispositivos cercanos» para que T-link pueda conectarse a tu iPhone emparejado.</string>
     <string name="allow_precise_location_for_diplay_in_the_head_unit_s_app_p">Permite «Ubicación precisa» para T-link en los permisos de la aplicación de la unidad principal.</string>
     <string name="allow_the_connection_permission_to_continue">Permite el permiso de conexión para continuar</string>
-    <string name="an_independent_carplay_receiver_for_android_head_units_wir">Un receptor de CarPlay independiente para unidades principales Android. Las conexiones con cable e inalámbricas se ejecutan en la unidad principal, con autenticación local. Un iPhone estándar puede conectarse sin jailbreak, Mac, dongle ni inicio de sesión.\n\nEsta versión preliminar usa una identidad de accesorio experimental. La compatibilidad con cada iPhone y cada unidad principal sigue en pruebas. No es un producto certificado por Apple.</string>
     <string name="android_9_compatibility">Compatibilidad con Android 9</string>
     <string name="app_permissions">Permisos de la aplicación</string>
     <string name="app_settings">Ajustes de la aplicación</string>
@@ -266,7 +263,6 @@
     <string name="location">Ubicación</string>
     <string name="longest_height">Altura máxima</string>
     <string name="looking_for_your_paired_iphone">Buscando tu iPhone emparejado…</string>
-    <string name="made_possible_by_open_source">Hecho posible por el código abierto</string>
     <string name="make_diplay_feel_right_for_your_car">Haz que T-link encaje con tu coche.</string>
     <string name="manual_hotspot">Punto de acceso manual</string>
     <string name="manual_mode_match_the_cluster_theme_here_the_map_cannot_fo">Modo manual: ajusta aquí el tema del cuadro. El mapa no puede seguir la visibilidad de las tarjetas sin el permiso de uso.</string>
@@ -314,7 +310,6 @@
     <string name="preparing_mfi_authentication">Preparando autenticación MFi</string>
     <string name="ready">Listo</string>
     <string name="ready_when_you_are">Listo cuando tú lo estés</string>
-    <string name="receiver_based_on_xcertplay_licensed_under_gpl_3_0_diplay">Receptor basado en xcertplay, con licencia GPL-3.0. La interfaz de T-link sigue el diseño de DiAuto, con licencia AGPL-3.0.\n\nIncluye AndroidX, Bouncy Castle, JmDNS y SLF4J. El código fuente y los avisos de licencia acompañan a esta versión.\n\nCarPlay y el icono de CarPlay pertenecen a Apple Inc. T-link es un proyecto independiente.</string>
     <string name="reconnecting_to_your_iphone">Reconectando con tu iPhone…</string>
     <string name="remote">Remoto</string>
     <string name="remote_server_address_contains_u_0000">La dirección del servidor remoto contiene U+0000</string>

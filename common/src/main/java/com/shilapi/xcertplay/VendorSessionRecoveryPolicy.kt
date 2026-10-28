@@ -3,6 +3,9 @@ package com.shilapi.xcertplay
 /** Bounded recovery sequence for a requested vendor-engine session that stops making progress. */
 internal class VendorSessionRecoveryPolicy(
     private val stallTimeoutMillis: Long = DEFAULT_STALL_TIMEOUT_MILLIS,
+    /** iAP2, MFi and the Wi-Fi handover need far longer than an idle engine; restarting mid-handshake
+     *  sends the engine back to wireless-0 and can jam the BLINK UART queue. */
+    private val negotiationStallTimeoutMillis: Long = DEFAULT_NEGOTIATION_STALL_TIMEOUT_MILLIS,
 ) {
     enum class Action {
         NONE,
@@ -51,7 +54,8 @@ internal class VendorSessionRecoveryPolicy(
             recoveryStep = 0
             return Action.NONE
         }
-        if (nowMillis - lastProgressAtMillis < stallTimeoutMillis) return Action.NONE
+        val timeout = if (isNegotiating(state)) negotiationStallTimeoutMillis else stallTimeoutMillis
+        if (nowMillis - lastProgressAtMillis < timeout) return Action.NONE
 
         lastProgressAtMillis = nowMillis
         val action = when (recoveryStep % RECOVERY_ACTIONS) {
@@ -63,6 +67,10 @@ internal class VendorSessionRecoveryPolicy(
         return action
     }
 
+    /** wireless-1..3 are the engine's own handshake steps; only wireless-0 is a genuine stall. */
+    internal fun isNegotiating(state: String): Boolean =
+        state.startsWith("wireless-") && state.removePrefix("wireless-").toIntOrNull() in 1..3
+
     private fun reset(nowMillis: Long, connected: Boolean, state: String, framesRendered: Long) {
         lastProgressAtMillis = nowMillis
         lastConnected = connected
@@ -73,6 +81,7 @@ internal class VendorSessionRecoveryPolicy(
 
     companion object {
         const val DEFAULT_STALL_TIMEOUT_MILLIS = 30_000L
+        const val DEFAULT_NEGOTIATION_STALL_TIMEOUT_MILLIS = 120_000L
         const val ACTIVE_SESSION_STATE = "wireless-4"
         private const val RECOVERY_ACTIONS = 3
     }

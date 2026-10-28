@@ -1,7 +1,21 @@
-# T-link 1.0.0 — 2026-10-21
+# T-link 1.0.0 — 2026-10-27
+
+- 完全对齐原厂 CarLink 2.0 的 CarPlay 显示算法（`h/c.java#b`）：横屏按 1920×1080、竖屏按 1080×1920 等比缩放，再向下对齐 8 像素；移除 T-link 额外加入的“禁止放大”限制。当前 768×880 竖屏窗口现在协商为 1080×1232，而不是低分辨率画布。
+- 修复启动阶段误把车机底部 144px 导航栏算进 CarPlay 窗口：服务启动时改用 `Display#getMetrics()` 的应用可视区，实测得到 768×880；投屏页完成布局后再用真实窗口校正，避免命令 218 使用 768×1024。
+- 修复 768×1024 竖屏首页顶栏溢出：窄竖屏下隐藏装饰性导航文字并缩小右上角按钮，Logo、语言、外观、设置和“车机主页”全部保持在可视范围内。
+- 按原厂 `h/g.java` 将 MediaCodec 输出改为独立高优先级线程，读流/送帧不再与取画面互相阻塞；新增每 6 秒的 `video output fps`、`inputFps`、画布尺寸及解码延迟诊断，便于区分源帧率、解码积压和渲染问题。
+- 修复无线 CarPlay 连上蓝牙后画面一直出不来（server state 停在 2、到不了 wireless-4）：T-link 先发 `CMD 200` 再由引擎回调 109 触发热点和 `CMD 225`，此时引擎状态已经不是 0，而蓝牙宣告被限制成“仅空闲态才同步”，导致 `CMD 226` 身份与 `IB/US/UU…/UE` 从未发出，iAP2 握手起不来。现在按原厂 CarLink 2.0 的语义——只要链路还未建立就持续宣告手机，并在 `CMD 200` 与 `CMD 225` 后各排一次 800ms 同步、未收到 `AT#SP` 前每 5 秒重试。
+- 修复热点被反复重启打断无线握手：原厂 CarLink 用 `JobInfo.MIN_BACKOFF_MILLIS`（30 秒）给热点请求去抖，T-link 之前是 10 秒，会在 iPhone 正在加入 Wi-Fi 时重新拉起软 AP。现改为 30 秒。
+- 对齐原厂 CarLink 2.0 的显示协商：物理宽度提示改用 CarLink 的常量 331（原为 221），并在 `CMD 218` 之后补发 `CMD 219`（`e/k.a` 的 link setup 序列里同样是空参数紧跟 218）。
+- 修复浅色外观下窗口底色仍是启动图深色：首帧绘制完成后窗口背景跟随当前配色，状态栏/导航栏配色逻辑不变。
+- 修复无线 CarPlay 一直停在“正在打开 CarPlay”：BLINK 蓝牙栈不维护 Android 的 UUID 缓存，`fetchUuidsWithSdp` 恒返回 0 个 UUID，导致手机身份与 CarPlay 服务 UUID 从未宣告给引擎（日志里反复 `SDP UUID refresh completed count=0 carplay=false`、`bluetoothAdvertised=false`），iAP2 无法起握手。现在手机来自 FYT 蓝牙模块时按原厂 CarLink 的做法直接宣告固定 CarPlay 服务 UUID，并在车机名为空时回退读取 `bluetooth_name`。
+- 修复无线协商被自身恢复逻辑打断：会话在 wireless-1..3 握手阶段 30 秒无变化就会重连/重启引擎，而完整握手（含 WirelessConnectMonitorLoop）远超 30 秒。握手阶段现在给 120 秒宽限，避免引擎被打回 wireless-0 并堵死 BLINK 的 UART 队列。
+- 修复车机热点无法自动开启：本机固件没有在 127.0.0.1:5555 上运行 adbd，此前新增的“静默 `appops set ... WRITE_SETTINGS allow`”永远不可能成功，反而每次白等约 7 秒（热点预算仅 15 秒）。现在该补授最多占用 4 秒并会超时中止；若 `WRITE_SETTINGS` 仍缺失且车机热点当前是关闭的，改为打开系统“修改系统设置”页面一次性授权（热点已经开启时不需要该权限，直接开始会话）。
+- 修复 FYT 手机蓝牙已连接但 Android 标准配对表为空时无线 CarPlay 一直停留在“正在打开 CarPlay”的问题：按原厂 CarLink 2.0 逻辑直接使用 FYT 模块返回的手机 MAC 获取远端设备，标准配对列表仅作为普通 Android 设备的后备。热点启动继续使用已验证的 Android 10 `startTethering` 接口（该固件上 `setWifiApEnabled` 是直接返回 false 的空实现，不再调用）；连接前若 `WRITE_SETTINGS` 授权缺失，会通过车机自身 adbd 静默补授（`appops set ... WRITE_SETTINGS allow`），不再弹出任何授权弹窗，也不依赖用户手动操作。
 
 - 在“关于 T-link”中加入在线更新入口，通过 GitHub Releases 最新版本接口检查版本，并优先下载 `T-Link` 命名的 APK 发布附件；当前发布仓库切换为 `Leolty0511/FYT-Carlink`。
-- 将车舱场景图从首页移到 T-link 启动窗口，替换点击应用及恢复既有 CarPlay 会话时的纯黑等待画面；启动图仅绑定首页入口 Activity，不影响投屏、设置及其他窗口。
+- 启动画面改为真实布局（不再是插进去的一整张图）：删除原横屏构图的车舱启动图（`home_background_landscape/portrait.png` 及横屏版启动背景 drawable），改为简笔画线稿矢量（手机 ⇢ 虚线链路 ⇢ 车机），并拆成 `layout/launch_screen.xml`（竖屏上下排列）与 `layout-land/launch_screen.xml`（横屏左右排列）两套真实 View 布局；系统启动窗口 `launch_window_background.xml`/`drawable-land` 用 `layer-list` 的 gravity + dp 偏移镜像同一套矢量，保证 starting window 与 Activity 覆盖层像素对齐、冷启动不黑屏。矢量按 dp 排列，任意分辨率和横竖屏车机都不会拉伸变形。
+- 精简设置信息架构：设置导航栏与搜索索引只保留“总览 / 显示 / 音频 / 语言 / 关于 / 诊断”六项，车辆（Vehicle）和导航（Navigation）不再作为独立分类入口，高级设置（Advanced）整类移除；“关于”页只保留版本号与在线更新入口，删除“公开预览”说明、备份设置入口和开源项目鸣谢段落（四种语言文案同步清理）。CarPlay 投屏页原“车辆”分区标题改为“CarPlay”，并移除针对特定车型的通话弹窗开关，界面内不再出现该品牌字样。
 - 首页恢复纯色工作界面并重新平衡布局：横屏将“选择连接方式”面板整体居中，无线与 USB 入口等宽横向排列，不再把全部操作挤在右侧；竖屏和紧凑窗口自动改为上下排列。
 - 语言选择入口移到首页右上角，并同步覆盖 1280×800 横屏、768×1024 竖屏、紧凑窗口及中俄文大字体截图回归测试；连接入口继续绑定真实 CarPlay 功能，不展示尚未实现的 Android Auto 假入口。
 - 修复 FYT 有线 CarPlay 启动顺序：USB Host 切换成功后立即向原厂 CarplayServer 发送有线启动命令，由原厂系统服务接管只读的 `ls_carplay`、USB 供电与设备枚举，不再由普通应用在启动服务前空等 iPhone。
